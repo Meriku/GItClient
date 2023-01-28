@@ -7,9 +7,8 @@
         xmlns:local="clr-namespace:GItClient"
         mc:Ignorable="d"
         Height="600" Width="920"
-        WindowStyle="None"
-        ResizeMode="NoResize"
-        
+        WindowStyle="None"   
+        WindowStartupLocation="CenterScreen"
         Background="Transparent"
         AllowsTransparency="True">
 
@@ -26,31 +25,73 @@
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="600"/>
                 <ColumnDefinition/>
-
-
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="75"/>
+                <RowDefinition Height="55"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            
-            <TextBlock Text="EasyClient"
-                   VerticalAlignment="Top"
-                   HorizontalAlignment="Left"
-                   Foreground="White"
-                   FontSize="16"
-                   Margin="15"/>
+            <Border 
+                Grid.Row="0"
+                Grid.ColumnSpan="3" 
+                Name="headerBorder" 
+                Width="Auto" 
+                Height="55" 
+                VerticalAlignment="Top"
+                CornerRadius="15,15,0,0"
+                Background="#22202f"
+                MouseLeftButtonDown="headerControlBar_MouseLeftButtonDown">
 
-            <Image Grid.Row="0"
-                   Grid.Column="2"
-                   Width="30"
-                   Height="30"
-                   VerticalAlignment="Top"
-                   HorizontalAlignment="Right"
-                   Margin="15"
-                   Source="Images/account-icon.png" />
+                
+                <Grid Name="HeaderGrid">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="600"/>
+                        <ColumnDefinition/>
+
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock 
+                       Grid.Column="0"
+                       Text="EasyClient"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Foreground="White"
+                       FontSize="16"
+                       Margin="15,0,0,0"
+                       IsHitTestVisible= "false"/>
+
+                    <Image 
+                       Grid.Column="3"
+                       Width="30"
+                       Height="30"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right"
+                       Margin="0,0,15,0"
+                       Source="Images/account-icon.png" />
+
+                    <TextBox Grid.Column="1"
+                       Foreground="White"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="10,0,0,0"
+                       Style="{StaticResource ModernTextBox}"/>
+                    
+                </Grid>
+        
+
+            </Border>
+            
+
+
+ 
 
 
 
@@ -78,14 +119,6 @@
 
             </StackPanel>
 
-            <TextBox Grid.Column="1"
-                       Width="250"
-                       Height="40"
-                       Foreground="White"
-                       FontSize="14"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       Style="{StaticResource ModernTextBox}"/>
 
             <ContentControl Grid.Row="1"
                             Grid.Column="1"
