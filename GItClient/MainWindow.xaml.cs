@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GItClient.Core;
+using GItClient.MVVM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -23,10 +25,16 @@ namespace GItClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        public RelayCommand MaximizedMinimizedWindow { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+
+            MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
+            headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
+            
         }
 
 
@@ -39,6 +47,13 @@ namespace GItClient
             SendMessage(helper.Handle, 161, 2, 0);
         }
 
+        private void headerControlBar_MouseLeftDoubleClick(object commandParameter)
+        {
+            if (this.WindowState == System.Windows.WindowState.Maximized)
+                this.WindowState = System.Windows.WindowState.Normal;
+            else
+                this.WindowState = System.Windows.WindowState.Maximized;
+        }
 
     }
 }

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace GItClient.Core
 {
-    internal class RelayCommand : ICommand
+    public class RelayCommand : ICommand
     {
 
         private Action<object> _execute;
