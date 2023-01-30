@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GItClient.MVVM.View
+namespace GItClient.MVVM.View.Menus
 {
     /// <summary>
-    /// Interaction logic for HomeView.xaml
+    /// Interaction logic for ActionMenuView.xaml
     /// </summary>
-    public partial class HomeView : UserControl
+    public partial class ActionMenuView : UserControl
     {
-        public HomeView()
+        public ActionMenuView()
         {
             InitializeComponent();
         }

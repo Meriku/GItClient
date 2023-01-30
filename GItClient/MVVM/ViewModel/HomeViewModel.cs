@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GItClient.MVVM.ViewModel
 {
-    internal class HomeViewModel 
+    class HomeViewModel 
     {
     }
 }

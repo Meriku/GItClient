@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GItClient.MVVM.View
+namespace GItClient.MVVM.View.Menus
 {
     /// <summary>
-    /// Interaction logic for DiscoveryView.xaml
+    /// Interaction logic for NavigateMenuView.xaml
     /// </summary>
-    public partial class DiscoveryView : UserControl
+    public partial class NavigateMenuView : UserControl
     {
-        public DiscoveryView()
+        public NavigateMenuView()
         {
             InitializeComponent();
         }

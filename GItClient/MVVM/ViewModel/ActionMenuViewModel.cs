@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GItClient.MVVM.ViewModel
 {
-    class DiscoveryViewModel
+    class ActionMenuViewModel
     {
     }
 }

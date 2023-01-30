@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:GItClient"
         mc:Ignorable="d"
         Height="600" Width="900"
-        MinHeight="300" MinWidth="450"
+        MinHeight="300" MinWidth="480"
         WindowStyle="None"   
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
@@ -30,9 +30,9 @@
 
     <Border Background="#272537" CornerRadius="15">
 
-        <Grid>
+        <Grid Name="MainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" MinWidth="100" MaxWidth="160"/>
+                <ColumnDefinition Width="2*" MinWidth="120" MaxWidth="160"/>
                 <ColumnDefinition Width="8*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
@@ -53,11 +53,11 @@
                 Background="#22202f"
                 MouseLeftButtonDown="headerControlBar_MouseLeftButtonDown">
 
-   
+
                 <Grid Name="HeaderGrid">
-                    
+
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" MinWidth="100" MaxWidth="160"/>
+                        <ColumnDefinition Width="2*" MinWidth="120" MaxWidth="160"/>
                         <ColumnDefinition Width="8*"/>
                         <ColumnDefinition Width="1*" MinWidth="50"/>
                     </Grid.ColumnDefinitions>
@@ -66,15 +66,38 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock 
-                       Grid.Column="0"
-                       Text="EasyClient"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       Foreground="White"
-                       FontSize="16"
-                       Margin="15,0,0,0"
-                       IsHitTestVisible= "false"/>
+                    <StackPanel 
+                        Orientation="Horizontal"
+                        Grid.Column="0">
+
+                        <RadioButton 
+                                Background="Black"
+                                BorderThickness="0"
+                                Width="15"
+                                Height="15"
+                                VerticalAlignment="Center"
+                                Margin="15,0,5,0"
+                                Command="{Binding ChangeMenuType}">
+                            <Image
+                               Name="menu_icon"
+                               Width="15"
+                               Height="15"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Source="Images/menu-icon.png"
+                               IsHitTestVisible="False"/>
+                        </RadioButton>
+                        
+                        <TextBlock                   
+                           Text="EasyClient"
+                           VerticalAlignment="Center"
+                           Foreground="White"
+                           FontSize="16"
+                           IsHitTestVisible= "False" 
+                           Height="24"/>
+                        
+                    </StackPanel>
+
 
                     <Image 
                        Grid.Column="3"
@@ -92,41 +115,15 @@
                        HorizontalAlignment="Left"
                        Margin="10,0,0,0"
                        Style="{StaticResource ModernTextBox}"/>
-                    
+
                 </Grid>
-        
-
             </Border>
-            
 
 
- 
-
-
-
-            <StackPanel Grid.Row="1">
-                <RadioButton Content="Home"
-                             Height="50"
-                             Foreground="White"
-                             FontSize="14"
-                             Style="{StaticResource MenuButtonTheme}"
-                             Command="{Binding HomeViewCommand}"
-                             IsChecked="true"/>
-                
-                <RadioButton Content="Discovery"
-                             Height="50"
-                             Foreground="White"
-                             FontSize="14"
-                             Style="{StaticResource MenuButtonTheme}"
-                             Command="{Binding DiscoveryViewCommand}"/>
-                
-                <RadioButton Content="Exit"
-                             Height="50"
-                             Foreground="White"
-                             FontSize="14"
-                             Style="{StaticResource MenuButtonTheme}"/>
-
-            </StackPanel>
+            <ContentControl Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="10"
+                            Content="{Binding CurrentMenu}"/>
 
 
             <ContentControl Grid.Row="1"

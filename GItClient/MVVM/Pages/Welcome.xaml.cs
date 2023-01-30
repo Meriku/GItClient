@@ -1,39 +1,32 @@
 ﻿using GItClient.Core;
-using GItClient.MVVM.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace GItClient
+namespace GItClient.MVVM.Pages
 {
-
-    public partial class MainWindow : Window
+    /// <summary>
+    /// Interaction logic for Welcome.xaml
+    /// </summary>
+    public partial class Welcome : Window
     {
         public RelayCommand MaximizedMinimizedWindow { get; set; }
-
-        public MainWindow()
+        public Welcome()
         {
             InitializeComponent();
 
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
-            //menu_icon.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftClick)));
+        }
 
-
+        private void button_Finish_Click(object sender, RoutedEventArgs e)
+        {
+            var newWindow = new MainWindow();
+            newWindow.Show();
+            this.Close();
         }
 
 
@@ -53,6 +46,5 @@ namespace GItClient
             else
                 this.WindowState = System.Windows.WindowState.Maximized;
         }
-
     }
 }
