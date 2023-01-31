@@ -21,6 +21,7 @@ namespace GItClient
 
             var profileCreated = false;
 
+            //TODO: If profile created - skip.
             if (profileCreated)
             {
 

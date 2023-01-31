@@ -1,4 +1,5 @@
 ﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.MVVM.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,6 @@ namespace GItClient
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
             //menu_icon.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftClick)));
-
 
         }
 

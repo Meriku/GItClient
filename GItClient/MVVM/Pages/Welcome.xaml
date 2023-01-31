@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adorners="http://gu.se/Adorners"
         xmlns:viewModel="clr-namespace:GItClient.MVVM.ViewModel"
-        xmlns:local="clr-namespace:GItClient" xmlns:i1="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core"
+        xmlns:local="clr-namespace:GItClient" xmlns:i1="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core" 
         mc:Ignorable="d"
         Height="400" Width="600"
-        MinHeight="300" MinWidth="450"
+        MinHeight="310" MinWidth="450"
         WindowStyle="None"   
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
@@ -27,7 +27,7 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="55"/>
-                    <RowDefinition MinHeight="260"/>
+                    <RowDefinition MinHeight="270"/>
                 </Grid.RowDefinitions>
 
                 <Border 
@@ -71,7 +71,7 @@
 
                     <Grid.RowDefinitions>
                         <RowDefinition MinHeight="40" Height="6*" MaxHeight="100"/>
-                        <RowDefinition MinHeight="40" Height="6*" MaxHeight="80"/>
+                        <RowDefinition MinHeight="50" Height="6*" MaxHeight="80"/>
                         <RowDefinition MinHeight="120" Height="14*" MaxHeight="130"/>
                         <RowDefinition MinHeight="30" Height="5*" MaxHeight="60"/>
                         <RowDefinition MinHeight="0" Height="3*"/>
@@ -113,7 +113,9 @@
                     
                     <StackPanel Orientation="Vertical"
                                 Grid.Row="2"
-                                Grid.Column="1">
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                HorizontalAlignment="center">
                         
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
                             
@@ -126,7 +128,8 @@
                                 HorizontalAlignment="Left"
                                 Padding="0,3,0,3"/>
 
-                            <TextBox            
+                            <TextBox       
+                                Name="User_Name_Box"
                                 Width="180"
                                 Height="26"
                                 Style="{StaticResource LoginTextBoxStyle}"
@@ -147,6 +150,7 @@
                                Padding="0,3,0,3"/>
 
                             <TextBox 
+                                Name="Email_Box"
                                 Width="180"
                                 Height="26"
                                 Style="{StaticResource LoginTextBoxStyle}"
@@ -167,8 +171,14 @@
                                Padding="0,3,0,3"/>
 
                             <TextBox 
+                                Name="User_Directory_Box"                               
                                 Width="180"
-                                Style="{StaticResource LoginTextBoxStyle}"/>
+                                Height="26"
+                                Style="{StaticResource LoginTextBoxStyle}"
+                                adorners:Watermark.Text="{Binding DefaultDriveName}"
+                                adorners:Watermark.VisibleWhen="Empty"
+                                PreviewMouseDown="onclick_Open_Directory_Dialog"/>
+                            
                         </StackPanel>
                         
                     </StackPanel>
@@ -192,7 +202,8 @@
                             Width="90"
                             Margin="15,0,0,0"
                             Style="{StaticResource LoginButtonStyle}"
-                            Content="Cancel"></Button>
+                            Content="Cancel"
+                            Click="button_Close_Click"></Button>
                         
                     </StackPanel>
                     
