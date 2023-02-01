@@ -10,6 +10,8 @@ using System.Windows.Interop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text;
 using GItClient.Core.Controllers;
+using System.Net.Mail;
+using GItClient.Core.Models;
 
 namespace GItClient.MVVM.Pages
 {
@@ -18,39 +20,55 @@ namespace GItClient.MVVM.Pages
     /// </summary>
     public partial class Welcome : Window
     {
+        private const int MAX_TEXT_LENGTH = 25;
+
         public RelayCommand MaximizedMinimizedWindow { get; set; }
 
-        private UserSettingsController _userSettingsController { get; set; }
-        private string _userDirectory { get; set; }
-
-        private const int MAX_TEXT_LENGTH = 25;
+        private string? UserName;
+        private string? Email;
+        private string? Directory;
 
         public Welcome()
         {
             InitializeComponent();
 
+            var WelcomeViewModel = new WelcomeViewModel();
+            Directory = WelcomeViewModel.DefaultDriveName;
+            DataContext = WelcomeViewModel;
+
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
-
-            DataContext = new WelcomeViewModel();
-
-            _userSettingsController = new UserSettingsController();
         }
 
-        //TODO: Validate email, set default directory if empty
         private void button_Finish_Click(object sender, RoutedEventArgs e)
         {
-            _userSettingsController.SetUserSettings(User_Name_Box.Text, Email_Box.Text, _userDirectory);
+            UserName = User_Name_Box.Text;
+
+            var userSettinsController = ControllersProvider.GetUserSettingsController();
+            userSettinsController.SetUserSettings(UserName, Email, Directory);
 
             var newWindow = new MainWindow();
-            Application.Current.MainWindow = newWindow;
+            System.Windows.Application.Current.MainWindow = newWindow;
             newWindow.Show();
             this.Close();
         }
 
-        private void button_Close_Click(object sender, RoutedEventArgs e)
+        private void textBoxEmail_LostFocus(object sender, RoutedEventArgs e)
         {
-            System.Windows.Application.Current.Shutdown();
+            var email = Email_Box.Text;
+            if (email.Length == 0) return;
+
+            if (MailAddress.TryCreate(email, out var result))
+            {
+                Email = email;
+                Email_Box.Text = result.Address;
+                email_Error_Icon.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                email_Error_Icon.Visibility = Visibility.Visible;
+            }
+
         }
 
         private void onclick_Open_Directory_Dialog(object sender, MouseButtonEventArgs e)
@@ -61,8 +79,8 @@ namespace GItClient.MVVM.Pages
             var result = dialog.ShowDialog();
             if (result == CommonFileDialogResult.Ok)
             {
-                _userDirectory = TrimDirectoryName(dialog.FileName);
-                ((TextBox)sender).Text = _userDirectory;
+                Directory = dialog.FileName;
+                ((TextBox)sender).Text = TrimDirectoryName(dialog.FileName);
             }   
         }
 
@@ -85,7 +103,12 @@ namespace GItClient.MVVM.Pages
             return result.ToString();
         }
 
+        private void button_Close_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
 
+        #region WindowControl
         [DllImport("user32.dll")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
@@ -102,5 +125,6 @@ namespace GItClient.MVVM.Pages
             else
                 this.WindowState = System.Windows.WindowState.Maximized;
         }
+        #endregion
     }
 }

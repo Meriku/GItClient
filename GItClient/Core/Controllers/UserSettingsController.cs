@@ -11,12 +11,11 @@ namespace GItClient.Core.Controllers
     {
         private UserSettings _userSettings;
 
-        //TODO: Write to file.
-        public void SetUserSettings(string username, string email, string directory)
+        public void SetUserSettings(string? username, string? email, string? directory)
         {
             _userSettings = new UserSettings(username, email, directory);
         }
-
+        //TODO: save info into file
         public UserSettings GetUserSettings()
         {
             return _userSettings;

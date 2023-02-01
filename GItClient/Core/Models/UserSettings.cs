@@ -16,16 +16,16 @@ namespace GItClient.Core.Models
 
     public class UserSettings
     {
-        public UserSettings(string username, string email, string directory) 
+        public UserSettings(string? username, string? email, string? directory) 
         {
             _username = username;
             _email = email;
             _directory = directory;
         }
 
-        private string _username;
-        private string _email;
-        private string _directory;
+        private string? _username;
+        private string? _email;
+        private string? _directory;
 
         public override string ToString()
         {

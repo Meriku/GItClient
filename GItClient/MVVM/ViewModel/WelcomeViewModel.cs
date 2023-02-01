@@ -20,7 +20,7 @@ namespace GItClient.MVVM.ViewModel
         public WelcomeViewModel()
         {
             var drives = DriveInfo.GetDrives();
-            _defaultDriveName = drives[0].Name;
+            _defaultDriveName = drives[0].Name + "repos";
         }
 
     }

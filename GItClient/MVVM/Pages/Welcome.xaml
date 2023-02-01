@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adorners="http://gu.se/Adorners"
         xmlns:viewModel="clr-namespace:GItClient.MVVM.ViewModel"
-        xmlns:local="clr-namespace:GItClient" xmlns:i1="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core" 
+        xmlns:local="clr-namespace:GItClient" 
+        xmlns:i1="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core" 
         mc:Ignorable="d"
         Height="400" Width="600"
         MinHeight="310" MinWidth="450"
@@ -13,8 +14,10 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
-        AllowsTransparency="True" >
+        AllowsTransparency="True" 
+        PreviewMouseLeftButtonDown="textBoxEmail_LostFocus">
 
+    
     <Grid>
         <Border Background="#272537" CornerRadius="15">
 
@@ -134,7 +137,8 @@
                                 Height="26"
                                 Style="{StaticResource LoginTextBoxStyle}"
                                 adorners:Watermark.Text="full name (optional)"
-                                adorners:Watermark.VisibleWhen="Empty"/>
+                                adorners:Watermark.VisibleWhen="Empty"
+                                adorners:Watermark.TextStyle="{StaticResource LoginWatermarkTextBoxStyle}"/>
                                 
                         </StackPanel>
 
@@ -144,18 +148,28 @@
                                Foreground="White"
                                FontSize="13"
                                TextAlignment="Left"
-                               Width="90"
+                               Width="70"
                                Height="26"
                                HorizontalAlignment="Left"
                                Padding="0,3,0,3"/>
-
+                            
+                            <Image 
+                               Name="email_Error_Icon"
+                               Visibility="Hidden"
+                               Width="12"
+                               Height="12"
+                               Margin="0,0,8,0"
+                               Source="/Images/error-icon.png" />
+                            
                             <TextBox 
                                 Name="Email_Box"
                                 Width="180"
                                 Height="26"
                                 Style="{StaticResource LoginTextBoxStyle}"
+                                LostFocus="textBoxEmail_LostFocus"
                                 adorners:Watermark.Text="email@domain.com (optional)"
-                                adorners:Watermark.VisibleWhen="Empty"/>
+                                adorners:Watermark.VisibleWhen="Empty"
+                                adorners:Watermark.TextStyle="{StaticResource LoginWatermarkTextBoxStyle}"/>
                         
                         </StackPanel>
 
@@ -171,12 +185,14 @@
                                Padding="0,3,0,3"/>
 
                             <TextBox 
-                                Name="User_Directory_Box"                               
+                                Name="User_Directory_Box"     
+                                IsReadOnly="True"
                                 Width="180"
-                                Height="26"
+                                Height="26"                             
                                 Style="{StaticResource LoginTextBoxStyle}"
                                 adorners:Watermark.Text="{Binding DefaultDriveName}"
                                 adorners:Watermark.VisibleWhen="Empty"
+                                adorners:Watermark.TextStyle="{StaticResource LoginWatermarkTextBoxStyle}"
                                 PreviewMouseDown="onclick_Open_Directory_Dialog"/>
                             
                         </StackPanel>
