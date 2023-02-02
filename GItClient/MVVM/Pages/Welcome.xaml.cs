@@ -12,6 +12,7 @@ using System.Text;
 using GItClient.Core.Controllers;
 using System.Net.Mail;
 using GItClient.Core.Models;
+using System.Threading.Tasks;
 
 namespace GItClient.MVVM.Pages
 {
@@ -40,15 +41,21 @@ namespace GItClient.MVVM.Pages
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
         }
 
-        private void button_Finish_Click(object sender, RoutedEventArgs e)
+        private async void button_Finish_Click(object sender, RoutedEventArgs e)
         {
+            Button button = (Button)sender;
+            button.IsEnabled = false;
+
             UserName = User_Name_Box.Text;
 
             var userSettinsController = ControllersProvider.GetUserSettingsController();
-            userSettinsController.SetUserSettings(UserName, Email, Directory);
+            await Task.Run(async () =>
+            {
+                await userSettinsController.SetUserSettings(UserName, Email, Directory);
+            });
 
             var newWindow = new MainWindow();
-            System.Windows.Application.Current.MainWindow = newWindow;
+            Application.Current.MainWindow = newWindow;
             newWindow.Show();
             this.Close();
         }

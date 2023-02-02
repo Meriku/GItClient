@@ -1,24 +1,34 @@
 ﻿using GItClient.Core.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
 {
-    public class UserSettingsController
+    internal class UserSettingsController
     {
-        private UserSettings _userSettings;
+        private UserSettings? _userSettings;
 
-        public void SetUserSettings(string? username, string? email, string? directory)
+        internal async Task SetUserSettings(string? username, string? email, string? directory)
         {
             _userSettings = new UserSettings(username, email, directory);
+            await SaveUserSettings();
         }
-        //TODO: save info into file
-        public UserSettings GetUserSettings()
+
+        internal UserSettings GetUserSettings()
         {
-            return _userSettings;
+            return _userSettings ?? new UserSettings();
+        }
+
+        private async Task SaveUserSettings()
+        {
+            if (_userSettings == null) { throw new ArgumentNullException(); }
+
+            var _configurationController = ControllersProvider.GetConfigurationController();
+
+            await _configurationController.SetUserSettingsConfiguration(_userSettings);
         }
 
     }
