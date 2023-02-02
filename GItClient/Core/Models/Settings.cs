@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace GItClient.Core.Models
 {
 
+    public interface ISetting
+    {
+    }
 
     public class Settings
     {
@@ -17,7 +20,7 @@ namespace GItClient.Core.Models
         public Settings() { }
     }
 
-    public class AppSettings
+    public class AppSettings : ISetting
     {
         public AppSettings(string appName, string appVersion) 
         {
@@ -29,7 +32,7 @@ namespace GItClient.Core.Models
         public string _appVersion { get; private set; }
     }
 
-    public class UserSettings
+    public class UserSettings : ISetting
     {
         public UserSettings(string? username = null, string? email = null, string? directory = null) 
         {

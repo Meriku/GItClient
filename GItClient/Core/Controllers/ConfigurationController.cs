@@ -22,7 +22,6 @@ namespace GItClient.Core.Controllers
             _semaphore = new SemaphoreSlim(1);
             _configuration = GetConfiguration();
         }
-
         internal Settings GetConfiguration()
         {
             if (_configuration != null) return _configuration;
@@ -34,15 +33,6 @@ namespace GItClient.Core.Controllers
             return _configuration;
         }
 
-        internal async Task SetUserSettingsConfiguration(UserSettings settings)
-        {
-            if (_configuration == null) { throw new ArgumentNullException(); }
-
-            _configuration.UserSettings = settings;
-
-            await WriteConfiguration();
-        }
-
         private async Task<Settings> ReadConfiguration()
         {
             var appsettings = String.Empty;
@@ -50,7 +40,7 @@ namespace GItClient.Core.Controllers
             await _semaphore.WaitAsync();
             try
             {
-                 appsettings = await File.ReadAllTextAsync("appsettings.json");
+                 appsettings = File.ReadAllText("appsettings.json");
             }
             catch(Exception e)
             {
@@ -69,14 +59,14 @@ namespace GItClient.Core.Controllers
             return settings;
         }
 
-        private async Task WriteConfiguration()
+        internal async Task WriteConfiguration(Settings configuration)
         {
-            var appsettings = JsonConvert.SerializeObject(_configuration, Formatting.Indented);
+            var appsettings = JsonConvert.SerializeObject(configuration, Formatting.Indented);
 
             await _semaphore.WaitAsync();
             try
             {
-                await File.WriteAllTextAsync("appsettings.json", appsettings);
+                File.WriteAllText("appsettings.json", appsettings);
             }
             catch (Exception e)
             {
@@ -87,5 +77,51 @@ namespace GItClient.Core.Controllers
                 _semaphore.Release();
             }                     
         }
+    }
+
+
+    internal static class SettingsController<T> where T : ISetting
+    {
+        private static Settings? _configuration;
+        private static ConfigurationController? _configurationController;
+
+        public static T GetSpecificSetting()
+        {
+            _configurationController ??= ControllersProvider.GetConfigurationController(); 
+            _configuration ??= _configurationController.GetConfiguration();
+
+            Type type = typeof(T);
+            switch (type.Name)
+            {
+                case "UserSettings":
+                    return (T)(ISetting)_configuration.UserSettings;
+                case "AppSettings":
+                    return (T)(ISetting)_configuration.AppSettings;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static async Task SetSpecificSetting(T setting)
+        {
+            _configurationController ??= ControllersProvider.GetConfigurationController();
+            _configuration ??= _configurationController.GetConfiguration();
+
+            Type type = typeof(T);
+            switch (type.Name)
+            {
+                case "UserSettings":
+                    _configuration.UserSettings = (UserSettings)(ISetting)setting;
+                    break;
+                case "AppSettings":
+                    _configuration.AppSettings = (AppSettings)(ISetting)setting;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            await _configurationController.WriteConfiguration(_configuration);
+        }
+
     }
 }

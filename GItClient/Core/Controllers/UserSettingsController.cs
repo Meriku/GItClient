@@ -19,16 +19,26 @@ namespace GItClient.Core.Controllers
 
         internal UserSettings GetUserSettings()
         {
-            return _userSettings ?? new UserSettings();
+            if (_userSettings == null) UpdateUserSettings();
+            return _userSettings; 
+        }
+        
+        internal bool IsInitialSettingsFilled()
+        {
+            if (_userSettings == null) UpdateUserSettings();
+
+            return _userSettings.Directory.Length > 0;
+        }
+
+        private void UpdateUserSettings()
+        {
+            _userSettings = SettingsController<UserSettings>.GetSpecificSetting();
         }
 
         private async Task SaveUserSettings()
         {
             if (_userSettings == null) { throw new ArgumentNullException(); }
-
-            var _configurationController = ControllersProvider.GetConfigurationController();
-
-            await _configurationController.SetUserSettingsConfiguration(_userSettings);
+            await SettingsController<UserSettings>.SetSpecificSetting(_userSettings);
         }
 
     }

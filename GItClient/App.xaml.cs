@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GItClient.Core.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -19,19 +20,14 @@ namespace GItClient
         {
             base.OnStartup(e);
 
-            var profileCreated = false;
 
-            //TODO: If profile created - skip.
-            if (profileCreated)
-            {
+            var userSettinsController = ControllersProvider.GetUserSettingsController();
+            var profileCreated = userSettinsController.IsInitialSettingsFilled();
 
-            }
-            else
-            {
-                this.StartupUri = new Uri("MVVM/Pages/Welcome.xaml", UriKind.Relative);
-            }
+            this.StartupUri = profileCreated ?
+                            new Uri("MainWindow.xaml", UriKind.Relative) :
+                            new Uri("MVVM/Pages/Welcome.xaml", UriKind.Relative);
 
-            
         }
 
 
