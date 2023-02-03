@@ -61,12 +61,19 @@
                 Foreground="White"
                 FontSize="13"
                 TextAlignment="Left"
-                Width="90"
+                Width="70"
                 Height="26"
                 HorizontalAlignment="Left"
                 Padding="0,3,0,3"/>
+            <Image 
+                Name="email_Error_Icon"
+                Visibility="Hidden"
+                Width="12"
+                Height="12"
+                Margin="0,0,8,0"
+                Source="/Images/error-icon.png" />
             <TextBox       
-                Name="Email_Box"
+                Name="User_Email_Box"
                 Text="{Binding Email}"
                 Width="180"
                 Height="26"
@@ -83,13 +90,14 @@
                 Height="26"
                 HorizontalAlignment="Left"
                 Padding="0,3,0,3"/>
-            <TextBox       
-                Name="User_Directory_Box"
+            <TextBox 
+                Name="User_Directory_Box"   
                 Text="{Binding Directory}"
                 IsReadOnly="True"
                 Width="180"
-                Height="26"
-                Style="{StaticResource LoginTextBoxStyle}"/>
+                Height="26"                             
+                Style="{StaticResource LoginTextBoxStyle}"
+                PreviewMouseDown="onclick_Open_Directory_Dialog"/>
         </StackPanel>
 
 
@@ -236,6 +244,7 @@
                     HorizontalAlignment="Center">
 
             <Button 
+                Name="button_Save"
                 Height="26"
                 Width="90"
                 Margin="0,0,50,0"

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace GItClient.Core.Models
 {
 
-    public interface ISetting
+    internal interface ISetting
     {
     }
 
@@ -35,18 +35,21 @@ namespace GItClient.Core.Models
 
     public class UserSettings : ISetting
     {
-        public UserSettings(string? username = null, string? email = null, string? directory = "") 
+        public UserSettings(string? username = null, string? email = null, string? directory = null) 
         {
-            if (directory == null || directory.Equals("")) throw new ArgumentNullException("Directory can not be empty");
-
             Username = username ?? "";
             Email = email ?? "";
-            Directory = directory;
+            Directory = directory ?? "";
         }
 
-        public string Username { get; private set; }
-        public string Email { get; private set; }
-        public string Directory { get; private set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Directory { get; set; }
+
+        public UserSettings Clone()
+        {
+            return new UserSettings(this.Username, this.Email, this.Directory);
+        }
 
         public override string ToString()
         {

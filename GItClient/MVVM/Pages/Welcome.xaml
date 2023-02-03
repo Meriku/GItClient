@@ -14,8 +14,7 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
-        AllowsTransparency="True" 
-        PreviewMouseLeftButtonDown="textBoxEmail_LostFocus">
+        AllowsTransparency="True" >
 
     
     <Grid>
@@ -166,7 +165,6 @@
                                 Width="180"
                                 Height="26"
                                 Style="{StaticResource LoginTextBoxStyle}"
-                                LostFocus="textBoxEmail_LostFocus"
                                 adorners:Watermark.Text="email@domain.com (optional)"
                                 adorners:Watermark.VisibleWhen="Empty"
                                 adorners:Watermark.TextStyle="{StaticResource LoginWatermarkTextBoxStyle}"/>
@@ -206,6 +204,7 @@
                                 Grid.Column="1">
 
                         <Button 
+                            Name="button_Finish"
                             Height="26"
                             Width="90"
                             Margin="0,0,15,0"

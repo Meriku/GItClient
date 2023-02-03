@@ -1,4 +1,5 @@
-﻿using GItClient.Core.Models;
+﻿using GItClient.Core.Base;
+using GItClient.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,11 @@ namespace GItClient.Core.Controllers
     {
 
         private static UserSettingsController? _userSettingsController;
-        private static ConfigurationController? _configurationController;
 
         public static UserSettingsController GetUserSettingsController()
         {
             _userSettingsController ??= new UserSettingsController();
             return _userSettingsController;
-        }
-
-        public static ConfigurationController GetConfigurationController()
-        {
-            _configurationController ??= new ConfigurationController();
-            return _configurationController;
         }
 
     }

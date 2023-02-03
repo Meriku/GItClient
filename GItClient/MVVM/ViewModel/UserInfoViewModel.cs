@@ -1,18 +1,25 @@
-﻿using GItClient.Core.Controllers;
+﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.View.MainView;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GItClient.MVVM.ViewModel
 {
     class UserInfoViewModel : IViewModel
     {
         private UserSettings UserSettings;
+        private UserSettingsController _userSettingsController;
 
         public string Username { get; set; }
         public string Email { get; set; }
@@ -23,11 +30,12 @@ namespace GItClient.MVVM.ViewModel
 
         public UserInfoViewModel()
         {
-            UserSettings = SettingsController<UserSettings>.GetSpecificSetting();
+            _userSettingsController = ControllersProvider.GetUserSettingsController();
+            UserSettings = _userSettingsController.GetUserSettings();
 
             Username = UserSettings.Username;
             Email = UserSettings.Email;
-            Directory = UserSettings.Directory;
+            Directory = Helper.TrimDirectoryName(UserSettings.Directory);
         }
     }
 }

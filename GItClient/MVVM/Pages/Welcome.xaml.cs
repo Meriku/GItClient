@@ -21,9 +21,8 @@ namespace GItClient.MVVM.Pages
     /// </summary>
     public partial class Welcome : Window
     {
-        private const int MAX_TEXT_LENGTH = 25;
-
         public RelayCommand MaximizedMinimizedWindow { get; set; }
+        private UserSettingsController _userSettingsController { get; set; }
 
         private string? UserName;
         private string? Email;
@@ -39,6 +38,15 @@ namespace GItClient.MVVM.Pages
 
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
+
+            InputManager.Current.PreProcessInput += (sender, e) =>
+            {
+                if (e.StagingItem.Input is MouseButtonEventArgs)
+                    textBoxEmail_LostFocus(sender,
+                      (MouseButtonEventArgs)e.StagingItem.Input);
+            };
+
+            _userSettingsController = ControllersProvider.GetUserSettingsController();
         }
 
         private async void button_Finish_Click(object sender, RoutedEventArgs e)
@@ -48,10 +56,9 @@ namespace GItClient.MVVM.Pages
 
             UserName = User_Name_Box.Text;
 
-            var userSettinsController = ControllersProvider.GetUserSettingsController();
             await Task.Run(async () =>
             {
-                await userSettinsController.SetAndSaveUserSettings(UserName, Email, Directory);
+                await _userSettingsController.SetAndSaveUserSettings(UserName, Email, Directory);
             });
 
             var newWindow = new MainWindow();
@@ -64,50 +71,34 @@ namespace GItClient.MVVM.Pages
         {
             var email = Email_Box.Text;
             if (email.Length == 0) return;
+            if (Email != null && Email.Equals(email)) return;
 
             if (MailAddress.TryCreate(email, out var result))
             {
-                Email = email;
-                Email_Box.Text = result.Address;
+                Email = result.Address;
+                Email_Box.Text = Email;
                 email_Error_Icon.Visibility = Visibility.Hidden;
+                button_Finish.IsEnabled = true;
             }
             else
             {
                 email_Error_Icon.Visibility = Visibility.Visible;
+                button_Finish.IsEnabled = false;
             }
-
         }
 
         private void onclick_Open_Directory_Dialog(object sender, MouseButtonEventArgs e)
         {
             var dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = true;
+            dialog.InitialDirectory = _userSettingsController.GetDefaultDrive();
 
             var result = dialog.ShowDialog();
             if (result == CommonFileDialogResult.Ok)
             {
                 Directory = dialog.FileName;
-                ((TextBox)sender).Text = TrimDirectoryName(dialog.FileName);
+                ((TextBox)sender).Text = Helper.TrimDirectoryName(dialog.FileName);
             }   
-        }
-
-        private string TrimDirectoryName(string input)
-        {
-            if (input.Length <= MAX_TEXT_LENGTH)
-            {
-                return input;
-            }
-            var folders = input.Split('\\');
-            var result = new StringBuilder();
-            foreach(var folder in folders)
-            {
-                if (result.Length + folder.Length > MAX_TEXT_LENGTH)
-                {
-                    return result + "...";
-                }
-                result.Append(folder + "\\");
-            }
-            return result.ToString();
         }
 
         private void button_Close_Click(object sender, RoutedEventArgs e)

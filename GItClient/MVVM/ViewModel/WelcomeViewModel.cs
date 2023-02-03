@@ -20,8 +20,8 @@ namespace GItClient.MVVM.ViewModel
 
         public WelcomeViewModel()
         {
-            var _configurationController = ControllersProvider.GetConfigurationController();
-            _defaultDriveName = _configurationController.GetDefaultDirectory();
+            var _userSettingsController = ControllersProvider.GetUserSettingsController();
+            _defaultDriveName = _userSettingsController.GetDefaultDirectory();
         }
 
     }
