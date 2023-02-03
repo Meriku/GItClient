@@ -23,7 +23,7 @@
                              Foreground="White"
                              FontSize="12"/>
 
-            <RadioButton Content="Init new repository"
+            <RadioButton Content="Init repository"
                              Height="25"
                              Foreground="White"
                              FontSize="12"/>

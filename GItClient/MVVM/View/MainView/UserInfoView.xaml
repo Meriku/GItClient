@@ -1,0 +1,259 @@
+﻿<UserControl x:Class="GItClient.MVVM.View.MainView.UserInfoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GItClient.MVVM.View.MainView"
+             xmlns:viewModel="clr-namespace:GItClient.MVVM.ViewModel" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+
+        <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="300" MaxWidth="400" Width="9*"/>
+            <ColumnDefinition MinWidth="120" MaxWidth="170" Width="4*"/>
+            <ColumnDefinition MinWidth="10"  MaxWidth="25"  Width="1*"/>
+            <ColumnDefinition MinWidth="120" MaxWidth="170" Width="4*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition MinHeight="40" MaxHeight="80"/>
+            <RowDefinition MinHeight="40" MaxHeight="80"/>
+            <RowDefinition MinHeight="40" MaxHeight="80"/>
+            <RowDefinition MinHeight="40" MaxHeight="50"/>
+            <RowDefinition MinHeight="0"/>
+            <RowDefinition MinHeight="0"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                Text="View and change User Info"
+                Foreground="White"
+                FontSize="18"
+                TextAlignment="Left"
+                Height="26"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Padding="0,3,0,3"/>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="1">
+            <TextBlock Text="User Name"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="90"
+                Height="26"
+                HorizontalAlignment="Left"
+                Padding="0,3,0,3"/>
+            <TextBox       
+                Name="User_Name_Box"
+                Text="{Binding Username}"
+                Width="180"
+                Height="26"
+                Style="{StaticResource LoginTextBoxStyle}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="2">
+            <TextBlock Text="Email"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="90"
+                Height="26"
+                HorizontalAlignment="Left"
+                Padding="0,3,0,3"/>
+            <TextBox       
+                Name="Email_Box"
+                Text="{Binding Email}"
+                Width="180"
+                Height="26"
+                Style="{StaticResource LoginTextBoxStyle}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="3">
+            <TextBlock Text="Default folder"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="90"
+                Height="26"
+                HorizontalAlignment="Left"
+                Padding="0,3,0,3"/>
+            <TextBox       
+                Name="User_Directory_Box"
+                Text="{Binding Directory}"
+                IsReadOnly="True"
+                Width="180"
+                Height="26"
+                Style="{StaticResource LoginTextBoxStyle}"/>
+        </StackPanel>
+
+
+        <TextBlock  Grid.Row="0"
+                    Grid.Column="1"
+                    Text="User Settings"
+                    Foreground="White"
+                    FontSize="18"
+                    TextAlignment="Left"
+                    Height="26"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Padding="0,3,0,3"/>
+
+
+        <StackPanel Name="CheckBox_1" Orientation="Horizontal"
+                        Grid.Row="1" Grid.Column="1">
+
+            <TextBlock Text="CheckBox 1"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="90"
+                Height="26"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Padding="0,3,0,3"/>
+
+            <CheckBox 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left">
+
+
+            </CheckBox>
+
+        </StackPanel>
+
+        <StackPanel Name="CheckBox_2" Orientation="Horizontal"
+                        Grid.Row="1" Grid.Column="3">
+
+            <TextBlock Text="CheckBox 2"
+                    Foreground="White"
+                    FontSize="13"
+                    TextAlignment="Left"
+                    Width="90"
+                    Height="26"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Padding="0,3,0,3"/>
+
+            <CheckBox 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left">
+            </CheckBox>
+
+        </StackPanel>
+
+        <StackPanel Name="CheckBox_3" Orientation="Horizontal"
+                            Grid.Row="2" Grid.Column="1">
+
+            <TextBlock Text="CheckBox 3"
+                        Foreground="White"
+                        FontSize="13"
+                        TextAlignment="Left"
+                        Width="90"
+                        Height="26"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Padding="0,3,0,3"/>
+
+            <CheckBox 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left">
+            </CheckBox>
+
+        </StackPanel>
+
+        <StackPanel Name="CheckBox_4" Orientation="Horizontal"
+                        Grid.Row="2" Grid.Column="3">
+
+            <TextBlock Text="CheckBox 4"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="90"
+                Height="26"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Padding="0,3,0,3"/>
+
+            <CheckBox 
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left">
+            </CheckBox>
+
+        </StackPanel>
+
+        <StackPanel Name="CheckBox_5" Orientation="Horizontal"
+                        Grid.Row="3" Grid.Column="1">
+
+            <TextBlock Text="CheckBox 5"
+                    Foreground="White"
+                    FontSize="13"
+                    TextAlignment="Left"
+                    Width="90"
+                    Height="26"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Padding="0,3,0,3"/>
+
+            <CheckBox 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left">
+            </CheckBox>
+
+        </StackPanel>
+
+        <StackPanel Name="CheckBox_6" Orientation="Horizontal"
+                            Grid.Row="3" Grid.Column="3">
+
+            <TextBlock Text="CheckBox 6"
+                        Foreground="White"
+                        FontSize="13"
+                        TextAlignment="Left"
+                        Width="90"
+                        Height="26"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Padding="0,3,0,3"/>
+
+            <CheckBox 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left">
+            </CheckBox>
+
+        </StackPanel>
+
+
+        <StackPanel Name="Buttons" 
+                    Orientation="Horizontal"        
+                    Grid.Row="4" 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    HorizontalAlignment="Center">
+
+            <Button 
+                Height="26"
+                Width="90"
+                Margin="0,0,50,0"
+                Style="{StaticResource LoginButtonStyle}"
+                Content="Save"
+                Click="button_Save_Click"></Button>
+
+            <Button 
+                Height="26"
+                Width="90"
+                Margin="50,0,0,0"
+                Style="{StaticResource LoginButtonStyle}"
+                Content="Cancel"
+                Click="button_Cancel_Click"></Button>
+
+
+        </StackPanel>
+
+    </Grid>
+    
+</UserControl>

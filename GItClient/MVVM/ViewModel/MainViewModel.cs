@@ -1,11 +1,6 @@
 ﻿using GItClient.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Interop;
+using GItClient.MVVM.View;
+using System.Windows;
 
 namespace GItClient.MVVM.ViewModel
 {
@@ -13,44 +8,51 @@ namespace GItClient.MVVM.ViewModel
     {
         public RelayCommand HelloViewCommand { get; set; }
         public RelayCommand HomeViewCommand { get; set; }
-        public RelayCommand DiscoveryViewCommand { get; set; }
+        public RelayCommand UserInfoViewCommand { get; set; }
         public RelayCommand ChangeMenuType { get; set; }
 
 
         public HelloViewModel HelloVM { get; set; }
         public HomeViewModel HomeVM { get; set; }
-        public DiscoveryViewModel DiscoveryVM { get; set; }
+        public UserInfoViewModel UserInfoVM { get; set; }
 
-
-        private object _currentView;
+        private ViewHandler _currentView;
+        private ViewHandler _currentMenu;
+        private object _previousView;
 
         public object CurrentView
         {
-            get { return _currentView; }
+            get { return _currentView.ViewModel; }
             set
             {
-                _currentView = value;
-                OnPropertyChanged();
+                _currentView.ViewModel = value;
+                _currentView.RaiseOnViewChange();
+                OnPropertyChanged();          
             }
-        }
+        } 
 
-        private object _currentMenu;
 
         public object CurrentMenu
         {
-            get { return _currentMenu; }
+            get { return _currentMenu.ViewModel; }
             set
             {
-                _currentMenu = value;
+                _currentMenu.ViewModel = value;
                 OnPropertyChanged();
             }
+
         }
 
         public MainViewModel() 
         {
+            _currentView = new ViewHandler();
+            _currentMenu = new ViewHandler();
+
             CurrentView = new HelloViewModel();
             CurrentMenu = new ActionMenuViewModel();
-
+          
+            _currentView.OnViewChange += ResizeWindow;
+          
             HelloViewCommand = new RelayCommand(o =>
             {
                 CurrentView = new HelloViewModel();
@@ -61,9 +63,18 @@ namespace GItClient.MVVM.ViewModel
                 CurrentView = new HomeViewModel();
             });
 
-            DiscoveryViewCommand = new RelayCommand(o =>
+            UserInfoViewCommand = new RelayCommand(o =>
             {
-                CurrentView = new DiscoveryViewModel();
+                if (CurrentView is UserInfoViewModel)
+                {
+                    CurrentView = _previousView ?? new HomeViewModel();
+                }
+                else
+                {
+                    _previousView = CurrentView;
+                    CurrentView = new UserInfoViewModel();
+                }
+     
             });
 
             ChangeMenuType = new RelayCommand(o =>
@@ -77,7 +88,16 @@ namespace GItClient.MVVM.ViewModel
                     CurrentMenu = new ActionMenuViewModel();
                 }
             });
+                
+        }
 
+        private const int MarginHeight = 60;
+        private const int MarginWidth = 25;
+        private void ResizeWindow()
+        {
+            var window = Application.Current.MainWindow;
+            window.MinHeight = ((IViewModel)CurrentView).MinHeight + MarginHeight;
+            window.MinWidth = ((IViewModel)CurrentView).MinWidth + ((IViewModel)CurrentMenu).MinWidth + MarginWidth;
         }
 
     }

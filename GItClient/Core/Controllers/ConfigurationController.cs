@@ -22,6 +22,13 @@ namespace GItClient.Core.Controllers
             _semaphore = new SemaphoreSlim(1);
             _configuration = GetConfiguration();
         }
+
+        internal string GetDefaultDirectory()
+        {
+            var drives = DriveInfo.GetDrives();
+            return drives[0].Name + "repos";
+        }
+
         internal Settings GetConfiguration()
         {
             if (_configuration != null) return _configuration;

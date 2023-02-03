@@ -51,7 +51,7 @@ namespace GItClient.MVVM.Pages
             var userSettinsController = ControllersProvider.GetUserSettingsController();
             await Task.Run(async () =>
             {
-                await userSettinsController.SetUserSettings(UserName, Email, Directory);
+                await userSettinsController.SetAndSaveUserSettings(UserName, Email, Directory);
             });
 
             var newWindow = new MainWindow();

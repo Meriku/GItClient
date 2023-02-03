@@ -1,4 +1,5 @@
 ﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,8 +20,8 @@ namespace GItClient.MVVM.ViewModel
 
         public WelcomeViewModel()
         {
-            var drives = DriveInfo.GetDrives();
-            _defaultDriveName = drives[0].Name + "repos";
+            var _configurationController = ControllersProvider.GetConfigurationController();
+            _defaultDriveName = _configurationController.GetDefaultDirectory();
         }
 
     }

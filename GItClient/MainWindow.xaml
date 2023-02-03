@@ -32,14 +32,14 @@
 
         <Grid Name="MainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" MinWidth="120" MaxWidth="160"/>
+                <ColumnDefinition Width="2*" MinWidth="130" MaxWidth="160"/>
                 <ColumnDefinition Width="8*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="55"/>
-                <RowDefinition/>
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Border 
@@ -70,23 +70,23 @@
                         Orientation="Horizontal"
                         Grid.Column="0">
 
-                        <RadioButton 
-                                Background="Black"
-                                BorderThickness="0"
-                                Width="15"
-                                Height="15"
-                                VerticalAlignment="Center"
-                                Margin="15,0,5,0"
-                                Command="{Binding ChangeMenuType}">
-                            <Image
-                               Name="menu_icon"
-                               Width="15"
-                               Height="15"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Source="Images/menu-icon.png"
-                               IsHitTestVisible="False"/>
-                        </RadioButton>
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Width="17"
+                            Height="17"
+                            VerticalAlignment="Center"
+                            Margin="15,0,5,0"
+                            Padding="0"
+                            Command="{Binding ChangeMenuType}">
+                                <Image
+                                   Name="menu_icon"
+                                   Width="15"
+                                   Height="15"
+                                   Margin="0"
+                                   Source="Images/menu-icon.png"
+                                   IsHitTestVisible="False"/>
+                        </Button>
                         
                         <TextBlock                   
                            Text="EasyClient"
@@ -98,15 +98,27 @@
                         
                     </StackPanel>
 
-
-                    <Image 
-                       Grid.Column="3"
-                       Width="30"
-                       Height="30"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Right"
-                       Margin="0,0,15,0"
-                       Source="Images/account-icon.png" />
+                    <Button
+                            Grid.Column="3"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Width="17"
+                            Height="17"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right" 
+                            Margin="0,0,15,0"
+                            Padding="0"
+                            Command="{Binding UserInfoViewCommand}"
+               >
+                        
+                        <Image 
+                           Width="15"
+                           Height="15"
+                           VerticalAlignment="Center"           
+                           Source="Images/user-icon2.png"
+                           IsHitTestVisible="False"/>
+                    </Button>
+                   
 
                     <TextBox Grid.Column="1"
                        Foreground="White"
@@ -120,17 +132,22 @@
             </Border>
 
 
-            <ContentControl Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="10"
-                            Content="{Binding CurrentMenu}"/>
+            <ContentControl 
+                Name="MenuContentControl"
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="10"
+                Content="{Binding CurrentMenu}"/>
 
 
-            <ContentControl Grid.Row="1"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="2"
-                            Margin="10"
-                            Content="{Binding CurrentView}"/>
+            <ContentControl 
+                Name="MainContentControl" 
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Margin="10"
+                HorizontalContentAlignment="Center"
+                Content="{Binding CurrentView}"/>
 
         </Grid>
 

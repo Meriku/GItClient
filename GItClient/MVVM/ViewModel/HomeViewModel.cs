@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GItClient.MVVM.ViewModel
+﻿namespace GItClient.MVVM.ViewModel
 {
-    class HomeViewModel 
+    class HomeViewModel : IViewModel
     {
+        public double MinWidth { get => 325; }
+        public double MinHeight { get => 250; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GItClient.Core.Controllers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,31 +25,28 @@ namespace GItClient.Core.Models
     {
         public AppSettings(string appName, string appVersion) 
         {
-            _appName = appName;
-            _appVersion = appVersion;
+            AppName = appName;
+            AppVersion = appVersion;
         }
 
-        public string _appName { get; private set; }
-        public string _appVersion { get; private set; }
+        public string AppName { get; private set; }
+        public string AppVersion { get; private set; }
     }
 
     public class UserSettings : ISetting
     {
-        public UserSettings(string? username = null, string? email = null, string? directory = null) 
+        public UserSettings(string? username = null, string? email = null, string? directory = "") 
         {
-            Username = username;
-            Email = email;
+            if (directory == null || directory.Equals("")) throw new ArgumentNullException("Directory can not be empty");
+
+            Username = username ?? "";
+            Email = email ?? "";
             Directory = directory;
         }
 
-        private string _username;
-        private string _email;
-        private string _directory;
-
-        public string? Username { get => _username ?? ""; private set => _username = value ?? ""; }
-        public string? Email { get => _email ?? ""; private set => _email = value ?? ""; }
-        public string? Directory { get => _directory ?? ""; private set => _directory = value ?? ""; }
-
+        public string Username { get; private set; }
+        public string Email { get; private set; }
+        public string Directory { get; private set; }
 
         public override string ToString()
         {

@@ -11,7 +11,7 @@ namespace GItClient.Core.Controllers
     {
         private UserSettings? _userSettings;
 
-        internal async Task SetUserSettings(string? username, string? email, string? directory)
+        internal async Task SetAndSaveUserSettings(string? username, string? email, string? directory)
         {
             _userSettings = new UserSettings(username, email, directory);
             await SaveUserSettings();

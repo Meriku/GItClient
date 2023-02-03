@@ -12,6 +12,8 @@
     <None Remove="Images\account-icon.png" />
     <None Remove="Images\error-icon.png" />
     <None Remove="Images\menu-icon.png" />
+    <None Remove="Images\user-icon.png" />
+    <None Remove="Images\user-icon2.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,9 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\account-icon.png" />
     <Resource Include="Images\error-icon.png" />
     <Resource Include="Images\menu-icon.png" />
+    <Resource Include="Images\user-icon.png" />
+    <Resource Include="Images\user-icon2.png" />
   </ItemGroup>
 
 </Project>

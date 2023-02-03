@@ -21,8 +21,8 @@
             <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
                 <mainViews:HomeView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModel:DiscoveryViewModel}">
-                <mainViews:DiscoveryView/>
+            <DataTemplate DataType="{x:Type viewModel:UserInfoViewModel}">
+                <mainViews:UserInfoView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:ActionMenuViewModel}">
                 <menuViews:ActionMenuView/>

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace GItClient.MVVM.ViewModel
 {
-    class NavigateMenuViewModel
+    class NavigateMenuViewModel : IViewModel
     {
+        public double MinWidth => 120;
+        public double MinHeight => 0;
     }
 }
