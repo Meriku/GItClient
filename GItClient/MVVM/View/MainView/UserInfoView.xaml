@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
 
-        <Grid>
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="300" MaxWidth="400" Width="9*"/>
             <ColumnDefinition MinWidth="120" MaxWidth="170" Width="4*"/>
@@ -261,5 +261,5 @@
         </StackPanel>
 
     </Grid>
-    
+
 </UserControl>

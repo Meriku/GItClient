@@ -10,8 +10,14 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="Images\account-icon.png" />
+    <None Remove="Images\Assets\img_arrow.png" />
     <None Remove="Images\error-icon.png" />
     <None Remove="Images\menu-icon.png" />
+    <None Remove="Images\Menu\add-icon.png" />
+    <None Remove="Images\Menu\exit-icon.png" />
+    <None Remove="Images\Menu\home-icon.png" />
+    <None Remove="Images\Menu\pull-push-icon.png" />
+    <None Remove="Images\Menu\settings-icon.png" />
     <None Remove="Images\user-icon.png" />
     <None Remove="Images\user-icon2.png" />
   </ItemGroup>
@@ -23,21 +29,37 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\Assets\img_arrow.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Fonts\" />
     <Folder Include="MVVM\Model\" />
+    <Folder Include="MVVM\View\PopUp\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Gu.Wpf.Adorners" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.2.9" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="7.2.9" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.2.9" />
+    <PackageReference Include="Microsoft.PowerShell.ConsoleHost" Version="7.2.9" />
+    <PackageReference Include="Microsoft.WSMan.Management" Version="7.2.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Management.Automation" Version="7.2.9" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Images\error-icon.png" />
     <Resource Include="Images\menu-icon.png" />
+    <Resource Include="Images\Menu\add-icon.png" />
+    <Resource Include="Images\Menu\exit-icon.png" />
+    <Resource Include="Images\Menu\home-icon.png" />
+    <Resource Include="Images\Menu\pull-push-icon.png" />
+    <Resource Include="Images\Menu\settings-icon.png" />
     <Resource Include="Images\user-icon.png" />
     <Resource Include="Images\user-icon2.png" />
   </ItemGroup>

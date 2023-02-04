@@ -136,7 +136,6 @@
                 Name="MenuContentControl"
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="10"
                 Content="{Binding CurrentMenu}"/>
 
 

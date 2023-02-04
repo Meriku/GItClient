@@ -22,7 +22,7 @@
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" 
                                          EndPoint="1,2">
-                        <GradientStop Color="#5bc3ff" Offset="0.0"/>
+                        <GradientStop Color="#df80ff" Offset="0.34"/>
                         <GradientStop Color="#3aa0ff" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.Background>
@@ -34,7 +34,7 @@
 
                 <Grid>
                     <StackPanel>
-                        <TextBlock Text="Check our website for news"
+                        <TextBlock Text="Check our news on website"
                                    Foreground="White"
                                    FontSize="22"
                                    Margin="10,10,0,0"/>
@@ -56,7 +56,7 @@
                     <LinearGradientBrush StartPoint="0,0" 
                                          EndPoint="1,2">
                         <GradientStop Color="#ffcc54" Offset="0.0"/>
-                        <GradientStop Color="#ffb73e" Offset="1"/>
+                        <GradientStop Color="#ff4d4d" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.Background>
                 <StackPanel>
@@ -74,5 +74,52 @@
 
         </StackPanel>
 
+        <StackPanel Orientation="Horizontal" Height="200">
+
+            <Border Width="300"
+                    Height="150">
+
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" 
+                                         EndPoint="1,2">
+                        <GradientStop Color="#ff7733" Offset="0.0"/>
+                        <GradientStop Color="#ff4d94" Offset="0.8"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Clip>
+                    <RectangleGeometry RadiusX="10"
+                                       RadiusY="10"
+                                       Rect="0,0,300,150"/>
+                </Border.Clip>
+
+                <Grid>
+                    <StackPanel>
+                        <TextBlock Text="Current EasyClient version:"
+                                   Foreground="White"
+                                   FontSize="22"
+                                   Margin="10,10,0,0"/>
+                        <TextBlock 
+                                    Name="Easy_Client_Version_Box"        
+                                    Text="1.0.0"
+                                    Foreground="White"
+                                    FontSize="18"
+                                    Margin="10,0,10,0"/>
+
+                        <TextBlock Text="Current Git version:"
+                                   Foreground="White"
+                                   FontSize="22"
+                                   Margin="10,10,0,0"/>
+                        <TextBlock 
+                                    Name="Git_Version_Box"   
+                                    Text="1.0.0"
+                                    Foreground="White"
+                                    FontSize="18"
+                                    Margin="10,0,10,0"/>
+                    </StackPanel>
+                </Grid>
+
+            </Border>
+
+        </StackPanel>
     </StackPanel>
 </UserControl>

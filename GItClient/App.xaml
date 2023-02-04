@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="Theme/ChangeMenuButtonTheme.xaml"/>
                 <ResourceDictionary Source="Theme/LoginTextBoxTheme.xaml"/>
                 <ResourceDictionary Source="Theme/LoginButtonTheme.xaml"/>
+                <ResourceDictionary Source="Theme/Templates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type viewModel:HelloViewModel}">
                 <mainViews:HelloView/>
@@ -24,11 +25,17 @@
             <DataTemplate DataType="{x:Type viewModel:UserInfoViewModel}">
                 <mainViews:UserInfoView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:InitRepoViewModel}">
+                <mainViews:InitRepoView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:ActionMenuViewModel}">
                 <menuViews:ActionMenuView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:NavigateMenuViewModel}">
                 <menuViews:NavigateMenuView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
+                <menuViews:HomeMenuView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

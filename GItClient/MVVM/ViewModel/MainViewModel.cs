@@ -1,5 +1,7 @@
 ﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.MVVM.View;
+using GItClient.MVVM.View.MainView;
 using System.Windows;
 
 namespace GItClient.MVVM.ViewModel
@@ -7,14 +9,15 @@ namespace GItClient.MVVM.ViewModel
     internal class MainViewModel : ObservableObject
     {
         public RelayCommand HelloViewCommand { get; set; }
-        public RelayCommand HomeViewCommand { get; set; }
-        public RelayCommand UserInfoViewCommand { get; set; }
+        public RelayCommand HomeViewCommand { get; set; }    
         public RelayCommand ChangeMenuType { get; set; }
-
+        public RelayCommand UserInfoViewCommand { get; set; }
+        public RelayCommand InitRepoCommand { get; set; }
 
         public HelloViewModel HelloVM { get; set; }
         public HomeViewModel HomeVM { get; set; }
         public UserInfoViewModel UserInfoVM { get; set; }
+        public InitRepoViewModel InitRepoVM { get; set; }
 
         private ViewHandler _currentView;
         private ViewHandler _currentMenu;
@@ -45,11 +48,13 @@ namespace GItClient.MVVM.ViewModel
 
         public MainViewModel() 
         {
+            // TODO: remove redundant views and models
+
             _currentView = new ViewHandler();
             _currentMenu = new ViewHandler();
 
-            CurrentView = new HelloViewModel();
-            CurrentMenu = new ActionMenuViewModel();
+            CurrentView = new InitRepoViewModel(); //new HelloViewModel();
+            CurrentMenu = new HomeMenuViewModel();
           
             _currentView.OnViewChange += ResizeWindow;
           
@@ -61,6 +66,11 @@ namespace GItClient.MVVM.ViewModel
             HomeViewCommand = new RelayCommand(o => 
             {
                 CurrentView = new HomeViewModel();
+            });
+
+            InitRepoCommand = new RelayCommand(o =>
+            {
+                CurrentView = new InitRepoViewModel();
             });
 
             UserInfoViewCommand = new RelayCommand(o =>
@@ -92,7 +102,7 @@ namespace GItClient.MVVM.ViewModel
         }
 
         private const int MarginHeight = 60;
-        private const int MarginWidth = 25;
+        private const int MarginWidth = 15;
         private void ResizeWindow()
         {
             var window = Application.Current.MainWindow;

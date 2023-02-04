@@ -35,7 +35,7 @@ namespace GItClient.Core.Controllers
         {
             UpdateUserSettings();
             return _userSettings.Clone();
-        }    
+        }
         internal bool IsInitialSettingsFilled()
         {
             UpdateUserSettings();

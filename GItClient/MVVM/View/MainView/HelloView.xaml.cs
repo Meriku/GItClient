@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using GItClient.Core.Controllers;
+using System.Windows.Controls;
 
 namespace GItClient.MVVM.View.MainView
 {
@@ -10,6 +11,18 @@ namespace GItClient.MVVM.View.MainView
         public HelloView()
         {
             InitializeComponent();
+
+            var gitController = ControllersProvider.GetGitController();
+            var appSettingsController = ControllersProvider.GetAppSettingsController();
+
+            var gitVersion = gitController.GetGitVersion();
+            var clietnVersion = appSettingsController.GetAppVersion();
+
+            Git_Version_Box.Text = gitVersion;
+            Easy_Client_Version_Box.Text = clietnVersion;
+
+
+
         }
     }
 }

@@ -23,6 +23,7 @@ namespace GItClient.MVVM.View.MainView
 
         public UserInfoView()
         {
+            // d:DesignHeight="450" d:DesignWidth="800"
             InitializeComponent();
 
             InputManager.Current.PreProcessInput += (sender, e) =>
