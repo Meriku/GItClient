@@ -18,24 +18,11 @@ namespace GItClient.MVVM.ViewModel
 {
     class UserInfoViewModel : IViewModel
     {
-        private UserSettings UserSettings;
-        private UserSettingsController _userSettingsController;
-
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Directory { get; set; }
-
         public double MinWidth { get => 550; }
         public double MinHeight { get => 220; }
 
         public UserInfoViewModel()
         {
-            _userSettingsController = ControllersProvider.GetUserSettingsController();
-            UserSettings = _userSettingsController.GetUserSettings();
-
-            Username = UserSettings.Username;
-            Email = UserSettings.Email;
-            Directory = Helper.TrimDirectoryName(UserSettings.Directory);
         }
     }
 }

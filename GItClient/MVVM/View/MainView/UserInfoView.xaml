@@ -49,7 +49,6 @@
                 Padding="0,3,0,3"/>
             <TextBox       
                 Name="User_Name_Box"
-                Text="{Binding Username}"
                 Width="180"
                 Height="26"
                 Style="{StaticResource LoginTextBoxStyle}"/>
@@ -74,7 +73,6 @@
                 Source="/Images/error-icon.png" />
             <TextBox       
                 Name="User_Email_Box"
-                Text="{Binding Email}"
                 Width="180"
                 Height="26"
                 Style="{StaticResource LoginTextBoxStyle}"/>
@@ -92,7 +90,6 @@
                 Padding="0,3,0,3"/>
             <TextBox 
                 Name="User_Directory_Box"   
-                Text="{Binding Directory}"
                 IsReadOnly="True"
                 Width="180"
                 Height="26"                             

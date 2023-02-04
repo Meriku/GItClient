@@ -38,19 +38,22 @@ namespace GItClient.MVVM.View.MainView
 
             UserSettings = _userSettingsController.GetUserSettings();
             UserSettingsCopy = UserSettings.Clone();
+
+            User_Name_Box.Text = UserSettings.Username;
+            User_Email_Box.Text = UserSettings.Email;
+            User_Directory_Box.Text = Helper.TrimDirectoryName(UserSettings.Directory);
         }
 
 
         private async void button_Save_Click(object sender, RoutedEventArgs e)
         {
             UserSettings.Username = User_Name_Box.Text;
+            UserSettingsCopy = UserSettings.Clone();
 
             await Task.Run(async () =>
             {
                 await _userSettingsController.SetAndSaveUserSettings(UserSettings);
-            });
-
-            UserSettingsCopy = UserSettings.Clone();
+            });       
         }
 
         private void button_Cancel_Click(object sender, RoutedEventArgs e)

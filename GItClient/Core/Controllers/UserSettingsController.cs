@@ -28,13 +28,13 @@ namespace GItClient.Core.Controllers
         }
         internal async Task SetAndSaveUserSettings(UserSettings userSettings)
         {
-            _userSettings = userSettings.Clone();
+            _userSettings = userSettings;
             await SaveUserSettings();
         }
         internal UserSettings GetUserSettings()
         {
             UpdateUserSettings();
-            return _userSettings; 
+            return _userSettings.Clone();
         }    
         internal bool IsInitialSettingsFilled()
         {
