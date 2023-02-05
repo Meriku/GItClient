@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Controllers;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace GItClient.MVVM.View.MainView
@@ -12,17 +13,30 @@ namespace GItClient.MVVM.View.MainView
         {
             InitializeComponent();
 
-            var gitController = ControllersProvider.GetGitController();
-            var appSettingsController = ControllersProvider.GetAppSettingsController();
 
-            var gitVersion = gitController.GetGitVersion();
-            var clietnVersion = appSettingsController.GetAppVersion();
+            UpdateGitVersion();
+            UpdateClientVersion();
+        }
 
-            Git_Version_Box.Text = gitVersion;
-            Easy_Client_Version_Box.Text = clietnVersion;
+        private void UpdateGitVersion()
+        {
+            Git_Version_Box.Text = "updating";
+            var _gitController = ControllersProvider.GetGitController();
+            Task.Run(() =>
+            {
+                var gitVersion = _gitController.GetGitVersion();
+                this.Dispatcher.Invoke(() => {
+                    Git_Version_Box.Text = gitVersion;
+                });
+            });
+        }
 
+        private void UpdateClientVersion()
+        {
+            var _appSettingsController = ControllersProvider.GetAppSettingsController();
+            var clientVersion = _appSettingsController.GetAppVersion();
 
-
+            Easy_Client_Version_Box.Text = clientVersion;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace GItClient.MVVM.ViewModel
             _currentView = new ViewHandler();
             _currentMenu = new ViewHandler();
 
-            CurrentView = new InitRepoViewModel(); //new HelloViewModel();
+            CurrentView = new HelloViewModel();
             CurrentMenu = new HomeMenuViewModel();
           
             _currentView.OnViewChange += ResizeWindow;

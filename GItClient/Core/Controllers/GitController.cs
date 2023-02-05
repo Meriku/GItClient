@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 using MS.WindowsAPICodePack.Internal;
+using System.Threading;
 
 namespace GItClient.Core.Controllers
 {
     internal class GitController
     {
-        // TODO: use async? add logger for all git commands
+        // TODO: add logger for all git commands
         internal string GetGitVersion()
         {
             using PowerShell powershell = PowerShell.Create();
@@ -19,7 +20,8 @@ namespace GItClient.Core.Controllers
             powershell.AddScript(@"git version");
 
             Collection<PSObject> results = powershell.Invoke();
-            return ParseVersion(results[0]);
+
+            return ParseVersion(results[0]);  
         }
 
         internal bool InitRepository(string directory)
@@ -31,6 +33,7 @@ namespace GItClient.Core.Controllers
 
             Collection<PSObject> results = powershell.Invoke();
             return results.Count > 0;
+            
         }
 
         private string ParseVersion(PSObject psObject)
