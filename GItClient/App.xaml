@@ -19,20 +19,11 @@
             <DataTemplate DataType="{x:Type viewModel:HelloViewModel}">
                 <mainViews:HelloView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
-                <mainViews:HomeView/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:UserInfoViewModel}">
                 <mainViews:UserInfoView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:InitRepoViewModel}">
                 <mainViews:InitRepoView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModel:ActionMenuViewModel}">
-                <menuViews:ActionMenuView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModel:NavigateMenuViewModel}">
-                <menuViews:NavigateMenuView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
                 <menuViews:HomeMenuView/>

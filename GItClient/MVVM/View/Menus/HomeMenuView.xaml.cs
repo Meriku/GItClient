@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core.Models;
+using GItClient.MVVM.View.MainView;
+using GItClient.MVVM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +28,18 @@ namespace GItClient.MVVM.View.Menus
         {
             InitializeComponent();
         }
+
+        private void button_InitRepo(object sender, RoutedEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new InitRepoViewModel()));
+        }
+        private void button_Home(object sender, RoutedEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new HelloViewModel()));
+        }
     }
+
+
+
+
 }

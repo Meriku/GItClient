@@ -8,7 +8,7 @@ namespace GItClient.MVVM.ViewModel
 {
     class InitRepoViewModel : IViewModel
     {
-        public double MinWidth { get => 550; }
+        public double MinWidth { get => 260; }
         public double MinHeight { get => 220; }
     }
 }

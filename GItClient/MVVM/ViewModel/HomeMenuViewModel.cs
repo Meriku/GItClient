@@ -8,7 +8,7 @@ namespace GItClient.MVVM.ViewModel
 {
     class HomeMenuViewModel : IViewModel
     {
-        public double MinWidth => 120;
+        public double MinWidth => 140;
         public double MinHeight => 0;
     }
 }

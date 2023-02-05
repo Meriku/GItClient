@@ -1,5 +1,9 @@
-﻿using GItClient.Core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core;
 using GItClient.Core.Controllers;
+using GItClient.Core.Models;
 using GItClient.MVVM.View;
 using GItClient.MVVM.View.MainView;
 using System.Windows;
@@ -7,21 +11,25 @@ using System.Windows;
 namespace GItClient.MVVM.ViewModel
 {
     internal class MainViewModel : ObservableObject
-    {
-        public RelayCommand HelloViewCommand { get; set; }
-        public RelayCommand HomeViewCommand { get; set; }    
-        public RelayCommand ChangeMenuType { get; set; }
+    { 
         public RelayCommand UserInfoViewCommand { get; set; }
-        public RelayCommand InitRepoCommand { get; set; }
 
-        public HelloViewModel HelloVM { get; set; }
-        public HomeViewModel HomeVM { get; set; }
         public UserInfoViewModel UserInfoVM { get; set; }
-        public InitRepoViewModel InitRepoVM { get; set; }
 
         private ViewHandler _currentView;
         private ViewHandler _currentMenu;
+        private string _lastGitCommand;
         private object _previousView;
+
+        public string LastGitCommand
+        {
+            get { return _lastGitCommand; }
+            set
+            {
+                _lastGitCommand = value;
+                OnPropertyChanged();
+            }
+        }
 
         public object CurrentView
         {
@@ -34,7 +42,6 @@ namespace GItClient.MVVM.ViewModel
             }
         } 
 
-
         public object CurrentMenu
         {
             get { return _currentMenu.ViewModel; }
@@ -43,12 +50,17 @@ namespace GItClient.MVVM.ViewModel
                 _currentMenu.ViewModel = value;
                 OnPropertyChanged();
             }
-
         }
 
         public MainViewModel() 
         {
-            // TODO: remove redundant views and models
+
+            WeakReferenceMessenger.Default.Register<GitCommandChangedMessage>(this, (r, m) =>
+            { LastGitCommand = m.Value; });
+
+            WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
+            { CurrentView = m.Value; });
+
 
             _currentView = new ViewHandler();
             _currentMenu = new ViewHandler();
@@ -58,48 +70,22 @@ namespace GItClient.MVVM.ViewModel
           
             _currentView.OnViewChange += ResizeWindow;
           
-            HelloViewCommand = new RelayCommand(o =>
-            {
-                CurrentView = new HelloViewModel();
-            });
 
-            HomeViewCommand = new RelayCommand(o => 
-            {
-                CurrentView = new HomeViewModel();
-            });
-
-            InitRepoCommand = new RelayCommand(o =>
-            {
-                CurrentView = new InitRepoViewModel();
-            });
-
-            UserInfoViewCommand = new RelayCommand(o =>
+            UserInfoViewCommand = new RelayCommand(() =>
             {
                 if (CurrentView is UserInfoViewModel)
                 {
-                    CurrentView = _previousView ?? new HomeViewModel();
+                    CurrentView = _previousView ?? new HelloViewModel();
                 }
                 else
                 {
                     _previousView = CurrentView;
                     CurrentView = new UserInfoViewModel();
-                }
-     
-            });
-
-            ChangeMenuType = new RelayCommand(o =>
-            {
-                if (CurrentMenu is ActionMenuViewModel)
-                {
-                    CurrentMenu = new NavigateMenuViewModel();
-                }
-                else
-                {
-                    CurrentMenu = new ActionMenuViewModel();
-                }
-            });
-                
+                }  
+            });               
         }
+
+
 
         private const int MarginHeight = 60;
         private const int MarginWidth = 15;

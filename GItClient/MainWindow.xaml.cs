@@ -1,4 +1,5 @@
-﻿using GItClient.Core;
+﻿using CommunityToolkit.Mvvm.Input;
+using GItClient.Core;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -14,6 +15,8 @@ namespace GItClient
 
         public MainWindow()
         {
+            //TODO: delete extramenu button on UI ?
+
             InitializeComponent();
 
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
@@ -30,7 +33,7 @@ namespace GItClient
             SendMessage(helper.Handle, 161, 2, 0);
         }
 
-        private void headerControlBar_MouseLeftDoubleClick(object commandParameter)
+        private void headerControlBar_MouseLeftDoubleClick()
         {
             if (this.WindowState == System.Windows.WindowState.Maximized)
                 this.WindowState = System.Windows.WindowState.Normal;

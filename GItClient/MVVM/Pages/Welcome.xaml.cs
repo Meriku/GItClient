@@ -13,6 +13,7 @@ using GItClient.Core.Controllers;
 using System.Net.Mail;
 using GItClient.Core.Models;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 
 namespace GItClient.MVVM.Pages
 {
@@ -116,7 +117,7 @@ namespace GItClient.MVVM.Pages
             SendMessage(helper.Handle, 161, 2, 0);
         }
 
-        private void headerControlBar_MouseLeftDoubleClick(object commandParameter)
+        private void headerControlBar_MouseLeftDoubleClick()
         {
             if (this.WindowState == System.Windows.WindowState.Maximized)
                 this.WindowState = System.Windows.WindowState.Normal;

@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Controllers;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -13,7 +14,8 @@ namespace GItClient.MVVM.View.MainView
         {
             InitializeComponent();
 
-
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+            
             UpdateGitVersion();
             UpdateClientVersion();
         }

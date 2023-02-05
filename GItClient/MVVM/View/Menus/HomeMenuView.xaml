@@ -17,7 +17,8 @@
 
         <MenuItem Header="Home"
                   Template="{StaticResource Menu_Template}"
-                  Width="Auto">
+                  Width="Auto"
+                  Click="button_Home">
 
             <MenuItem.Icon>
                 <Image Source="/Images/Menu/home-icon.png"/>
@@ -35,7 +36,7 @@
 
             <MenuItem Header="Init"
                       Template="{StaticResource Item_Template}"
-                      Command="{Binding InitRepoCommand}">
+                      Click="button_InitRepo">
             </MenuItem>
             
             <MenuItem Header="Clone"
