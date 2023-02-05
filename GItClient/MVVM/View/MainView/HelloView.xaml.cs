@@ -1,7 +1,9 @@
 ﻿using GItClient.Core.Controllers;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Xml.Linq;
 
 namespace GItClient.MVVM.View.MainView
 {

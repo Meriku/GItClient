@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using GItClient.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;

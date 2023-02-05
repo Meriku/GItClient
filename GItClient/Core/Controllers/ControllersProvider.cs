@@ -1,10 +1,5 @@
-﻿using GItClient.Core.Base;
-using GItClient.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace GItClient.Core.Controllers
 {
@@ -32,6 +27,5 @@ namespace GItClient.Core.Controllers
             _gitController ??= new GitController();
             return _gitController;
         }
-
     }
 }

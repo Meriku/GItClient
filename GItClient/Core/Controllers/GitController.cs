@@ -11,13 +11,14 @@ using CommunityToolkit.Mvvm.Messaging;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using GItClient.Core.Models;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace GItClient.Core.Controllers
 {
     internal class GitController
     {
         // TODO: add logger for all git commands
-
+        private ILogger _logger = LoggerProvider.GetLogger("GitController");
         private string? _gitVersion;
 
         internal string GetGitVersion()
@@ -55,7 +56,7 @@ namespace GItClient.Core.Controllers
 
         private void LogGitCommand(string command)
         {
-            //TODO: log in file
+            _logger.LogDebug("Execute Git Command: " + command);
             WeakReferenceMessenger.Default.Send(new GitCommandChangedMessage(command));
         }
 
