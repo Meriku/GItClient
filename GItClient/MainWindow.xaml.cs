@@ -17,6 +17,7 @@ namespace GItClient
         public MainWindow()
         {
             //TODO: delete extramenu button on UI ?
+            //TODO: add colors for git commands? 
 
             InitializeComponent();
 

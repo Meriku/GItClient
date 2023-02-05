@@ -1,11 +1,14 @@
-﻿using GItClient.Core.Models;
+﻿using GItClient.Core.Controllers;
+using GItClient.Core.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +19,7 @@ namespace GItClient.Core.Base
     {
         private Settings? _configuration;
         private readonly SemaphoreSlim _semaphore;
+        private ILogger _logger = LoggerProvider.GetLogger("ConfigurationBase");
 
         protected ConfigurationBase()
         {
@@ -45,7 +49,7 @@ namespace GItClient.Core.Base
             }
             catch (Exception e)
             {
-                //TODO add logger
+                _logger.LogError(e.Message);
             }
             finally
             {
@@ -63,7 +67,7 @@ namespace GItClient.Core.Base
             }
             catch (Exception e)
             {
-                //TODO add logger
+                _logger.LogError(e.Message);
             }
             finally
             {
@@ -73,8 +77,10 @@ namespace GItClient.Core.Base
             var settings = JsonConvert.DeserializeObject<Settings>(appsettings);
 
             if (settings == null || settings.AppSettings == null || settings.UserSettings == null)
+            {
+                _logger.LogError("Incorect appsettings.json file.");
                 throw new Exception("Incorect appsettings file.");
-                // TODO: restore default settings? 
+            }               
 
             return settings;
         }
