@@ -12,21 +12,29 @@ namespace GItClient.Core.Controllers
     {
         private AppSettings? _appSettings;
 
+        private AppSettings AppSettings 
+        { 
+            get
+            {
+                if (_appSettings == null) { UpdateAppSettings(); };
+                return _appSettings;
+            }
+            set { _appSettings = value; } 
+        }
+
         internal AppSettings GetAppSettings()
         {
-            UpdateAppSettings();
-            return _appSettings;
+            return AppSettings;
         }
 
         internal string GetAppVersion()
         {
-            UpdateAppSettings();
-            return _appSettings.AppVersion;
+            return AppSettings.AppVersion;
         }
 
         private void UpdateAppSettings()
         {
-            _appSettings ??= base.GetSpecificSetting();
+            _appSettings = base.GetSpecificSetting();
         }
 
     }

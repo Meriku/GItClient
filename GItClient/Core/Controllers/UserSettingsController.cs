@@ -12,6 +12,15 @@ namespace GItClient.Core.Controllers
     internal class UserSettingsController : SettingsBase<UserSettings>
     {
         private UserSettings? _userSettings;
+        private UserSettings UserSettings
+        {
+            get
+            {
+                if (_userSettings == null) { UpdateUserSettings(); };
+                return _userSettings;
+            }
+            set { _userSettings = value; }
+        }
 
         internal string GetDefaultDirectory()
         {
@@ -23,32 +32,30 @@ namespace GItClient.Core.Controllers
         }
         internal async Task SetAndSaveUserSettings(string? username, string? email, string? directory)
         {
-            _userSettings = new UserSettings(username, email, directory);
-            await SaveUserSettings();
+            UserSettings = new UserSettings(username, email, directory);
+            await SaveUserSettings(UserSettings);
         }
         internal async Task SetAndSaveUserSettings(UserSettings userSettings)
         {
-            _userSettings = userSettings;
-            await SaveUserSettings();
+            UserSettings = userSettings;
+            await SaveUserSettings(userSettings);
         }
         internal UserSettings GetUserSettings()
         {
-            UpdateUserSettings();
-            return _userSettings.Clone();
+            return UserSettings.Clone();
         }
         internal bool IsInitialSettingsFilled()
         {
-            UpdateUserSettings();
-            return _userSettings.Directory.Length > 0;
+            return UserSettings.Directory.Length > 0;
         }
         private void UpdateUserSettings()
         {
-            _userSettings ??= base.GetSpecificSetting();          
+            _userSettings = base.GetSpecificSetting();          
         }
-        private async Task SaveUserSettings()
+        private async Task SaveUserSettings(UserSettings userSettings)
         {
-            if (_userSettings == null) { throw new ArgumentNullException(); }
-            await base.SetSpecificSetting(_userSettings);
+            if (userSettings == null) { throw new ArgumentNullException(); }
+            await base.SetSpecificSetting(userSettings);
         }
     }
 }

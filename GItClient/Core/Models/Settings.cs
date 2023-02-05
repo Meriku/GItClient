@@ -15,8 +15,8 @@ namespace GItClient.Core.Models
 
     public class Settings
     {
-        public AppSettings AppSettings { get; set; }
-        public UserSettings UserSettings { get; set; }
+        public AppSettings? AppSettings { get; set; }
+        public UserSettings? UserSettings { get; set; }
 
         public Settings() { }
     }
