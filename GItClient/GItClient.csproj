@@ -35,10 +35,10 @@
   <ItemGroup>
     <Folder Include="Fonts\" />
     <Folder Include="MVVM\Model\" />
-    <Folder Include="MVVM\View\PopUp\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="Gu.Wpf.Adorners" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
