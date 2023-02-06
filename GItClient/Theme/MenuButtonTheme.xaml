@@ -6,7 +6,6 @@
            x:Key="MenuButtonTheme">
 
         <Style.Setters>
-            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">

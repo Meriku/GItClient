@@ -37,6 +37,11 @@ namespace GItClient.MVVM.View.Menus
         {
             WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new HelloViewModel()));
         }
+
+        private void button_Exit(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
     }
 
 

@@ -6,6 +6,7 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.View;
 using GItClient.MVVM.View.MainView;
+using System;
 using System.Windows;
 
 namespace GItClient.MVVM.ViewModel
@@ -15,12 +16,13 @@ namespace GItClient.MVVM.ViewModel
         public RelayCommand UserInfoViewCommand { get; set; }
 
         public UserInfoViewModel UserInfoVM { get; set; }
-
-        private ViewHandler _currentView;
-        private ViewHandler _currentMenu;
-        private string _lastGitCommand;
+        
+        
+        private object _currentView;
+        private object _currentMenu;
         private object _previousView;
 
+        private string _lastGitCommand;
         public string LastGitCommand
         {
             get { return _lastGitCommand; }
@@ -33,21 +35,20 @@ namespace GItClient.MVVM.ViewModel
 
         public object CurrentView
         {
-            get { return _currentView.ViewModel; }
+            get { return _currentView; }
             set
             {
-                _currentView.ViewModel = value;
-                _currentView.RaiseOnViewChange();
+                _currentView = value;
                 OnPropertyChanged();          
             }
         } 
 
         public object CurrentMenu
         {
-            get { return _currentMenu.ViewModel; }
+            get { return _currentMenu; }
             set
             {
-                _currentMenu.ViewModel = value;
+                _currentMenu = value;
                 OnPropertyChanged();
             }
         }
@@ -61,40 +62,21 @@ namespace GItClient.MVVM.ViewModel
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { CurrentView = m.Value; });
 
-
-            _currentView = new ViewHandler();
-            _currentMenu = new ViewHandler();
-
             CurrentView = new HelloViewModel();
-            CurrentMenu = new HomeMenuViewModel();
-          
-            _currentView.OnViewChange += ResizeWindow;
-          
+            CurrentMenu = new HomeMenuViewModel();               
 
             UserInfoViewCommand = new RelayCommand(() =>
             {
                 if (CurrentView is UserInfoViewModel)
                 {
-                    CurrentView = _previousView ?? new HelloViewModel();
+                    WeakReferenceMessenger.Default.Send(new MainViewChangedMessage((IViewModel)_previousView));
                 }
                 else
                 {
                     _previousView = CurrentView;
-                    CurrentView = new UserInfoViewModel();
+                    WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new UserInfoViewModel()));
                 }  
             });               
         }
-
-
-
-        private const int MarginHeight = 60;
-        private const int MarginWidth = 15;
-        private void ResizeWindow()
-        {
-            var window = Application.Current.MainWindow;
-            window.MinHeight = ((IViewModel)CurrentView).MinHeight + MarginHeight;
-            window.MinWidth = ((IViewModel)CurrentView).MinWidth + ((IViewModel)CurrentMenu).MinWidth + MarginWidth;
-        }
-
     }
 }

@@ -34,7 +34,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MinWidth="140" MaxWidth="170"/>
                 <ColumnDefinition Width="8*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -58,10 +58,9 @@
                 <Grid Name="HeaderGrid">
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80*" MinWidth="120" MaxWidth="160"/>
-                        <ColumnDefinition Width="301*"/>
-                        <ColumnDefinition Width="28*"/>
-                        <ColumnDefinition Width="41*" MinWidth="50"/>
+                        <ColumnDefinition Width="2*" MinWidth="120" MaxWidth="160"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="1*" MinWidth="120" MaxWidth="160"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -106,8 +105,8 @@
                             Width="17"
                             Height="17"
                             VerticalAlignment="Center"
-                            HorizontalAlignment="Left" 
-                            Margin="50,0,0,0"
+                            HorizontalAlignment="Right" 
+                            Margin="0,0,20,0"
                             Padding="0"
                             Command="{Binding UserInfoViewCommand}">
 
@@ -125,21 +124,16 @@
             </Border>
 
 
-            <Border 
-                    Name="GitCommandsBorder"
-                    Grid.Row="0"
-                    Grid.Column="1"
+            <Button 
+                    Name="GitCommandsButton"
+                    Grid.Row="0"          
                     Grid.RowSpan="2"
-                    Panel.ZIndex="1"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    Background="#353340"
-                    CornerRadius="15"
-                    Margin="10,10,0,10"
-                    Height="35"
-                    Width="600"
-                    MouseLeftButtonDown="gitHistory_MouseLeftButtonDown">
+                    Grid.Column="1"
+                    Style="{StaticResource GitCommandsBarStyle}"
+                    Click="gitCommandsButton_MouseLeftButtonDown">
 
+                
+                
                 <TextBlock 
                     Name="GitCommandsTextBlock"
                     HorizontalAlignment="Left"
@@ -148,10 +142,12 @@
                     Width="Auto"
                     FontSize="13"
                     Foreground="White"
-                    Margin="20,7,0,3"/>
+                    Margin="20,7,0,3"
+                    Text="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}} }"/>
 
-            </Border>
+            </Button>
 
+   
 
             <ContentControl 
                 Name="MenuContentControl"

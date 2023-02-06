@@ -100,7 +100,8 @@
 
         <MenuItem Header="Exit"
                   Template="{StaticResource Menu_Template}"
-                  Width="Auto">
+                  Width="Auto"
+                  Click="button_Exit">
 
             <MenuItem.Icon>
                 <Image Source="/Images/Menu/exit-icon.png"/>
