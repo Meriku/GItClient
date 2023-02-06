@@ -1,7 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:src="clr-namespace:GItClient.Core.Convertors">
+
+
+
     <Style TargetType="{x:Type Button}"
            x:Key="GitCommandsBarStyle">
+        
+        <Style.Resources>
+            <src:DoubleToBoolConverter x:Key="doubleToBoolConverter"/>
+        </Style.Resources>
+
         <Style.Setters>
             <Setter Property="Panel.ZIndex" Value="1"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
@@ -20,44 +29,13 @@
             </Setter>
         </Style.Setters>
 
-        <!--<Style.Triggers>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsPressed" Value="True"/>
-                    <Condition Property="Height" Value="30"/>
-                </MultiTrigger.Conditions>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource doubleToBoolConverter}}" Value="True">
 
-                <MultiTrigger.EnterActions>
-                    <RemoveStoryboard BeginStoryboardName="close"/>
-                    <BeginStoryboard Name="open">
-                        <Storyboard>
-                            <DoubleAnimation Duration="0:0:0.300" From="30" To="300" 
-                                             Storyboard.TargetProperty="Height"
-                                             FillBehavior="HoldEnd"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </MultiTrigger.EnterActions>
-            </MultiTrigger>
+                <Setter Property="Padding" Value="0,10,0,0" />
 
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsPressed" Value="True"/>
-                    <Condition Property="Height" Value="300"/>
-                </MultiTrigger.Conditions>
-                <MultiTrigger.EnterActions>
-                    <RemoveStoryboard BeginStoryboardName="open"/>
-                    <BeginStoryboard Name="close">
-                        <Storyboard>
-                            <DoubleAnimation Duration="0:0:0.300" From="300" To="30" 
-                                             Storyboard.TargetProperty="Height"
-                                             FillBehavior="HoldEnd"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </MultiTrigger.EnterActions>
-            </MultiTrigger>
-        </Style.Triggers>-->
-        
-        
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
     
     

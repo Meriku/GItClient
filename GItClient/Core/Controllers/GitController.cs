@@ -34,7 +34,8 @@ namespace GItClient.Core.Controllers
 
         internal string GetGitVersion()
         {
-            if (_gitVersion != null) return _gitVersion;
+            // TODO: delete, comments for testing puposes only
+            // if (_gitVersion != null) return _gitVersion;
 
             var results = ExecuteGitCommand(new string[] { "git version" });
             

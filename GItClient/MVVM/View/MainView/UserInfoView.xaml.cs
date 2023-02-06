@@ -3,6 +3,7 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
+using System.Management.Automation.Language;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace GItClient.MVVM.View.MainView
         private UserSettings UserSettings;
         private UserSettings UserSettingsCopy;
         private UserSettingsController _userSettingsController;
+        private GitController _gitController;
 
         public UserInfoView()
         {
@@ -36,6 +38,7 @@ namespace GItClient.MVVM.View.MainView
             };
 
             _userSettingsController = ControllersProvider.GetUserSettingsController();
+            _gitController = ControllersProvider.GetGitController();
 
             UserSettings = _userSettingsController.GetUserSettings();
             UserSettingsCopy = UserSettings.Clone();
@@ -44,6 +47,29 @@ namespace GItClient.MVVM.View.MainView
             User_Email_Box.Text = UserSettings.Email;
             User_Directory_Box.Text = Helper.TrimDirectoryName(UserSettings.Directory);
         }
+
+        private void checkBox_SimulateGitCommandsChanged(object sender, RoutedEventArgs args)
+        {
+            // TODO: delete, for testing purposes only / Integrate unit testing? 
+            Task.Run(() =>
+            {
+               var counter = 0;
+               while (true)
+               {
+
+                    var gitVersion = _gitController.GetGitVersion();
+                    counter++;
+
+                    if (counter > 20)
+                    {
+                        return;
+                    }
+
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+
 
 
         private async void button_Save_Click(object sender, RoutedEventArgs e)

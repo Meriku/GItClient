@@ -113,19 +113,21 @@
         <StackPanel Name="CheckBox_1" Orientation="Horizontal"
                         Grid.Row="1" Grid.Column="1">
 
-            <TextBlock Text="CheckBox 1"
-                Foreground="White"
-                FontSize="13"
-                TextAlignment="Left"
-                Width="90"
-                Height="26"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Padding="0,3,0,3"/>
+            <TextBlock  Text="Simulate Com"            
+                        Foreground="White"
+                        FontSize="13"
+                        TextAlignment="Left"
+                        Width="90"
+                        Height="26"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Padding="0,3,0,3"/>
 
             <CheckBox 
+                    Name="Simulate_Git_Commands"
                     VerticalAlignment="Center"
-                    HorizontalAlignment="Left">
+                    HorizontalAlignment="Left"
+                    Checked="checkBox_SimulateGitCommandsChanged">
 
 
             </CheckBox>

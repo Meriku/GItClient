@@ -6,6 +6,7 @@
              xmlns:mainViews="clr-namespace:GItClient.MVVM.View.MainView"
              xmlns:menuViews="clr-namespace:GItClient.MVVM.View.Menus"
              StartupUri="MainWindow.xaml">
+    
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

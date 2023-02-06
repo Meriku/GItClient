@@ -23,7 +23,7 @@ namespace GItClient
         {
             //TODO: delete extramenu button on UI ?
             //TODO: add colors for git commands? 
-
+            //TODO: close git commands bar by click anywhere (easy)
             InitializeComponent();
 
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);

@@ -135,8 +135,8 @@
                     Style="{StaticResource GitCommandsBarStyle}"
                     Click="openCloseGitCommandsBar">
 
-                
-                
+
+      
                 <TextBlock 
                     Name="GitCommandsTextBlock"
                     HorizontalAlignment="Left"
