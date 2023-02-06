@@ -1,16 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.Core.Models;
-using GItClient.MVVM.ViewModel;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace GItClient
@@ -19,7 +15,8 @@ namespace GItClient
     public partial class MainWindow : Window
     {
         public RelayCommand MaximizedMinimizedWindow { get; set; }
-        private bool IsGitCommandsBarOpen;
+
+        private AnimationController _animationController;
 
         public MainWindow()
         {
@@ -33,64 +30,18 @@ namespace GItClient
 
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { ResizeWindow(m); });
+
+            _animationController = ControllersProvider.GetAnimationController();
         }
 
 
 
-        private void gitCommandsButton_MouseLeftButtonDown(object sender, EventArgs e)
+        private void openCloseGitCommandsBar(object sender = null, EventArgs e = null)
         {
-            // very bad unclean code for testing purposes
-            // after thousand tries to implement this bar using WPF,
-            // decided to do it here. 
-            // btw this approach use in 10 times less code and more flexible
-
-            var startHeight = 0.0;
-            var endHeight = 0.0;
-
-            var startWidth = 0.0;
-            var endWidth = 0.0;
-
-            var GitCommandsBarMaxHeight = (int)Math.Round(Application.Current.MainWindow.ActualHeight / 1.80, 0);
-            var GitCommandsBarMaxWidth = (int)Math.Round(Application.Current.MainWindow.ActualWidth / 1.80, 0);
-
-            if (GitCommandsButton.Height == 30)
-            {
-                startHeight = 30;
-                endHeight = GitCommandsBarMaxHeight;
-
-                startWidth = 250;
-                endWidth = GitCommandsBarMaxWidth > 250 ? GitCommandsBarMaxWidth : 250;
-
-                IsGitCommandsBarOpen = true;
-            }
-            else if (GitCommandsButton.Height > 30)
-            {
-                startHeight = GitCommandsButton.Height;
-                endHeight = 30;
-
-                startWidth = GitCommandsButton.Width;
-                endWidth = 250;
-
-                IsGitCommandsBarOpen = false;
-            }
-
-            var AnimationHeight = new DoubleAnimation()
-            {
-                Duration = new Duration(new TimeSpan(0,0,0,0,300)),
-                From = startHeight,
-                To = endHeight
-            };
-
-            var AnimationWidth = new DoubleAnimation()
-            {
-                Duration = new Duration(new TimeSpan(0, 0, 0, 0, 300)),
-                From = startWidth,
-                To = endWidth
-            };
-
-            GitCommandsButton.BeginAnimation(HeightProperty, AnimationHeight);
-            GitCommandsButton.BeginAnimation(WidthProperty, AnimationWidth);
-
+            var animations = _animationController.GetCommandsBarAnimation(GitCommandsButton.ActualHeight, GitCommandsButton.ActualWidth, false);
+        
+            GitCommandsButton.BeginAnimation(HeightProperty, animations.Height);
+            GitCommandsButton.BeginAnimation(WidthProperty, animations.Width);
 
         }
 
@@ -103,11 +54,6 @@ namespace GItClient
             var window = Application.Current.MainWindow;
             window.MinHeight = message.Value.MinHeight + MarginHeight;
             window.MinWidth = message.Value.MinWidth + MenuMinHeight + MarginWidth;
-
-            if (IsGitCommandsBarOpen)
-            {
-                gitCommandsButton_MouseLeftButtonDown(null, null);
-            }
         }
 
 
@@ -118,6 +64,17 @@ namespace GItClient
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
             SendMessage(helper.Handle, 161, 2, 0);
+        }
+
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_animationController.IsCommandsBarOpen)
+            {
+                var animations = _animationController.GetCommandsBarAnimation(GitCommandsButton.ActualHeight, GitCommandsButton.ActualWidth, true);
+
+                GitCommandsButton.BeginAnimation(HeightProperty, animations.Height);
+                GitCommandsButton.BeginAnimation(WidthProperty, animations.Width);
+            }
         }
 
         private void headerControlBar_MouseLeftDoubleClick()

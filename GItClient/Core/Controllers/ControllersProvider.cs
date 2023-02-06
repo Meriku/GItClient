@@ -8,6 +8,7 @@ namespace GItClient.Core.Controllers
 
         private static UserSettingsController? _userSettingsController;
         private static AppSettingsController? _appSettingsController;
+        private static AnimationController? _animationController;
         private static GitController? _gitController;
 
         public static UserSettingsController GetUserSettingsController()
@@ -20,6 +21,11 @@ namespace GItClient.Core.Controllers
         {
             _appSettingsController ??= new AppSettingsController();
             return _appSettingsController;
+        }
+        public static AnimationController GetAnimationController()
+        {
+            _animationController ??= new AnimationController();
+            return _animationController;
         }
 
         public static GitController GetGitController()

@@ -12,7 +12,8 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
-        AllowsTransparency="True" >
+        AllowsTransparency="True"
+        SizeChanged="window_SizeChanged">
 
 
     <Window.DataContext>
@@ -130,7 +131,7 @@
                     Grid.RowSpan="2"
                     Grid.Column="1"
                     Style="{StaticResource GitCommandsBarStyle}"
-                    Click="gitCommandsButton_MouseLeftButtonDown">
+                    Click="openCloseGitCommandsBar">
 
                 
                 
