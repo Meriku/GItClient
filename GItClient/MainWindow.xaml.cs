@@ -40,12 +40,11 @@ namespace GItClient
         private void openCloseGitCommandsBar(object sender = null, EventArgs e = null)
         {
             var animations = _animationController.GetCommandsBarAnimation(GitCommandsButton.ActualHeight, GitCommandsButton.ActualWidth, false);
-            WeakReferenceMessenger.Default.Send(new GitCommandsHistoryMessage(10));
 
             GitCommandsButton.BeginAnimation(HeightProperty, animations.Height);
             GitCommandsButton.BeginAnimation(WidthProperty, animations.Width);
 
-            
+            WeakReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(1));
         }
 
 

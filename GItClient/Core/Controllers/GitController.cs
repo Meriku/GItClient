@@ -49,13 +49,20 @@ namespace GItClient.Core.Controllers
             return results.Count > 0;         
         }
 
-        internal string GetFormattedCommandsHistory()
+        internal string GetFormattedCommandsHistory(int count)
         {
             var result = new StringBuilder();
+            int counter = 0;
 
             foreach(var command in CommandsHistory.GetReversed())
-            {
+            {   
                 result.Append(command.DateTime.ToString("T") + " " + command.Command + "\n");
+                counter++;
+
+                if (counter >= count)
+                {
+                    return result.ToString();
+                }
             }
 
             return result.ToString();
@@ -81,7 +88,7 @@ namespace GItClient.Core.Controllers
         {
             AddCommandToHistory(command);
             _logger.LogDebug("Execute Git Command: " + command);
-            WeakReferenceMessenger.Default.Send(new GitCommandChangedMessage(command));
+            WeakReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(1));
         }
 
 

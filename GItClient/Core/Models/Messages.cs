@@ -13,16 +13,9 @@ namespace GItClient.Core.Models
     {
     }
 
-    public class GitCommandChangedMessage : ValueChangedMessage<string>
+    public class UpdateGitHistoryMessage : ValueChangedMessage<int>
     {
-        public GitCommandChangedMessage(string command) : base(command)
-        {
-        }
-    }
-
-    public class GitCommandsHistoryMessage : ValueChangedMessage<int>
-    {
-        public GitCommandsHistoryMessage(int count) : base(count)
+        public UpdateGitHistoryMessage(int count) : base(count)
         {
         }
     }
