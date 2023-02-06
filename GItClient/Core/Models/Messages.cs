@@ -20,6 +20,13 @@ namespace GItClient.Core.Models
         }
     }
 
+    public class GitCommandsHistoryMessage : ValueChangedMessage<int>
+    {
+        public GitCommandsHistoryMessage(int count) : base(count)
+        {
+        }
+    }
+
     public class MainViewChangedMessage : ValueChangedMessage<IViewModel>
     {
         public MainViewChangedMessage(IViewModel viewmodel) : base(viewmodel)

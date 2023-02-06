@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using System;
+using System.Management.Automation.Runspaces;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -39,10 +40,12 @@ namespace GItClient
         private void openCloseGitCommandsBar(object sender = null, EventArgs e = null)
         {
             var animations = _animationController.GetCommandsBarAnimation(GitCommandsButton.ActualHeight, GitCommandsButton.ActualWidth, false);
-        
+            WeakReferenceMessenger.Default.Send(new GitCommandsHistoryMessage(10));
+
             GitCommandsButton.BeginAnimation(HeightProperty, animations.Height);
             GitCommandsButton.BeginAnimation(WidthProperty, animations.Width);
 
+            
         }
 
 

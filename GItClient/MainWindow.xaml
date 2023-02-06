@@ -130,6 +130,8 @@
                     Grid.Row="0"          
                     Grid.RowSpan="2"
                     Grid.Column="1"
+                    VerticalContentAlignment="Top"
+                    HorizontalContentAlignment="Left"
                     Style="{StaticResource GitCommandsBarStyle}"
                     Click="openCloseGitCommandsBar">
 
@@ -143,8 +145,8 @@
                     Width="Auto"
                     FontSize="13"
                     Foreground="White"
-                    Margin="20,7,0,3"
-                    Text="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}} }"/>
+                    Margin="20,4,0,3"
+                    Text="{Binding LastGitCommand}"/>
 
             </Button>
 

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Text;
 
 namespace GItClient.Core.Controllers
 {
@@ -47,9 +49,16 @@ namespace GItClient.Core.Controllers
             return results.Count > 0;         
         }
 
-        internal CommandDateTime[] GetCommandsHistory()
+        internal string GetFormattedCommandsHistory()
         {
-            return CommandsHistory.GetReversed().ToArray();
+            var result = new StringBuilder();
+
+            foreach(var command in CommandsHistory.GetReversed())
+            {
+                result.Append(command.DateTime.ToString("T") + " " + command.Command + "\n");
+            }
+
+            return result.ToString();
         }
 
         private Collection<PSObject> ExecuteGitCommand(string[] commands)

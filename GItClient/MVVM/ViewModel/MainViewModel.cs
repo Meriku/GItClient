@@ -16,8 +16,9 @@ namespace GItClient.MVVM.ViewModel
         public RelayCommand UserInfoViewCommand { get; set; }
 
         public UserInfoViewModel UserInfoVM { get; set; }
-        
-        
+
+        private GitController _gitController;
+
         private object _currentView;
         private object _currentMenu;
         private object _previousView;
@@ -55,9 +56,14 @@ namespace GItClient.MVVM.ViewModel
 
         public MainViewModel() 
         {
+            _gitController = ControllersProvider.GetGitController();
 
             WeakReferenceMessenger.Default.Register<GitCommandChangedMessage>(this, (r, m) =>
             { LastGitCommand = m.Value; });
+
+            // TODO: not the best impl, to think about
+            WeakReferenceMessenger.Default.Register<GitCommandsHistoryMessage>(this, (r, m) =>
+            { LastGitCommand = _gitController.GetFormattedCommandsHistory(); });
 
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { CurrentView = m.Value; });
