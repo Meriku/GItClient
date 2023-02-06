@@ -145,8 +145,9 @@
                     Width="Auto"
                     FontSize="13"
                     Foreground="White"
-                    Margin="20,4,0,3"
-                    Text="{Binding LastGitCommand}"/>
+                    Margin="20,4,0,3"/>
+
+                <!--Text="{Binding LastGitCommand}"-->
 
             </Button>
 

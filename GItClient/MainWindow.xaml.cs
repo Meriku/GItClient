@@ -2,12 +2,15 @@
 using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using Markdig.Syntax.Inlines;
 using System;
 using System.Management.Automation.Runspaces;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace GItClient
@@ -18,13 +21,20 @@ namespace GItClient
         public RelayCommand MaximizedMinimizedWindow { get; set; }
 
         private AnimationController _animationController;
+        private GitController _gitController;
 
         public MainWindow()
         {
             //TODO: delete extramenu button on UI ?
             //TODO: add colors for git commands? 
-            //TODO: close git commands bar by click anywhere (easy)
+ 
             InitializeComponent();
+
+            _animationController = ControllersProvider.GetAnimationController();
+            _gitController = ControllersProvider.GetGitController();
+
+            // AddEventsToInputManager(); 
+            //TODO: don't like this; fix bug with hard to close the bar, and make configurable 
 
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
@@ -32,10 +42,66 @@ namespace GItClient
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { ResizeWindow(m); });
 
-            _animationController = ControllersProvider.GetAnimationController();
+            //test
+            WeakReferenceMessenger.Default.Register<UpdateGitHistoryMessage>(this, (r, m) =>
+            { ColorFormatGitCommands(); });
         }
 
+        private void ColorFormatGitCommands()
+        {
+            GitCommandsTextBlock.Text = "";
+            var text = _gitController.GetUnFormattedCommandsHistory();
+            
 
+            foreach (var line in text)
+            {
+                var words = line.Split(' ');
+
+                for (var i = 0; i < words.Length; i++)
+                {
+                    GitCommandsTextBlock.Inlines.Add(FormatByPattern(words[i], i));       
+                }
+
+                GitCommandsTextBlock.Inlines.Add("\n");
+            }
+        }
+
+        private Run FormatByPattern(string word, int index)
+        {
+            word += " ";
+
+            switch (index)
+            {
+                case 0:
+                    return new Run(word) { Foreground = Brushes.DimGray };
+                case 1:
+                    return new Run(word) { Foreground = Brushes.DarkGoldenrod };
+                case 2:
+                    return new Run(word) { Foreground = Brushes.SkyBlue };
+                case 3:
+                    return new Run(word) { Foreground = Brushes.SlateGray };
+                default:
+                    return new Run(word) { Foreground = Brushes.White };
+
+            }
+
+
+        }
+
+        private void AddEventsToInputManager()
+        {
+            // TODO: make close git comands window on click anywhere configurable?
+            InputManager.Current.PreProcessInput += (sender, e) =>
+            {
+                if (e.StagingItem.Input is MouseButtonEventArgs args && args.ClickCount > 0)
+                {
+                    if (_animationController.IsCommandsBarOpen)
+                    {
+                        openCloseGitCommandsBar();
+                    };
+                };
+            };
+        }
 
         private void openCloseGitCommandsBar(object sender = null, EventArgs e = null)
         {

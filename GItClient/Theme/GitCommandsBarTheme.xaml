@@ -33,6 +33,8 @@
             <DataTrigger Binding="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource doubleToBoolConverter}}" Value="True">
 
                 <Setter Property="Padding" Value="0,10,0,0" />
+                <Setter Property="TextBlock.LineStackingStrategy" Value="BlockLineHeight" />
+                <Setter Property="TextBlock.LineHeight" Value="20"/>
 
             </DataTrigger>
         </Style.Triggers>

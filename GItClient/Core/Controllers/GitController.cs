@@ -57,7 +57,7 @@ namespace GItClient.Core.Controllers
 
             foreach(var command in CommandsHistory.GetReversed())
             {   
-                result.Append(command.DateTime.ToString("T") + " " + command.Command + "\n");
+                result.Append(command.DateTime.ToString("T") + " " + command.Command + " \n");
                 counter++;
 
                 if (counter >= count)
@@ -67,6 +67,18 @@ namespace GItClient.Core.Controllers
             }
 
             return result.ToString();
+        }
+
+        internal string[] GetUnFormattedCommandsHistory()
+        {
+            var result = new List<string>();
+
+            foreach (var command in CommandsHistory.GetReversed())
+            {
+                result.Add(command.DateTime.ToString("T") + " " + command.Command);
+            }
+
+            return result.ToArray();
         }
 
         private Collection<PSObject> ExecuteGitCommand(string[] commands)
