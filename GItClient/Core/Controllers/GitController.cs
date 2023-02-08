@@ -7,6 +7,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
+using System.Threading;
 
 namespace GItClient.Core.Controllers
 {
@@ -72,7 +73,7 @@ namespace GItClient.Core.Controllers
         internal string[] GetUnFormattedCommandsHistory()
         {
             var result = new List<string>();
-
+            
             foreach (var command in CommandsHistory.GetReversed())
             {
                 result.Add(command.DateTime.ToString("T") + " " + command.Command);
