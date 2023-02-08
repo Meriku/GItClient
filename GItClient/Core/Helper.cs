@@ -38,6 +38,11 @@ namespace GItClient.Core
             return result.ToString();
         }
 
+        public static bool IsValidLink(string link)
+        {
+            return Uri.IsWellFormedUriString(link, UriKind.Absolute);
+        }
+
 
     }
 

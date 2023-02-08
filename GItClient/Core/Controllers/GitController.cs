@@ -13,6 +13,9 @@ namespace GItClient.Core.Controllers
 {
     internal class GitController
     {
+
+        // TODO: split in a few classes / add base class with basic impl, maybe inteface
+
         private ILogger _logger = LoggerProvider.GetLogger("GitController");
 
         private string? _gitVersion;
@@ -48,6 +51,14 @@ namespace GItClient.Core.Controllers
             var results = ExecuteGitCommand(new string[] { $"cd {directory}", "git init" });
 
             return results.Count > 0;         
+        }
+
+        internal bool CloneRepository(string directory, string link)
+        {
+            // TODO: async!!!
+            var results = ExecuteGitCommand(new string[] { $"cd {directory}", $"git clone {link}" });
+
+            return results.Count > 0;
         }
 
         internal string GetFormattedCommandsHistory(int count)

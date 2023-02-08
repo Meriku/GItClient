@@ -1,4 +1,5 @@
-﻿using GItClient.Core.Controllers;
+﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -28,6 +29,8 @@ namespace GItClient.MVVM.View.MainView
         private UserSettingsController _userSettingsController;
         private GitController _gitController;
         private DirectoryController _directoryController;
+
+        private string Link;
 
         public CloneRepoView()
         {
@@ -62,9 +65,29 @@ namespace GItClient.MVVM.View.MainView
             }
         }
 
+        private void Link_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Helper.IsValidLink(User_Link_Box.Text))
+            {
+                Link = User_Link_Box.Text;
+                link_Error_Icon.Visibility = Visibility.Hidden;
+                button_Clone.IsEnabled = true;
+            }
+            else
+            {
+                Link = "";
+                link_Error_Icon.Visibility = Visibility.Visible;
+                button_Clone.IsEnabled = false;
+            }
+            
+        }
+
         private void button_Clone_Click(object sender, RoutedEventArgs e)
         {
-            //_gitController.InitRepository(UserSettings.Directory);
+            if (!string.IsNullOrEmpty(Link))
+            {
+                _gitController.CloneRepository(UserSettings.Directory, Link);
+            }
         }
     }
 }

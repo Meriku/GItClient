@@ -88,27 +88,73 @@
                 VerticalAlignment="Center"
                 Padding="0,3,0,3"/>
 
-        <TextBlock 
-            Grid.Row="4"
-            Grid.Column="0"
+        <StackPanel Orientation="Horizontal"            
+                    Grid.Row="4"
+                    Grid.Column="0">
+            
+            <TextBlock 
             Text="Link"
             Foreground="White"
             FontSize="13"
             TextAlignment="Left"
-            Width="50"
+            Width="37"
             Height="26"
             HorizontalAlignment="Left"
             Padding="0,3,0,3"/>
+            
+            <Image 
+                HorizontalAlignment="Right"
+                Name="link_Error_Icon"
+                Visibility="Hidden"
+                Width="12"
+                Height="12"
+                Margin="0,0,8,0"
+                Source="/Images/error-icon.png" />
+        </StackPanel>
+
         
         <TextBox 
             Grid.Row="4"
             Grid.Column="1"
-            Name="User_Link_Box"   
-            IsReadOnly="True"   
+            Name="User_Link_Box"    
             MaxWidth="570"
             Height="26"     
             Margin="10,0,10,0"                            
-            Style="{StaticResource LoginTextBoxStyle}"/>
+            Style="{StaticResource LoginTextBoxStyle}"
+            TextChanged="Link_TextChanged"/>
+
+
+        <StackPanel    
+                Orientation="Horizontal"
+                Grid.Row="1"
+                Grid.Column="2">
+
+
+            <TextBlock 
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Text="Create a new folder"
+                Foreground="White"
+                FontSize="14"
+                TextAlignment="Left"
+                Height="26"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Padding="0,3,0,3"/>
+
+            <ToggleButton 
+                
+                    Height="15"
+                    Margin="15,0,0,0"
+                    Style="{StaticResource Toggle_Button_Custom}">
+
+            </ToggleButton>
+
+        </StackPanel>
+
+  
+        
         
 
 

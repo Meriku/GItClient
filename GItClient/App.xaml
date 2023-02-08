@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Theme/LoginButtonTheme.xaml"/>
                 <ResourceDictionary Source="Theme/Templates.xaml"/>
                 <ResourceDictionary Source="Theme/GitCommandsBarTheme.xaml"/>
+                <ResourceDictionary Source="Theme/ToggleButtonTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type viewModel:HelloViewModel}">
                 <mainViews:HelloView/>
