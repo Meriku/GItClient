@@ -10,8 +10,8 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="3*" MinWidth="300" MaxWidth="600"/>
-            <ColumnDefinition Width="5*" MinWidth="0" MaxWidth="450"/>
+            <ColumnDefinition Width="5*" MinWidth="300"/>
+            <ColumnDefinition Width="5*" MinWidth="0" MaxWidth="380"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -25,9 +25,10 @@
             <RowDefinition MinHeight="0"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
+        <TextBlock 
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Text="Clone an existing Git repository"
                 Foreground="White"
                 FontSize="18"
@@ -37,9 +38,10 @@
                 VerticalAlignment="Top"
                 Padding="0,3,0,3"/>
 
-        <TextBlock Grid.Row="1"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
+        <TextBlock 
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Text="Choose a folder for repository"
                 Foreground="White"
                 FontSize="14"
@@ -69,13 +71,14 @@
                 Height="26"     
                 Margin="10,0,10,0"
                 Style="{StaticResource LoginTextBoxStyle}"
-                />
-        <!--PreviewMouseDown="onclick_Open_Directory_Dialog"-->
+                PreviewMouseDown="onclick_Open_Directory_Dialog"/>
+        
 
 
-        <TextBlock Grid.Row="3"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
+        <TextBlock 
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Text="Provide a link for repository"
                 Foreground="White"
                 FontSize="14"
@@ -96,6 +99,7 @@
             Height="26"
             HorizontalAlignment="Left"
             Padding="0,3,0,3"/>
+        
         <TextBox 
             Grid.Row="4"
             Grid.Column="1"
@@ -104,11 +108,10 @@
             MaxWidth="570"
             Height="26"     
             Margin="10,0,10,0"                            
-            Style="{StaticResource LoginTextBoxStyle}"
-            />
-        <!--PreviewMouseDown="onclick_Open_Directory_Dialog"-->
-
+            Style="{StaticResource LoginTextBoxStyle}"/>
         
+
+
         <Button Grid.Row="5"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
@@ -116,9 +119,9 @@
                 Height="26"
                 Width="130"
                 Style="{StaticResource LoginButtonStyle}"
-                Content="Create"
-                ></Button>
-        <!--Click="button_Create_Click"-->
+                Content="Clone"
+                Click="button_Clone_Click"/>
+
 
 
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using GItClient.Core;
 using GItClient.Core.Controllers;
+using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
@@ -22,10 +23,10 @@ namespace GItClient.MVVM.View.MainView
         private UserSettings UserSettingsCopy;
         private UserSettingsController _userSettingsController;
         private GitController _gitController;
+        private DirectoryController _directoryController;
 
         public UserInfoView()
         {
-            // d:DesignHeight="450" d:DesignWidth="800"
             InitializeComponent();
 
             InputManager.Current.PreProcessInput += (sender, e) =>
@@ -33,20 +34,25 @@ namespace GItClient.MVVM.View.MainView
                 if (e.StagingItem.Input is MouseButtonEventArgs args && args.ClickCount > 0)
                 {
                     textBoxEmail_LostFocus(sender, (MouseButtonEventArgs)e.StagingItem.Input);
-                }
-            
+                }       
             };
 
             _userSettingsController = ControllersProvider.GetUserSettingsController();
             _gitController = ControllersProvider.GetGitController();
+            _directoryController = ControllersProvider.GetDirectoryController();
 
-            UserSettings = _userSettingsController.GetUserSettings();
+            UserSettings = _userSettingsController.GetUserSettings().Clone();
             UserSettingsCopy = UserSettings.Clone();
 
             User_Name_Box.Text = UserSettings.Username;
             User_Email_Box.Text = UserSettings.Email;
-            User_Directory_Box.Text = Helper.TrimDirectoryName(UserSettings.Directory);
+
+            User_Directory_Box.SizeChanged += TextBox_SizeChanged;
+            User_Directory_Box.TextChanged += TextBox_SizeChanged;
+
+            User_Directory_Box.Text = UserSettings.Directory;
         }
+
 
         private void checkBox_SimulateGitCommandsChanged(object sender, RoutedEventArgs args)
         {
@@ -71,6 +77,10 @@ namespace GItClient.MVVM.View.MainView
         }
 
 
+        private void TextBox_SizeChanged(object sender, RoutedEventArgs e)
+        {
+            User_Directory_Box.Text = TextTrimmer.TrimText((TextBox)sender, UserSettings.Directory);
+        }
 
         private async void button_Save_Click(object sender, RoutedEventArgs e)
         {
@@ -130,8 +140,7 @@ namespace GItClient.MVVM.View.MainView
 
         private void onclick_Open_Directory_Dialog(object sender, MouseButtonEventArgs e)
         {
-            var dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
+            var dialog = _directoryController.GetDirectoryDialog();
 
             var result = dialog.ShowDialog();
             if (result == CommonFileDialogResult.Ok)

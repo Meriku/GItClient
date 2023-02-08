@@ -11,7 +11,7 @@ namespace GItClient.Core.Controllers
         private static AnimationController? _animationController;
         private static GitController? _gitController;
         private static TextController? _textController;
-
+        private static DirectoryController? _directoryController;
         public static UserSettingsController GetUserSettingsController()
         {
             _userSettingsController ??= new UserSettingsController();
@@ -32,6 +32,11 @@ namespace GItClient.Core.Controllers
         {
             _textController ??= new TextController();
             return _textController;
+        }
+        public static DirectoryController GetDirectoryController()
+        {
+            _directoryController ??= new DirectoryController();
+            return _directoryController;
         }
         public static GitController GetGitController()
         {

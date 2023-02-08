@@ -1,4 +1,8 @@
-﻿using System;
+﻿using GItClient.Core.Controllers;
+using GItClient.Core.Convertors;
+using GItClient.Core.Models;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +24,47 @@ namespace GItClient.MVVM.View.MainView
     /// </summary>
     public partial class CloneRepoView : UserControl
     {
+        private UserSettings UserSettings;
+        private UserSettingsController _userSettingsController;
+        private GitController _gitController;
+        private DirectoryController _directoryController;
+
         public CloneRepoView()
         {
             InitializeComponent();
+
+            _userSettingsController = ControllersProvider.GetUserSettingsController();
+            _gitController = ControllersProvider.GetGitController();
+            _directoryController = ControllersProvider.GetDirectoryController();
+
+            UserSettings = _userSettingsController.GetUserSettings();
+
+            User_Directory_Box.SizeChanged += TextBox_SizeChanged;
+            User_Directory_Box.TextChanged += TextBox_SizeChanged;
+
+            User_Directory_Box.Text = UserSettings.Directory;
+        }
+        private void TextBox_SizeChanged(object sender, RoutedEventArgs e)
+        {
+            User_Directory_Box.Text = TextTrimmer.TrimText((TextBox)sender, UserSettings.Directory);
+        }
+
+        private void onclick_Open_Directory_Dialog(object sender, MouseButtonEventArgs e)
+        {
+            var dialog = _directoryController.GetDirectoryDialog();
+
+            var result = dialog.ShowDialog();
+            if (result == CommonFileDialogResult.Ok)
+            {
+                var textBox = ((TextBox)sender);
+                UserSettings.Directory = dialog.FileName;
+                textBox.Text = dialog.FileName;
+            }
+        }
+
+        private void button_Clone_Click(object sender, RoutedEventArgs e)
+        {
+            //_gitController.InitRepository(UserSettings.Directory);
         }
     }
 }

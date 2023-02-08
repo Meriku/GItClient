@@ -13,7 +13,6 @@ namespace GItClient.Core.Controllers
 {
     internal class GitController
     {
-        // TODO: add logger for all git commands
         private ILogger _logger = LoggerProvider.GetLogger("GitController");
 
         private string? _gitVersion;
@@ -31,12 +30,12 @@ namespace GItClient.Core.Controllers
         }
 
 
-        private const int COMMANDS_HISTORY_LENGHT = 10; // TODO: a const for now. Implement custom history lenght?
+        private const int COMMANDS_HISTORY_LENGHT = 25; 
+        // TODO: a const for now. Implement custom history lenght?
 
         internal string GetGitVersion()
         {
-            // TODO: delete, comments for testing puposes only
-            // if (_gitVersion != null) return _gitVersion;
+            if (_gitVersion != null) return _gitVersion;
 
             var results = ExecuteGitCommand(new string[] { "git version" });
             
@@ -84,8 +83,6 @@ namespace GItClient.Core.Controllers
 
         private Collection<PSObject> ExecuteGitCommand(string[] commands)
         {           
-            //TODO: current impl using PowerShell, change to exe git later?
-
             using PowerShell powershell = PowerShell.Create();
             foreach(var command in commands)
             {

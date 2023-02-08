@@ -3,6 +3,6 @@
     internal class CloneRepoViewModel : IViewModel
     {
         public double MinWidth => 350;
-        public double MinHeight => 200;
+        public double MinHeight => 250;
     }
 }
