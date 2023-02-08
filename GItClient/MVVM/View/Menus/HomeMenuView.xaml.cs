@@ -33,10 +33,15 @@ namespace GItClient.MVVM.View.Menus
         {
             WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new InitRepoViewModel()));
         }
+        private void button_CloneRepo(object sender, RoutedEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new CloneRepoViewModel()));
+        }
+
         private void button_Home(object sender, RoutedEventArgs e)
         {
             WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new HelloViewModel()));
-        }
+        }     
 
         private void button_Exit(object sender, RoutedEventArgs e)
         {

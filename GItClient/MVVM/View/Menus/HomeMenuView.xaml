@@ -40,7 +40,8 @@
             </MenuItem>
             
             <MenuItem Header="Clone"
-                      Template="{StaticResource Item_Template}">
+                      Template="{StaticResource Item_Template}"
+                      Click="button_CloneRepo">
             </MenuItem>
             
             <MenuItem Header="Open"

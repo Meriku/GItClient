@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows;
 
 namespace GItClient.Core
 {
@@ -10,7 +13,12 @@ namespace GItClient.Core
     {
 
         private const int MAX_TEXT_LENGTH = 25;
-
+        /// <summary>
+        /// Trim text to const lenght
+        /// Now is used only in login page
+        /// </summary>
+        /// <param name="input">Input string to be trimmed</param>
+        /// <returns></returns>
         public static string TrimDirectoryName(string input)
         {
             if (input.Length <= MAX_TEXT_LENGTH)
@@ -30,5 +38,8 @@ namespace GItClient.Core
             return result.ToString();
         }
 
+
     }
+
+
 }

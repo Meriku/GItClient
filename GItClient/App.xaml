@@ -27,6 +27,9 @@
             <DataTemplate DataType="{x:Type viewModel:InitRepoViewModel}">
                 <mainViews:InitRepoView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:CloneRepoViewModel}">
+                <mainViews:CloneRepoView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
                 <menuViews:HomeMenuView/>
             </DataTemplate>
