@@ -9,8 +9,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition MinWidth="0" Width="Auto"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="5*" MinWidth="300"/>
+            <ColumnDefinition Width="5*" MinWidth="0" MaxWidth="380"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -23,7 +24,10 @@
             <RowDefinition MinHeight="0"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
+        <TextBlock 
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Text="Create an empty Git repository"
                 Foreground="White"
                 FontSize="18"
@@ -33,7 +37,10 @@
                 VerticalAlignment="Top"
                 Padding="0,3,0,3"/>
 
-        <TextBlock Grid.Row="1"
+        <TextBlock 
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Text="Choose a folder for new repository"
                 Foreground="White"
                 FontSize="14"
@@ -43,9 +50,10 @@
                 VerticalAlignment="Center"
                 Padding="0,3,0,3"/>
 
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="2">
-            <TextBlock Text="Folder"
+            <TextBlock 
+                Grid.Row="2"
+                Grid.Column="0"
+                Text="Folder"
                 Foreground="White"
                 FontSize="13"
                 TextAlignment="Left"
@@ -54,15 +62,20 @@
                 HorizontalAlignment="Left"
                 Padding="0,3,0,3"/>
             <TextBox 
+                Grid.Row="2"
+                Grid.Column="1"
                 Name="User_Directory_Box"   
                 IsReadOnly="True"
-                Width="195"
-                Height="26"                             
+                MaxWidth="570"
+                Height="26"   
+                Margin="10,0,10,0"
                 Style="{StaticResource LoginTextBoxStyle}"
                 PreviewMouseDown="onclick_Open_Directory_Dialog"/>
-        </StackPanel>
+
 
         <Button Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Name="button_Create"
                 Height="26"
                 Width="130"
