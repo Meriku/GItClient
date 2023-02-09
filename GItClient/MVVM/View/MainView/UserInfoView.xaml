@@ -157,7 +157,7 @@
         <StackPanel Name="CheckBox_3" Orientation="Horizontal"
                             Grid.Row="2" Grid.Column="1">
 
-            <TextBlock Text="CheckBox 3"
+            <TextBlock Text="Show Git Resp"
                         Foreground="White"
                         FontSize="13"
                         TextAlignment="Left"
@@ -169,7 +169,9 @@
 
             <CheckBox 
                         VerticalAlignment="Center"
-                        HorizontalAlignment="Left">
+                        HorizontalAlignment="Left"
+                Checked="checkBox_ShowGitResponsesChanged"
+                Unchecked="checkBox_ShowGitResponsesChanged">
             </CheckBox>
 
         </StackPanel>

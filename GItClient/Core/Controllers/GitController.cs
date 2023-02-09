@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core.Base;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
+using MS.WindowsAPICodePack.Internal;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,125 +10,100 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace GItClient.Core.Controllers
 {
-    internal class GitController
+    internal class GitController : GitControllerBase
     {
+        private UserSettings UserSettings { get; set; }
 
-        // TODO: split in a few classes / add base class with basic impl, maybe inteface
+        private UserSettingsController _userSettingsController; 
 
-        private ILogger _logger = LoggerProvider.GetLogger("GitController");
+        protected string? _gitVersion;
 
-        private string? _gitVersion;
-
-        private CircularList<CommandDateTime>? _commandsHistory;
-        private CircularList<CommandDateTime> CommandsHistory
+        internal GitController()
         {
-            get
-            {
-                if (_commandsHistory == null) { _commandsHistory = new CircularList<CommandDateTime>(COMMANDS_HISTORY_LENGHT); };
-                return _commandsHistory;
-            }
-            set { _commandsHistory = value; }
-
+            _userSettingsController = ControllersProvider.GetUserSettingsController();
         }
 
-
-        private const int COMMANDS_HISTORY_LENGHT = 25; 
-        // TODO: a const for now. Implement custom history lenght?
-
-        internal string GetGitVersion()
+        internal async Task<string> GetGitVersionAsync()
         {
-            if (_gitVersion != null) return _gitVersion;
+            //if (_gitVersion != null) return _gitVersion;
 
-            var results = ExecuteGitCommand(new string[] { "git version" });
-            
-            _gitVersion = ParseVersion(results[0]);
+            var request = new PowerShellCommands();
+            request.AddCommand(CommandsPowerShell.git_Version);
+
+            var results = await Execute(request);
+            _gitVersion = ParseVersion(results.AllResponses.First() ?? "Error");
+            // TODO: retry if Error? 
+
             return _gitVersion;  
         }
 
-        internal bool InitRepository(string directory)
+        internal async Task<bool> InitRepositoryAsync(string directory)
         {
-            var results = ExecuteGitCommand(new string[] { $"cd {directory}", "git init" });
+            var request = new PowerShellCommands();
+            request.AddCommand(CommandsPowerShell.git_Init, directory);
 
-            return results.Count > 0;         
+            var results = await ExecuteAndInformUIAsync(request);
+
+            return results.IsError;         
         }
 
-        internal bool CloneRepository(string directory, string link)
+        internal async Task<bool> CloneRepositoryAsync(string directory, string link)
         {
-            // TODO: async!!!
-            var results = ExecuteGitCommand(new string[] { $"cd {directory}", $"git clone {link}" });
+            var request = new PowerShellCommands();
+            request.AddCommand(CommandsPowerShell.git_Clone, new string[] {link, directory});
 
-            return results.Count > 0;
+            var results = await Execute(request);
+
+            return results.IsError;
         }
 
-        internal string GetFormattedCommandsHistory(int count)
+        internal async Task<bool> CreateFolderAsync(string directory, string folderName)
         {
-            var result = new StringBuilder();
-            int counter = 0;
+            var request = new PowerShellCommands();
+            request.AddCommand(CommandsPowerShell.cd, directory);
+            request.AddCommand(CommandsPowerShell.md, folderName);
 
-            foreach(var command in CommandsHistory.GetReversed())
-            {   
-                result.Append(command.DateTime.ToString("T") + " " + command.Command + " \n");
-                counter++;
-
-                if (counter >= count)
-                {
-                    return result.ToString();
-                }
-            }
-
-            return result.ToString();
+            var results = await Execute(request);
+            return results.IsError;
         }
 
-        internal string[] GetUnFormattedCommandsHistory()
+        internal string[] GetFormattedCommandsHistory(int count)
         {
-            var result = new List<string>();
-            
-            foreach (var command in CommandsHistory.GetReversed())
+            UserSettings = _userSettingsController.GetUserSettings();
+
+            var result = new List<string>(count);
+
+            foreach(var command in GitHistory.GetReversed())
             {
-                result.Add(command.DateTime.ToString("T") + " " + command.Command);
+                if (command.Type == HistoryType.Response)
+                {
+                    if (UserSettings.Optional.ShowGitResponses)
+                    {
+                        result.Add(command.DateTime.ToString("T") + " " + command.Value + " \n");
+                    }
+                }
+                else
+                {
+                    result.Add(command.DateTime.ToString("T") + " " + command.Value + " \n");
+                }  
+
+                if (result.Count >= count)
+                {
+                    return result.ToArray();
+                }
             }
 
             return result.ToArray();
         }
 
-        private Collection<PSObject> ExecuteGitCommand(string[] commands)
-        {           
-            using PowerShell powershell = PowerShell.Create();
-            foreach(var command in commands)
-            {
-                LogGitCommand(command);
-                powershell.AddScript(command);
-            }           
-            var results = powershell.Invoke();
-            //TODO: errors handling
-            //TODO: convert to string[]
-            return results;
-        }
-
-        private void LogGitCommand(string command)
+        private string ParseVersion(string input)
         {
-            AddCommandToHistory(command);
-            _logger.LogDebug("Execute Git Command: " + command);
-            WeakReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(1));
-        }
-
-
-        private void LogGitCommandResult(string result)
-        {
-            //TODO: log in file
-        }
-
-        private void AddCommandToHistory(string command)
-        {
-            CommandsHistory.Add(new CommandDateTime(command));
-        }
-
-        private string ParseVersion(PSObject psObject)
-        {
-            return psObject.ToString()[12..];
+            return input[12..];
         }
 
     }

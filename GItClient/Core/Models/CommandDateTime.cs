@@ -1,20 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Models
 {
-    internal class CommandDateTime
+    internal class HistoryElement
     {
-        public string Command { get; set; }
+        public string Value { get; set; }
         public DateTime DateTime { get; set; }
+        public HistoryType Type { get; set; }
 
-        internal CommandDateTime(string command, DateTime? time = null)
+        internal HistoryElement(string value, HistoryType _type, DateTime? time = null)
         {
-            Command = command;
+            Value = value;
             DateTime = time ?? DateTime.Now;
+            Type = _type;
         }
+    }
+
+    enum HistoryType
+    {
+        Request,
+        Response
     }
 }

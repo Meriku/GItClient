@@ -6,7 +6,9 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.View;
 using GItClient.MVVM.View.MainView;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Windows;
 
 namespace GItClient.MVVM.ViewModel
@@ -87,11 +89,11 @@ namespace GItClient.MVVM.ViewModel
         {
             if (_animationController.IsCommandsBarOpen)
             {
-                return _gitController.GetFormattedCommandsHistory(10);
+                return string.Join('\n', _gitController.GetFormattedCommandsHistory(10));
             }
             else
             {
-                return _gitController.GetFormattedCommandsHistory(1);
+                return string.Join('\n', _gitController.GetFormattedCommandsHistory(1));
             }
         }
 

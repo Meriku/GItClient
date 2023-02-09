@@ -23,17 +23,14 @@ namespace GItClient.MVVM.View.MainView
             UpdateClientVersion();
         }
 
-        private void UpdateGitVersion()
+        private async void UpdateGitVersion()
         {
             Git_Version_Box.Text = "updating";
+
             var _gitController = ControllersProvider.GetGitController();
-            Task.Run(() =>
-            {
-                var gitVersion = _gitController.GetGitVersion();
-                this.Dispatcher.Invoke(() => {
-                    Git_Version_Box.Text = gitVersion;
-                });
-            });
+            var gitVersion = await _gitController.GetGitVersionAsync();
+
+            Git_Version_Box.Text = gitVersion;         
         }
 
         private void UpdateClientVersion()

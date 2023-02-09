@@ -67,7 +67,7 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Create_Click(object sender, RoutedEventArgs e)
         {
-            _gitController.InitRepository(UserSettings.Directory);
+            _gitController.InitRepositoryAsync(UserSettings.Directory);
         }
     }
 }

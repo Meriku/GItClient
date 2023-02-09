@@ -10,18 +10,18 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="5*" MinWidth="300"/>
+            <ColumnDefinition Width="5*" MinWidth="320"/>
             <ColumnDefinition Width="5*" MinWidth="0" MaxWidth="380"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition MinHeight="35" MaxHeight="50"/>
-            <RowDefinition MinHeight="35" MaxHeight="60"/>
-            <RowDefinition MinHeight="35" MaxHeight="50"/>
+            <RowDefinition Name="Folder_Row" MinHeight="35" MaxHeight="60"/>
+            <RowDefinition Name="Folder_Name_Row"  Height="0" MaxHeight="60"/>
             <RowDefinition MinHeight="35" MaxHeight="60"/>
             <RowDefinition MinHeight="35" MaxHeight="80"/>
-            <RowDefinition MinHeight="0"/>
+            <RowDefinition MinHeight="35" MaxHeight="80"/>
             <RowDefinition MinHeight="0"/>
         </Grid.RowDefinitions>
 
@@ -38,10 +38,14 @@
                 VerticalAlignment="Top"
                 Padding="0,3,0,3"/>
 
-        <TextBlock 
+        <DockPanel    
                 Grid.Row="1"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch">
+
+            <TextBlock 
+                
                 Text="Choose a folder for repository"
                 Foreground="White"
                 FontSize="14"
@@ -50,6 +54,38 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Padding="0,3,0,3"/>
+
+            <StackPanel Orientation="Horizontal"
+                        Width="170"
+                        HorizontalAlignment="Right">
+                <TextBlock 
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Text="Create a new folder"
+                Foreground="White"
+                FontSize="14"
+                TextAlignment="Left"
+                Height="26"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Padding="0,3,0,3"/>
+
+                <ToggleButton 
+                    Name="New_Folder_Button"
+                    Height="15"
+                    Margin="15,0,0,0"
+                    Style="{StaticResource Toggle_Button_Custom}"
+                    Checked="create_New_Folder_Changed"
+                    Unchecked="create_New_Folder_Changed">
+
+                </ToggleButton>
+            </StackPanel>
+           
+
+        </DockPanel>
+        
+        
 
         <TextBlock 
                 Grid.Row="2"
@@ -72,11 +108,30 @@
                 Margin="10,0,10,0"
                 Style="{StaticResource LoginTextBoxStyle}"
                 PreviewMouseDown="onclick_Open_Directory_Dialog"/>
-        
-
 
         <TextBlock 
                 Grid.Row="3"
+                Grid.Column="0"
+                Name="User_FolderName_Text" 
+                Text="Name"
+                Foreground="White"
+                FontSize="13"
+                TextAlignment="Left"
+                Width="50"
+                Height="26"
+                HorizontalAlignment="Left"
+                Padding="0,3,0,3"/>
+        <TextBox 
+                Grid.Row="3"
+                Grid.Column="1"
+                Name="User_FolderName_Box"     
+                MaxWidth="570"
+                Height="26"     
+                Margin="10,0,10,0"
+                Style="{StaticResource LoginTextBoxStyle}"/>
+
+        <TextBlock 
+                Grid.Row="4"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Text="Provide a link for repository"
@@ -89,9 +144,9 @@
                 Padding="0,3,0,3"/>
 
         <StackPanel Orientation="Horizontal"            
-                    Grid.Row="4"
+                    Grid.Row="5"
                     Grid.Column="0">
-            
+
             <TextBlock 
             Text="Link"
             Foreground="White"
@@ -101,7 +156,7 @@
             Height="26"
             HorizontalAlignment="Left"
             Padding="0,3,0,3"/>
-            
+
             <Image 
                 HorizontalAlignment="Right"
                 Name="link_Error_Icon"
@@ -112,9 +167,9 @@
                 Source="/Images/error-icon.png" />
         </StackPanel>
 
-        
+
         <TextBox 
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="1"
             Name="User_Link_Box"    
             MaxWidth="570"
@@ -124,41 +179,7 @@
             TextChanged="Link_TextChanged"/>
 
 
-        <StackPanel    
-                Orientation="Horizontal"
-                Grid.Row="1"
-                Grid.Column="2">
-
-
-            <TextBlock 
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Text="Create a new folder"
-                Foreground="White"
-                FontSize="14"
-                TextAlignment="Left"
-                Height="26"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Padding="0,3,0,3"/>
-
-            <ToggleButton 
-                
-                    Height="15"
-                    Margin="15,0,0,0"
-                    Style="{StaticResource Toggle_Button_Custom}">
-
-            </ToggleButton>
-
-        </StackPanel>
-
-  
-        
-        
-
-
-        <Button Grid.Row="5"
+        <Button Grid.Row="6"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Name="button_Clone"

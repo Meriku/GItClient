@@ -40,11 +40,13 @@ namespace GItClient.Core.Models
             Username = username ?? "";
             Email = email ?? "";
             Directory = directory ?? "";
+            Optional = new UserSettingsOptional();
         }
 
         public string Username { get; set; }
         public string Email { get; set; }
         public string Directory { get; set; }
+        public UserSettingsOptional Optional { get; set; }
 
         public UserSettings Clone()
         {
@@ -55,5 +57,11 @@ namespace GItClient.Core.Models
         {
             return Username + " " + Email + " " + Directory;
         }
+    }
+    public class UserSettingsOptional
+    {
+        public bool ShowGitResponses { get; set; }
+        public bool two { get; set; }
+        public bool three { get; set; }
     }
 }

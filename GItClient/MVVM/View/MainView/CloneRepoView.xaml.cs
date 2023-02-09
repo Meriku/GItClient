@@ -2,11 +2,13 @@
 using GItClient.Core.Controllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
+using Microsoft.PowerShell.Commands;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +16,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -52,6 +55,21 @@ namespace GItClient.MVVM.View.MainView
             User_Directory_Box.Text = TextTrimmer.TrimText((TextBox)sender, UserSettings.Directory);
         }
 
+        private void create_New_Folder_Changed(object sender, RoutedEventArgs args)
+        {
+
+            if ((bool)New_Folder_Button.IsChecked)
+            {
+                Folder_Name_Row.Height = Folder_Row.Height;
+                Folder_Name_Row.MinHeight = Folder_Row.MinHeight;
+            }
+            else
+            {
+                Folder_Name_Row.MinHeight = 0;
+                Folder_Name_Row.Height = new GridLength(0);
+            }
+
+        }
         private void onclick_Open_Directory_Dialog(object sender, MouseButtonEventArgs e)
         {
             var dialog = _directoryController.GetDirectoryDialog();
@@ -84,10 +102,20 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Clone_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Link))
+            if (string.IsNullOrEmpty(Link))
+            { return; }
+
+            if ((bool)New_Folder_Button.IsChecked)
             {
-                _gitController.CloneRepository(UserSettings.Directory, Link);
+                if (Helper.IsValidFilename(User_FolderName_Box.Text))
+                {
+                    _gitController.CreateFolderAsync(UserSettings.Directory, User_FolderName_Box.Text);
+                    UserSettings.Directory += "\\" + User_FolderName_Box.Text;
+                }
             }
+                
+            _gitController.CloneRepositoryAsync(UserSettings.Directory, Link);
+
         }
     }
 }

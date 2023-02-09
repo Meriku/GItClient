@@ -63,7 +63,7 @@ namespace GItClient.MVVM.View.MainView
                while (true)
                {
 
-                    var gitVersion = _gitController.GetGitVersion();
+                    var gitVersion =  _gitController.GetGitVersionAsync();
                     counter++;
 
                     if (counter > 20)
@@ -76,7 +76,15 @@ namespace GItClient.MVVM.View.MainView
             });
         }
 
-
+        
+        private void checkBox_ShowGitResponsesChanged(object sender, RoutedEventArgs args)
+        {
+            // TODO: async
+            // TODO: update git bar
+            // TODO: show cheked chekboxes if setting = true
+            UserSettings.Optional.ShowGitResponses = ((CheckBox)sender).IsChecked ?? false;
+            _userSettingsController.SetAndSaveUserSettings(UserSettings);
+        }
         private void TextBox_SizeChanged(object sender, RoutedEventArgs e)
         {
             User_Directory_Box.Text = TextTrimmer.TrimText((TextBox)sender, UserSettings.Directory);

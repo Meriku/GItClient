@@ -47,8 +47,11 @@ namespace GItClient
 
         private async void UpdateGitBarTextSafely()
         {
-            var text = await Task.Run(() => _gitController.GetUnFormattedCommandsHistory());
+
+            var text = await Task.Run(() => _gitController.GetFormattedCommandsHistory(20));
             // Possible block of UI, so executed in a separate Thread
+            // TODO: rework, encapsulate in gitController
+            // TODO: delete 20
 
             this.Dispatcher.Invoke(() => 
             {

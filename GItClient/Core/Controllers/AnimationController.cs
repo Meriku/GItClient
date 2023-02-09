@@ -16,6 +16,7 @@ namespace GItClient.Core.Controllers
 
         public bool IsCommandsBarOpen {get; private set;}
 
+        #region CommandBar
         internal AnimationHolder GetCommandsBarAnimation(double currentHeight, double currentWidth, bool resize)
         {
             var IsOpen = currentHeight > MinCommandsBarHeight && currentWidth > MinCommandsBarWidth;
@@ -40,8 +41,6 @@ namespace GItClient.Core.Controllers
 
             return new AnimationHolder(AnimationHeight, AnimationWidth);
         }
-
-
         private double GetFinalHeight(bool isOpen, bool resize = false)
         { // readability is important
 
@@ -60,7 +59,6 @@ namespace GItClient.Core.Controllers
             }
             return MinCommandsBarWidth;
         }
-
         private Duration GetDuration(double currentHeight, double currentWidth, bool resize = false)
         {
             double timeD = 0;
@@ -92,6 +90,8 @@ namespace GItClient.Core.Controllers
             
             return new Duration(new TimeSpan(0, 0, 0, 0, (int)Math.Round(timeD, 0)));
         }
+        #endregion
+
 
     }
 }

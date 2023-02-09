@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Windows.Shapes;
+using GItClient.Core.Base;
 
 namespace GItClient.Core
 {
@@ -38,11 +42,31 @@ namespace GItClient.Core
             return result.ToString();
         }
 
-        public static bool IsValidLink(string link)
+        public static bool IsValidLink(this string link)
         {
             return Uri.IsWellFormedUriString(link, UriKind.Absolute);
         }
 
+        public static bool IsValidFilename(this string filename)
+        {
+            var invalidPathChars = System.IO.Path.GetInvalidFileNameChars();
+
+            if (filename.Any(x => invalidPathChars.Contains(x)))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static string AddBracketsIfSpaces(this string input)
+        {
+            return input.Contains(' ') ? '"' + input + '"' : input;
+        }
+
+        public static string ToPWString(this CommandsPowerShell command)
+        {
+            return command.ToString().ToLower().Replace('_', ' ');
+        }
 
     }
 
