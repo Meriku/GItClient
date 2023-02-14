@@ -1,20 +1,14 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using GItClient.Core.Base;
+﻿using GItClient.Core.Base;
 using GItClient.Core.Models;
-using Microsoft.Extensions.Logging;
-using MS.WindowsAPICodePack.Internal;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Controller 
+    /// Provides "API" for Git commands
+    /// </summary>
     internal class GitController : GitControllerBase
     {
         protected string? _gitVersion;
@@ -61,7 +55,7 @@ namespace GItClient.Core.Controllers
 
         internal async Task<bool> CreateFolderAsync(string directory, string folderName)
         {
-            var request = new PowerShellCommands();
+            var request = new PowerShellCommands(2);
             request.AddCommand(CommandsPowerShell.cd, directory);
             request.AddCommand(CommandsPowerShell.md, folderName);
 

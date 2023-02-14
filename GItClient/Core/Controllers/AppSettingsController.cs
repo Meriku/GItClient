@@ -1,13 +1,13 @@
 ﻿using GItClient.Core.Base;
 using GItClient.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Controller
+    /// Easy way to access AppSettings
+    /// Model: public class AppSettings : ISetting
+    /// </summary>
     internal class AppSettingsController : SettingsBase<AppSettings>
     {
         private AppSettings? _appSettings;

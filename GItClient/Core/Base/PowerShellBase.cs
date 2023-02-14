@@ -1,16 +1,10 @@
 ﻿using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.PowerShell.Commands.Utility;
-using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Management.Automation;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace GItClient.Core.Base
 {
@@ -19,6 +13,8 @@ namespace GItClient.Core.Base
         private ILogger _logger = LoggerProvider.GetLogger("PowerShellBase");
 
         protected event EventHandler<PowerShellResponses> DataAdded;
+
+        private PowerShellResponse? ErrorResponse;
 
         /// <summary>
         /// Create PowerShell instance
@@ -29,6 +25,7 @@ namespace GItClient.Core.Base
         /// <exception cref="Exception"></exception>
         internal async Task<PowerShellResponses> Execute(PowerShellCommands commands)
         {
+            ErrorResponse = null;
             try
             {
                 return await Task.Run(async () =>
@@ -51,7 +48,6 @@ namespace GItClient.Core.Base
                     return ParseResponse(responses);
                 });
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
@@ -67,6 +63,10 @@ namespace GItClient.Core.Base
         /// <returns></returns>
         private PowerShellResponses ParseResponse(PSDataCollection<PSObject> PSObjects)
         {
+            if (ErrorResponse != null) { return new PowerShellResponses(ErrorResponse); }
+
+            if (PSObjects.Count == 0) { return new PowerShellResponses(); }
+
             var result = new List<PowerShellResponse>();
             for (var i = 0; i < PSObjects.Count; i++)
             {
@@ -93,7 +93,8 @@ namespace GItClient.Core.Base
                     break;
 
                 case PSDataCollection<ErrorRecord> errorRecords:
-                        result.Add(new PowerShellResponse(errorRecords[e.Index].Exception.Message, ResponseType.Error));
+                        ErrorResponse = new PowerShellResponse(errorRecords[e.Index].Exception.Message, ResponseType.Error);
+                        result.Add(ErrorResponse);
                     break;
 
                 case PSDataCollection<InformationRecord> informationRecords:

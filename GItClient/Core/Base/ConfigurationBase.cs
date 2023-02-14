@@ -1,15 +1,9 @@
 ﻿using GItClient.Core.Controllers;
 using GItClient.Core.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Management.Automation.Runspaces;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

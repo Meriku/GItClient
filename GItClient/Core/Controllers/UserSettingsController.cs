@@ -1,14 +1,16 @@
 ﻿using GItClient.Core.Base;
 using GItClient.Core.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.IO;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Controller
+    /// Easy way to access UserSettings
+    /// Model: public class UserSettings : ISetting
+    /// </summary>
     internal class UserSettingsController : SettingsBase<UserSettings>
     {
         private UserSettings? _userSettings;

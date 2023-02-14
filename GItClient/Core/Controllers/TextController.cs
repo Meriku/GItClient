@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Contoller
+    /// Provides services for text
+    /// </summary>
     class TextController
     {
         internal Inline[] GetInlinesFromText(string[] text)

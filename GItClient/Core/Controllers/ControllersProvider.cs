@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-
-namespace GItClient.Core.Controllers
+﻿namespace GItClient.Core.Controllers
 {
     internal static class ControllersProvider
     {
-
+        /// <summary>
+        /// Static class which provides all necessary controllers
+        /// </summary>
         private static UserSettingsController? _userSettingsController;
         private static AppSettingsController? _appSettingsController;
         private static AnimationController? _animationController;

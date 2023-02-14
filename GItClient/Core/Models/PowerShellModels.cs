@@ -19,7 +19,7 @@ namespace GItClient.Core.Models
 
         public string Command { get; private set; }
 
-        internal PowerShellCommand(CommandsPowerShell _command, string[] _arguments)
+        internal PowerShellCommand(CommandsPowerShell _command, string[]? _arguments)
         {
             command = _command;
             arguments = _arguments ?? System.Array.Empty<string>();
@@ -66,7 +66,7 @@ namespace GItClient.Core.Models
             LastCommandIndex = 0;
         }
 
-        internal void AddCommand(CommandsPowerShell _command, string[] arguments = null)
+        internal void AddCommand(CommandsPowerShell _command, string?[] arguments = null)
         {
             if (LastCommandIndex > AllCommandsInternal.Length)
             {
@@ -118,6 +118,12 @@ namespace GItClient.Core.Models
             }
         }
         internal PowerShellResponses() { Responses = new List<PowerShellResponse>(); }
+
+        internal PowerShellResponses(PowerShellResponse response) 
+        { 
+            Responses = new List<PowerShellResponse>() { response };
+            
+        }
         internal PowerShellResponses(List<PowerShellResponse> responses)
         {
             Responses = responses;

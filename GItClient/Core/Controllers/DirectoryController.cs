@@ -1,14 +1,13 @@
 ﻿using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Contoller
+    /// Provides Dialog to choose folder
+    /// </summary>
     class DirectoryController
     {
         private UserSettings UserSettings;

@@ -48,7 +48,7 @@ namespace GItClient.Core
             return Uri.IsWellFormedUriString(link, UriKind.Absolute);
         }
 
-        public static bool IsValidFilename(this string filename)
+        public static bool IsValidFolderName(this string filename)
         {
             var invalidPathChars = System.IO.Path.GetInvalidFileNameChars();
 

@@ -4,6 +4,10 @@ using System;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Controller
+    /// Provides logger
+    /// </summary>
     internal static class LoggerProvider
     {
         private static ILoggerFactory? _loggerFactory;

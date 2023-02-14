@@ -50,15 +50,27 @@ namespace GItClient.MVVM.View.MainView
 
             User_Directory_Box.Text = UserSettings.Directory;
         }
+
+        /// <summary>
+        /// Trim text, to fit into TextBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBox_SizeChanged(object sender, RoutedEventArgs e)
         {
             User_Directory_Box.Text = TextTrimmer.TrimText((TextBox)sender, UserSettings.Directory);
         }
 
+        /// <summary>
+        /// Trigger "Create New Folder" changed
+        /// Adds new row to enter Folder Name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void create_New_Folder_Changed(object sender, RoutedEventArgs args)
         {
-
-            if ((bool)New_Folder_Button.IsChecked)
+             
+            if (New_Folder_Button.IsChecked ?? false)
             {
                 Folder_Name_Row.Height = Folder_Row.Height;
                 Folder_Name_Row.MinHeight = Folder_Row.MinHeight;
@@ -103,18 +115,31 @@ namespace GItClient.MVVM.View.MainView
         private void button_Clone_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(Link))
-            { return; }
+            { Link_TextChanged(null, null);  return; }
 
-            if ((bool)New_Folder_Button.IsChecked)
+            var IsNewFolder = New_Folder_Button.IsChecked ?? false;
+
+            var FolderName = User_FolderName_Box.Text;
+
+            Task.Run(async () =>
             {
-                if (Helper.IsValidFilename(User_FolderName_Box.Text))
+                if (IsNewFolder)
                 {
-                    _gitController.CreateFolderAsync(UserSettings.Directory, User_FolderName_Box.Text);
-                    UserSettings.Directory += "\\" + User_FolderName_Box.Text;
+                    if (Helper.IsValidFolderName(FolderName))
+                    {
+                        var IsError = await _gitController.CreateFolderAsync(UserSettings.Directory, FolderName);
+                        if (!IsError)
+                        {
+                            await _gitController.CloneRepositoryAsync(UserSettings.Directory + "\\" + FolderName, Link);
+                        }
+                    }
                 }
-            }
-                
-            _gitController.CloneRepositoryAsync(UserSettings.Directory, Link);
+                else
+                {
+                    await _gitController.CloneRepositoryAsync(UserSettings.Directory, Link);
+                }
+            });
+
 
         }
     }

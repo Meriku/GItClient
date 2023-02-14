@@ -2,21 +2,15 @@
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
-using MS.WindowsAPICodePack.Internal;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GItClient.Core.Base
 {
     internal class GitControllerBase : PowerShellBase
     {
+        private const int COMMANDS_HISTORY_LENGHT = 25;
+
         private CircularList<HistoryElement>? _gitHistory;
         private CircularList<HistoryElement> GitHistory
         {

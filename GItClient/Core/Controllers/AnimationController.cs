@@ -6,6 +6,7 @@ using System.Windows.Media.Animation;
 namespace GItClient.Core.Controllers
 {
     /// <summary>
+    /// Controller
     /// Creates all animation for WPF
     /// MaxCommandsBar Height and Width calculates using wax window size
     /// </summary>
