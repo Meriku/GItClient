@@ -9,6 +9,11 @@ using System.Windows;
 
 namespace GItClient.Core.Convertors
 {
+    /// <summary>
+    /// Using in WPF Binding
+    /// If element property > 30 returns true
+    /// Now it used only by CommandsBar
+    /// </summary>
     [ValueConversion(typeof(double), typeof(bool))]
     public class DoubleToBoolConverter : IValueConverter
     {

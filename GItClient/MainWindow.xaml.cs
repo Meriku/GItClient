@@ -2,13 +2,18 @@
 using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace GItClient
 {
@@ -21,12 +26,12 @@ namespace GItClient
         private GitController _gitController;
         private TextController _textController;
 
+        private ILogger _logger = LoggerProvider.GetLogger("MainWindow");
+        private readonly SemaphoreSlim _semaphore;        
+
         public MainWindow()
         {
             // TODO: delete extramenu button on UI ?
-            // TODO: add colors for git commands? 
-            // TODO: AddEventsToInputManager() don't like it;
-            // fix bug with hard to close the bar, and make configurable 
 
             InitializeComponent();
 
@@ -37,56 +42,68 @@ namespace GItClient
             _gitController = ControllersProvider.GetGitController();
             _textController = ControllersProvider.GetTextController();
 
+            _semaphore = new SemaphoreSlim(1);
+
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { ResizeWindow(m); });
 
-            WeakReferenceMessenger.Default.Register<UpdateGitHistoryMessage>(this, (r, m) =>
-            { UpdateGitBarTextSafely(); });
+            StrongReferenceMessenger.Default.Register<UpdateGitHistoryMessage>(this, (r, m) =>
+            { UpdateGitBarText(); });
         }
 
-
-        private async void UpdateGitBarTextSafely()
+        /// <summary>
+        /// Get GitCommandsHistory
+        /// 25 commands, if bar is open, and 1 if bar is closed
+        /// Format strings[] to Inlines using Runs
+        /// (add colors, basically)
+        /// Invoke Dispatcher, wait _semaphore
+        /// (protection of messing up the commands order)
+        /// (Clear Inlines, and add new Range)
+        /// </summary>
+        private void UpdateGitBarText()
         {
-
-            var text = await Task.Run(() => _gitController.GetFormattedCommandsHistory(20));
-            // Possible block of UI, so executed in a separate Thread
-            // TODO: rework, encapsulate in gitController
-            // TODO: delete 20
-
-            this.Dispatcher.Invoke(() => 
+            Task.Run( async () =>
             {
-                var lines = _textController.GetInlines(text);
-                GitCommandsTextBlock.Inlines.Clear();
-                GitCommandsTextBlock.Inlines.AddRange(lines);
+                var count = _animationController.IsCommandsBarOpen ? 25 : 1;
+                var text = await _gitController.GetFormattedCommandsHistory(count);
+
+                await GitCommandsTextBlock.Dispatcher.Invoke( async () => 
+                {
+
+                    await _semaphore.WaitAsync();
+                    var lines = _textController.GetInlinesFromText(text);
+                    GitCommandsTextBlock.Inlines.Clear();
+                    GitCommandsTextBlock.Inlines.AddRange(lines);
+                    _semaphore.Release();
+
+                }, DispatcherPriority.Background);             
             });
         }
 
 
 
-        private void AddEventsToInputManager()
-        {
-            // TODO: make close git comands window on click anywhere configurable?
-            InputManager.Current.PreProcessInput += (sender, e) =>
-            {
-                if (e.StagingItem.Input is MouseButtonEventArgs args && args.ClickCount > 0)
-                {
-                    if (_animationController.IsCommandsBarOpen)
-                    {
-                        openCloseGitCommandsBar();
-                    };
-                };
-            };
-        }
-
+        /// <summary>
+        /// Ask _animationController for Width and Height animations
+        /// (if bar closed - opening animation, if open - closing animation
+        /// Start animation
+        /// Update bar text
+        /// </summary>
         private void openCloseGitCommandsBar(object sender = null, EventArgs e = null)
         {
             var animations = _animationController.GetCommandsBarAnimation(GitCommandsButton.ActualHeight, GitCommandsButton.ActualWidth, false);
 
             GitCommandsButton.BeginAnimation(HeightProperty, animations.Height);
             GitCommandsButton.BeginAnimation(WidthProperty, animations.Width);
+
+            UpdateGitBarText();
         }
 
 
+        /// <summary>
+        /// Invokes when view changes 
+        /// Set new minimum Height and Height
+        /// To restrict make window smaller than content
+        /// </summary>
         private const int MarginHeight = 60;
         private const int MarginWidth = 30;
         private const int MenuMinHeight = 130;
@@ -98,6 +115,10 @@ namespace GItClient
         }
 
 
+        /// <summary>
+        /// Internal Window OS command to drag window
+        /// And implements default window behavior (split the screen etc.) 
+        /// </summary>
         [DllImport("user32.dll")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
@@ -118,6 +139,9 @@ namespace GItClient
             }
         }
 
+        /// <summary>
+        /// Maximize and Minimize the window on double click on header
+        /// </summary>
         private void headerControlBar_MouseLeftDoubleClick()
         {
             if (this.WindowState == System.Windows.WindowState.Maximized)

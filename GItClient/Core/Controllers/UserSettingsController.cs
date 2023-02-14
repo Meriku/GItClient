@@ -48,9 +48,9 @@ namespace GItClient.Core.Controllers
         {
             return UserSettings.Directory.Length > 0;
         }
-        private void UpdateUserSettings()
+        private async void UpdateUserSettings()
         {
-            _userSettings = base.GetSpecificSetting();          
+            _userSettings = await base.GetSpecificSetting();          
         }
         private async Task SaveUserSettings(UserSettings userSettings)
         {

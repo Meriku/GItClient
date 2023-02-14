@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Base;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace GItClient.Core.Models
     {
         private PowerShellCommand[] AllCommandsInternal { get; set; }
 
-        public IEnumerable<string> AllCommands
+        internal IEnumerable<string> AllCommands
         {
             get
             {
@@ -92,47 +93,52 @@ namespace GItClient.Core.Models
     }
     internal class PowerShellResponse
     {
-        private const string ERROR_MESSAGE = "Error";
-        internal string Response { get; private set; }
-        internal bool IsError => Response.Contains(ERROR_MESSAGE);
+        internal string Message { get; private set; }
+        internal ResponseType Type { get; private set; }
 
-        internal PowerShellResponse(string response)
+        internal PowerShellResponse(string response, ResponseType type)
         {
-            Response = response;
+            Message = response;
+            Type = type;
         }
     }
     internal class PowerShellResponses
     {
-        private PowerShellResponse[] Responses { get; set; }
-        internal bool IsError => Responses.Any(x => x.IsError);
-        internal string ErrorMessage => GetErrorMessage();
-        public IEnumerable<string> AllResponses
+        private List<PowerShellResponse> Responses { get; set; }
+        internal bool IsError => Responses.Any(x => x.Type == ResponseType.Error);
+
+        internal IEnumerable<PowerShellResponse> AllResponses
         {
             get
             {
                 foreach (var response in Responses)
                 {
-                    yield return response.Response;
+                    yield return response;
                 };
             }
         }
-        internal PowerShellResponses() { }
-        internal PowerShellResponses(PowerShellResponse[] responses)
+        internal PowerShellResponses() { Responses = new List<PowerShellResponse>(); }
+        internal PowerShellResponses(List<PowerShellResponse> responses)
         {
             Responses = responses;
         }
 
-        private string GetErrorMessage()
+        internal void AddResponse(PowerShellResponse newResponse)
         {
-            if (IsError)
-            {
-                return Responses.First(x => x.IsError).ToString();
-            }
-            else
-            {
-                return String.Empty;
-            }
+            Responses.Add(newResponse);
         }
+
     }
+    enum ResponseType
+    {
+        Debug,
+        Error,
+        Information,
+        Progress,
+        Verbose,
+        Warning,
+        Successful
+    }
+
 
 }

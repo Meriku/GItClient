@@ -24,6 +24,6 @@ namespace GItClient.Core.Models
     enum HistoryType
     {
         Request,
-        Response
+        Response,
     }
 }

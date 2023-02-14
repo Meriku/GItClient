@@ -10,6 +10,10 @@ using System.Windows;
 
 namespace GItClient.Core.Convertors
 {
+    /// <summary>
+    /// Calculates text width and trim it
+    /// to fit inside the TexBox
+    /// </summary>
     public static class TextTrimmer
     {
         private const int PADDING_RIGHT = 20;

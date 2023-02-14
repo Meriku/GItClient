@@ -52,38 +52,14 @@ namespace GItClient.MVVM.View.MainView
 
             User_Directory_Box.Text = UserSettings.Directory;
         }
-
-
-        private void checkBox_SimulateGitCommandsChanged(object sender, RoutedEventArgs args)
-        {
-            // TODO: delete, for testing purposes only / Integrate unit testing? 
-            Task.Run(() =>
-            {
-               var counter = 0;
-               while (true)
-               {
-
-                    var gitVersion =  _gitController.GetGitVersionAsync();
-                    counter++;
-
-                    if (counter > 20)
-                    {
-                        return;
-                    }
-
-                    Thread.Sleep(1000);
-                }
-            });
-        }
-
         
-        private void checkBox_ShowGitResponsesChanged(object sender, RoutedEventArgs args)
+        private async void checkBox_ShowGitResponsesChanged(object sender, RoutedEventArgs args)
         {
             // TODO: async
             // TODO: update git bar
             // TODO: show cheked chekboxes if setting = true
             UserSettings.Optional.ShowGitResponses = ((CheckBox)sender).IsChecked ?? false;
-            _userSettingsController.SetAndSaveUserSettings(UserSettings);
+            await _userSettingsController.SetAndSaveUserSettings(UserSettings);
         }
         private void TextBox_SizeChanged(object sender, RoutedEventArgs e)
         {

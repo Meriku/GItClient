@@ -32,9 +32,9 @@ namespace GItClient.Core.Controllers
             return AppSettings.AppVersion;
         }
 
-        private void UpdateAppSettings()
+        private async void UpdateAppSettings()
         {
-            _appSettings = base.GetSpecificSetting();
+            _appSettings = await base.GetSpecificSetting();
         }
 
     }

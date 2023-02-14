@@ -24,19 +24,26 @@ namespace GItClient.Core.Base
         protected ConfigurationBase()
         {
             _semaphore = new SemaphoreSlim(1);
-            _configuration = GetConfiguration();
+            _configuration = GetConfiguration().Result;
         }
 
-        protected Settings GetConfiguration()
+        /// <summary>
+        /// Return cached _configuration if exist
+        /// Or call method to read _configuration from the file
+        /// </summary>
+        protected Task<Settings> GetConfiguration()
         {
-            if (_configuration != null) return _configuration;
+            if (_configuration != null) return Task.FromResult(_configuration);
 
             var readTask = ReadConfiguration();
-            readTask.Wait();
-            _configuration = readTask.Result;
 
-            return _configuration;
+            return readTask;
         }
+
+        /// <summary>
+        /// Write new _configuration to the file
+        /// And update cache
+        /// </summary>
         protected async Task WriteConfiguration(Settings configuration)
         {
             _configuration = configuration;
@@ -56,6 +63,12 @@ namespace GItClient.Core.Base
                 _semaphore.Release();
             }
         }
+
+        /// <summary>
+        /// Read _configuration from the file
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"> Incorrect appsettings.json </exception>
         private async Task<Settings> ReadConfiguration()
         {
             var appsettings = string.Empty;
@@ -78,8 +91,8 @@ namespace GItClient.Core.Base
 
             if (settings == null || settings.AppSettings == null || settings.UserSettings == null)
             {
-                _logger.LogError("Incorect appsettings.json file.");
-                throw new Exception("Incorect appsettings file.");
+                _logger.LogError("Incorrect appsettings.json file.");
+                throw new Exception("Incorrect appsettings file.");
             }               
 
             return settings;

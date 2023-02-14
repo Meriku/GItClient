@@ -135,9 +135,9 @@
                     Style="{StaticResource GitCommandsBarStyle}"
                     Click="openCloseGitCommandsBar">
 
-
-      
-                <TextBlock 
+                <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                              IsHitTestVisible="False">
+                    <TextBlock 
                     Name="GitCommandsTextBlock"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
@@ -145,7 +145,10 @@
                     Width="Auto"
                     FontSize="13"
                     Foreground="White"
-                    Margin="20,4,0,3"/>
+                    Margin="20,4,0,3"
+                    />
+                </ScrollViewer>
+
 
                 <!--Text="{Binding LastGitCommand}"-->
 

@@ -10,7 +10,7 @@ namespace GItClient.Core.Controllers
 {
     class TextController
     {
-        internal Inline[] GetInlines(string[] text)
+        internal Inline[] GetInlinesFromText(string[] text)
         {
             var result = new List<Inline>();
             foreach (var line in text)
@@ -25,6 +25,18 @@ namespace GItClient.Core.Controllers
             return result.ToArray();
         }
 
+        internal Run[] GetInlineFromText(string text)
+        {
+            var result = new List<Run>();
+            var words = text.Split(' ');
+            for (var i = 0; i < words.Length; i++)
+            {
+                result.Add(FormatByPattern(words[i], i));
+            }
+            result.Add(new Run("\n"));
+            
+            return result.ToArray();
+        }
 
         private Run FormatByPattern(string word, int index)
         {

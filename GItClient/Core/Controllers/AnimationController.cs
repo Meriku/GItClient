@@ -5,12 +5,15 @@ using System.Windows.Media.Animation;
 
 namespace GItClient.Core.Controllers
 {
+    /// <summary>
+    /// Creates all animation for WPF
+    /// MaxCommandsBar Height and Width calculates using wax window size
+    /// </summary>
     internal class AnimationController
     {
         private const double MinCommandsBarHeight = 30;
         private const double MinCommandsBarWidth = 250;
-
-
+        
         private double MaxCommandsBarHeight { get { return Application.Current.MainWindow.ActualHeight / 1.80; } }
         private double MaxCommandsBarWidth { get { return Application.Current.MainWindow.ActualWidth / 1.80; } }
 

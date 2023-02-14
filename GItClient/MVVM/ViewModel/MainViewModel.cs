@@ -19,23 +19,9 @@ namespace GItClient.MVVM.ViewModel
 
         public UserInfoViewModel UserInfoVM { get; set; }
 
-        private GitController _gitController;
-        private AnimationController _animationController;
-
         private object _currentView;
         private object _currentMenu;
         private object _previousView;
-
-        private string _lastGitCommand;
-        public string LastGitCommand
-        {
-            get { return _lastGitCommand; }
-            set
-            {
-                _lastGitCommand = value;
-                OnPropertyChanged();
-            }
-        }
 
         public object CurrentView
         {
@@ -59,12 +45,6 @@ namespace GItClient.MVVM.ViewModel
 
         public MainViewModel() 
         {
-            _gitController = ControllersProvider.GetGitController();
-            _animationController = ControllersProvider.GetAnimationController();
-
-            WeakReferenceMessenger.Default.Register<UpdateGitHistoryMessage>(this, (r, m) =>
-            { LastGitCommand = GetGitHistoryForBar(); });
-
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>
             { CurrentView = m.Value; });
 
@@ -84,19 +64,5 @@ namespace GItClient.MVVM.ViewModel
                 }  
             });               
         }
-
-        private string GetGitHistoryForBar()
-        {
-            if (_animationController.IsCommandsBarOpen)
-            {
-                return string.Join('\n', _gitController.GetFormattedCommandsHistory(10));
-            }
-            else
-            {
-                return string.Join('\n', _gitController.GetFormattedCommandsHistory(1));
-            }
-        }
-
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace GItClient.Core.Models
 {
@@ -9,7 +10,6 @@ namespace GItClient.Core.Models
         private CircularListItem<T> Head { get; set; }
         private int MaxCount { get; set; }
         public int Count { get; set; }
-
 
         public CircularList(int count) 
         {
@@ -63,9 +63,6 @@ namespace GItClient.Core.Models
                     currentItem = currentItem.Next;
                 }
             }
-
-
-
         }
 
         public IEnumerator GetEnumerator()
@@ -85,7 +82,7 @@ namespace GItClient.Core.Models
             {
                 yield return current.Data;
                 current = current.Previous;
-            }
+            }        
         }
     }
 

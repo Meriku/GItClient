@@ -2,20 +2,23 @@
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GItClient.Core.Base
 {
     internal class GitControllerBase : PowerShellBase
     {
-        private const int COMMANDS_HISTORY_LENGHT = 25;
         private CircularList<HistoryElement>? _gitHistory;
-        protected CircularList<HistoryElement> GitHistory
+        private CircularList<HistoryElement> GitHistory
         {
             get
             {
@@ -28,35 +31,97 @@ namespace GItClient.Core.Base
         
         private ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
 
+        private UserSettings UserSettings { get; set; }
+
+        private UserSettingsController _userSettingsController;
+
+        protected GitControllerBase()
+        {
+            _userSettingsController = ControllersProvider.GetUserSettingsController();
+            base.DataAdded += AddResponseToHistory;
+        }
+
+        /// <summary>
+        /// Call method to add command to history and update UI
+        /// Call base method to execute command
+        /// Return result
+        /// </summary>
+        /// <param name="commands">Commands to execute</param>
+        /// <returns></returns>
         protected async Task<PowerShellResponses> ExecuteAndInformUIAsync(PowerShellCommands commands)
         {
+            AddRequestToHistory(commands);
+
             var result = await Execute(commands);
-
-            LogGitCommands(commands);
-            LogGitCommandsResult(result);
-
-            WeakReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(1));
 
             return result;
         }
 
-        private void LogGitCommands(PowerShellCommands requests)
+
+        /// <summary>
+        /// Adds response to the history (circular list)
+        /// and sends message to update UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="responses"></param>
+        private void AddResponseToHistory(object? sender, PowerShellResponses responses)
+        {
+            if (sender == null) return;
+
+            foreach (var response in responses.AllResponses)
+            {
+                GitHistory.Add(new HistoryElement(response.Message, HistoryType.Response));
+                _logger.LogDebug("Received Git Response: " + response.Message);
+            }
+            StrongReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(0));
+        }
+
+        /// <summary>
+        /// Adds request to the history (circular list)
+        /// and sends message to update UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="responses"></param>
+        private void AddRequestToHistory(PowerShellCommands requests)
         {
             foreach (var request in requests.AllCommands)
             {
                 GitHistory.Add(new HistoryElement(request, HistoryType.Request));
                 _logger.LogDebug("Executed Git Command: " + request);
-            }                  
-        }
-
-        private void LogGitCommandsResult(PowerShellResponses result)
-        {
-            foreach (var response in result.AllResponses)
-            {
-                GitHistory.Add(new HistoryElement(response, HistoryType.Response));
-                _logger.LogDebug("Git Response: " + response);
             }
+            StrongReferenceMessenger.Default.Send(new UpdateGitHistoryMessage(0));
         }
 
+        /// <summary>
+        /// Using UserSettings, returns git history with responses or not
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        internal Task<string[]> GetFormattedCommandsHistory(int count = 1)
+        {
+            UserSettings = _userSettingsController.GetUserSettings();
+
+            var result = new List<string>(count);
+
+            foreach (var command in GitHistory.GetReversed())
+            {
+                switch(command.Type)
+                {
+                    case HistoryType.Request:
+                        result.Add(command.DateTime.ToString("T") + " " + command.Value);
+                        break;
+                    case HistoryType.Response:
+                        if (UserSettings.Optional.ShowGitResponses) { result.Add(command.DateTime.ToString("T") + " " + command.Value); }
+                        break;
+                }
+
+                if (result.Count >= count)
+                {
+                    return Task.FromResult(result.ToArray());
+                }
+            }
+
+            return Task.FromResult(result.ToArray());
+        }
     }
 }

@@ -17,29 +17,26 @@ namespace GItClient.Core.Controllers
 {
     internal class GitController : GitControllerBase
     {
-        private UserSettings UserSettings { get; set; }
-
-        private UserSettingsController _userSettingsController; 
-
         protected string? _gitVersion;
-
-        internal GitController()
-        {
-            _userSettingsController = ControllersProvider.GetUserSettingsController();
-        }
 
         internal async Task<string> GetGitVersionAsync()
         {
-            //if (_gitVersion != null) return _gitVersion;
+            if (_gitVersion != null) return _gitVersion;
 
             var request = new PowerShellCommands();
             request.AddCommand(CommandsPowerShell.git_Version);
 
-            var results = await Execute(request);
-            _gitVersion = ParseVersion(results.AllResponses.First() ?? "Error");
-            // TODO: retry if Error? 
+            var results = await ExecuteAndInformUIAsync(request);
+
+            _gitVersion = ParseVersion(results); 
 
             return _gitVersion;  
+        }
+
+        private string ParseVersion(PowerShellResponses input)
+        {
+            if (!input.AllResponses.Any()) { return "Error"; }
+            return input.AllResponses.First().Message[12..];
         }
 
         internal async Task<bool> InitRepositoryAsync(string directory)
@@ -55,9 +52,9 @@ namespace GItClient.Core.Controllers
         internal async Task<bool> CloneRepositoryAsync(string directory, string link)
         {
             var request = new PowerShellCommands();
-            request.AddCommand(CommandsPowerShell.git_Clone, new string[] {link, directory});
+            request.AddCommand(CommandsPowerShell.git_Clone, new string[] { "--progress", link, directory});
 
-            var results = await Execute(request);
+            var results = await ExecuteAndInformUIAsync(request);
 
             return results.IsError;
         }
@@ -68,44 +65,9 @@ namespace GItClient.Core.Controllers
             request.AddCommand(CommandsPowerShell.cd, directory);
             request.AddCommand(CommandsPowerShell.md, folderName);
 
-            var results = await Execute(request);
+            var results = await ExecuteAndInformUIAsync(request);
             return results.IsError;
         }
-
-        internal string[] GetFormattedCommandsHistory(int count)
-        {
-            UserSettings = _userSettingsController.GetUserSettings();
-
-            var result = new List<string>(count);
-
-            foreach(var command in GitHistory.GetReversed())
-            {
-                if (command.Type == HistoryType.Response)
-                {
-                    if (UserSettings.Optional.ShowGitResponses)
-                    {
-                        result.Add(command.DateTime.ToString("T") + " " + command.Value + " \n");
-                    }
-                }
-                else
-                {
-                    result.Add(command.DateTime.ToString("T") + " " + command.Value + " \n");
-                }  
-
-                if (result.Count >= count)
-                {
-                    return result.ToArray();
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        private string ParseVersion(string input)
-        {
-            return input[12..];
-        }
-
     }
 
 

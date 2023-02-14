@@ -10,12 +10,13 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Windows.Shapes;
 using GItClient.Core.Base;
+using GItClient.Core.Controllers;
+using Microsoft.Extensions.Logging;
 
 namespace GItClient.Core
 {
     internal static class Helper
     {
-
         private const int MAX_TEXT_LENGTH = 25;
         /// <summary>
         /// Trim text to const lenght
