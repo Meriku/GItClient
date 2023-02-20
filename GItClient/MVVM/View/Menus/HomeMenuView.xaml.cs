@@ -29,6 +29,17 @@ namespace GItClient.MVVM.View.Menus
             InitializeComponent();
         }
 
+        //TODO: temp on this button
+        
+
+        private void button_ViewRepos(object sender, RoutedEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new CommitsHistoryViewModel()));
+        }
+        private void button_OpenRepo(object sender, RoutedEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new CommitsHistoryViewModel()));
+        }
         private void button_InitRepo(object sender, RoutedEventArgs e)
         {
             WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new InitRepoViewModel()));

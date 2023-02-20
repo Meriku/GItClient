@@ -45,7 +45,12 @@
             </MenuItem>
             
             <MenuItem Header="Open"
-                      Template="{StaticResource Item_Template}">
+                      Template="{StaticResource Item_Template}"
+                      Click="button_OpenRepo">
+            </MenuItem>
+            <MenuItem Header="View"
+                      Template="{StaticResource Item_Template}"
+                      Click="button_ViewRepos">
             </MenuItem>
         </MenuItem>
 

@@ -5,6 +5,7 @@
              xmlns:viewModel="clr-namespace:GItClient.MVVM.ViewModel"
              xmlns:mainViews="clr-namespace:GItClient.MVVM.View.MainView"
              xmlns:menuViews="clr-namespace:GItClient.MVVM.View.Menus"
+             xmlns:partialViews="clr-namespace:GItClient.MVVM.View.PartialView"
              StartupUri="MainWindow.xaml">
     
     <Application.Resources>
@@ -30,6 +31,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:CloneRepoViewModel}">
                 <mainViews:CloneRepoView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:CommitsHistoryViewModel}">
+                <mainViews:CommitsHistoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:CommitsHistoryPartialViewModel}">
+                <partialViews:CommitsHistoryPartialView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
                 <menuViews:HomeMenuView/>
