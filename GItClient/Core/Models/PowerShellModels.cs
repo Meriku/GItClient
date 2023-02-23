@@ -36,6 +36,7 @@ namespace GItClient.Core.Models
             command = _command;
             arguments = _argument != null ? new string[1] { _argument } : System.Array.Empty<string>();
 
+
             Command = command.ToPWString();
             foreach (var arg in arguments)
             {
@@ -46,6 +47,7 @@ namespace GItClient.Core.Models
     internal class PowerShellCommands
     {
         private PowerShellCommand[] AllCommandsInternal { get; set; }
+        public bool InternalUsage { get; private set; }
 
         internal IEnumerable<string> AllCommands
         {
@@ -60,8 +62,9 @@ namespace GItClient.Core.Models
 
         private int LastCommandIndex;
 
-        internal PowerShellCommands(int count = 1)
+        internal PowerShellCommands(int count = 1, bool internalUsage = false)
         {
+            InternalUsage = internalUsage;
             AllCommandsInternal = new PowerShellCommand[count];
             LastCommandIndex = 0;
         }

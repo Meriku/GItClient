@@ -6,9 +6,7 @@
              xmlns:local="clr-namespace:GItClient.MVVM.View.MainView"
              xmlns:viewModel="clr-namespace:GItClient.MVVM.ViewModel" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             MouseRightButtonDown="Button_RemoveRepos_Click"
-             MouseLeftButtonDown="Button_AddRepos_Click">
+             d:DesignHeight="450" d:DesignWidth="800">
     
     
     <Grid x:Name="MainGrid">
@@ -34,13 +32,20 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <ContentControl 
-                Name="MainContentControl" 
+            <Border 
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="10"
+                CornerRadius="10"
+                Opacity="1"
+                Background="#22202f">
+
+                <ContentControl 
+                Name="MainContentControl" 
                 HorizontalContentAlignment="Center"
                 Content="{Binding CurrentView}"/>
+                
+            </Border>
+
 
         </Grid>
 

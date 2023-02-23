@@ -38,7 +38,7 @@ namespace GItClient.MVVM.View.Menus
         }
         private void button_OpenRepo(object sender, RoutedEventArgs e)
         {
-            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new CommitsHistoryViewModel()));
+            WeakReferenceMessenger.Default.Send(new MainViewChangedMessage(new OpenRepoViewModel()));
         }
         private void button_InitRepo(object sender, RoutedEventArgs e)
         {

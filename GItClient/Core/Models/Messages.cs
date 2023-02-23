@@ -33,4 +33,11 @@ namespace GItClient.Core.Models
         {
         }
     }
+
+    public class LoadCommitsMessage : ValueChangedMessage<Repository>
+    {
+        public LoadCommitsMessage(Repository repository) : base(repository)
+        {
+        }
+    }
 }

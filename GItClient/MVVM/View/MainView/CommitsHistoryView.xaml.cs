@@ -1,6 +1,11 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core.Controllers;
+using GItClient.Core.Models;
+using GItClient.MVVM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,64 +20,108 @@ using System.Windows.Shapes;
 
 namespace GItClient.MVVM.View.MainView
 {
+
     /// <summary>
-    /// Interaction logic for CommitsHistoryView.xaml
+    /// This is main view, 
+    /// this class resposible for tabs
+    /// All commits history is displayed in 
+    /// CommitsHistoryPartialView
     /// </summary>
     public partial class CommitsHistoryView : UserControl
     {
+        private GitController _gitController;
+        private RepositoriesController _repositoriesController;
+
         private int ActiveRepos = 0;
 
         public CommitsHistoryView()
         {
-
+            // TODO: add close buttons for tabs
             InitializeComponent();
 
+            _gitController = ControllersProvider.GetGitController();
+            _repositoriesController = ControllersProvider.GetRepositoriesController();
 
+            AddRepositoryTabs();
 
         }
 
-        private void UpdateMainGrid()
+        private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
-            for (var i = 0; i < MainGrid.ColumnDefinitions.Count; i++)
-            {
-                if (i < ActiveRepos)
-                {
-                    MainGrid.ColumnDefinitions[i].MinWidth = 50;
-                    MainGrid.ColumnDefinitions[i].Width = new GridLength(0, GridUnitType.Auto);
-                }
-                else
-                {
-                    MainGrid.ColumnDefinitions[i].MinWidth = 0;
-                    MainGrid.ColumnDefinitions[i].Width = new GridLength(0, GridUnitType.Pixel);
-                }
-            }
+            var repoName = ((Button)sender).Content.ToString();
+            var repo = _repositoriesController.GetSpecificRepository(repoName);
+            WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(repo));
+
         }
 
-        private void Button_AddRepos_Click(object sender, MouseButtonEventArgs e)
+
+        private void AddRepositoryTabs()
+        {
+            var repositories = _repositoriesController.GetAllOpenRepositories();
+
+            if (repositories.Length == 0)
+            {
+                AddWelcomeRepositoryTab();
+                return;
+            }
+
+            foreach (var repository in repositories)
+            {
+                AddRepositoryTab(repository);
+            }
+
+        }
+
+        private void AddRepositoryTab(Repository repository)
         {
             MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
+            Random random = new Random();
+            var color = Color.FromRgb((byte)random.Next(100, 200), (byte)random.Next(100, 200), (byte)random.Next(100, 200));
 
-            Random random = new Random();     
-            var color = Color.FromRgb( (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255) );
+            var button = new Button();
+            button.Background = new SolidColorBrush(color);
+            button.Content = repository.GenName;
 
-            var border = new Border();
-            border.Background = new SolidColorBrush(color);
+            button.Click += button_Repository_Click;
 
-            MainGrid.Children.Add(border);
-            Grid.SetRow(border, 0);
-            Grid.SetColumn(border, ActiveRepos);
+            MainGrid.Children.Add(button);
+            Grid.SetRow(button, 0);
+            Grid.SetColumn(button, ActiveRepos);
 
             ActiveRepos++;
         }
 
+
+        private void AddWelcomeRepositoryTab()
+        {
+            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            Random random = new Random();
+            var color = Color.FromRgb((byte)random.Next(100, 200), (byte)random.Next(100, 200), (byte)random.Next(100, 200));
+
+            var button = new Button();
+            button.Background = new SolidColorBrush(color);
+            button.Content = "Welcome!";
+
+            MainGrid.Children.Add(button);
+            Grid.SetRow(button, 0);
+            Grid.SetColumn(button, ActiveRepos);
+
+            //TODO: do not need to send repo
+            WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(new Repository()));
+        }
+
+
         private void Button_RemoveRepos_Click(object sender, MouseButtonEventArgs e)
         {
-            if (MainGrid.ColumnDefinitions.Any())
-            {
-                MainGrid.ColumnDefinitions.Remove(MainGrid.ColumnDefinitions.Last());
-                ActiveRepos--;
-            }
+            // TODO: interaction logic when press close button on the tab
+
+            //if (MainGrid.ColumnDefinitions.Any())
+            //{
+            //    MainGrid.ColumnDefinitions.Remove(MainGrid.ColumnDefinitions.Last());
+            //    ActiveRepos--;
+            //}
         }
 
     }

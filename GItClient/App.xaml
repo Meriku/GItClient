@@ -32,6 +32,9 @@
             <DataTemplate DataType="{x:Type viewModel:CloneRepoViewModel}">
                 <mainViews:CloneRepoView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:OpenRepoViewModel}">
+                <mainViews:OpenRepoView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:CommitsHistoryViewModel}">
                 <mainViews:CommitsHistoryView/>
             </DataTemplate>

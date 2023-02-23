@@ -11,6 +11,7 @@
         private static GitController? _gitController;
         private static TextController? _textController;
         private static DirectoryController? _directoryController;
+        private static RepositoriesController? _repositoriesController;
         public static UserSettingsController GetUserSettingsController()
         {
             _userSettingsController ??= new UserSettingsController();
@@ -36,6 +37,11 @@
         {
             _directoryController ??= new DirectoryController();
             return _directoryController;
+        }
+        public static RepositoriesController GetRepositoriesController()
+        {
+            _repositoriesController ??= new RepositoriesController();
+            return _repositoriesController;
         }
         public static GitController GetGitController()
         {

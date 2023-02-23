@@ -65,7 +65,8 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Open_Click(object sender, RoutedEventArgs e)
         {
-            //_gitController.InitRepositoryAsync(UserSettings.Directory);
+            // TODO: show info that repo is already added
+            _gitController.OpenRepository(UserSettings.Directory);
         }
     }
 }

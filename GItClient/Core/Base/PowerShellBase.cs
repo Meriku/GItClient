@@ -29,23 +29,27 @@ namespace GItClient.Core.Base
             try
             {
                 return await Task.Run(async () =>
-                { 
+                {
                     using PowerShell powershell = PowerShell.Create();
+
                     foreach (var command in commands.AllCommands)
                     {
                         powershell.AddScript(command);
                     }
 
-                    powershell.Streams.Debug.DataAdded += PowerShell_DataAdded;
-                    powershell.Streams.Error.DataAdded += PowerShell_DataAdded;
-                    powershell.Streams.Information.DataAdded += PowerShell_DataAdded;
-                    powershell.Streams.Progress.DataAdded += PowerShell_DataAdded;
-                    powershell.Streams.Verbose.DataAdded += PowerShell_DataAdded;
-                    powershell.Streams.Warning.DataAdded += PowerShell_DataAdded;
-                   
+                    if (!commands.InternalUsage)
+                    {
+                        powershell.Streams.Debug.DataAdded += PowerShell_DataAdded;
+                        powershell.Streams.Error.DataAdded += PowerShell_DataAdded;
+                        powershell.Streams.Information.DataAdded += PowerShell_DataAdded;
+                        powershell.Streams.Progress.DataAdded += PowerShell_DataAdded;
+                        powershell.Streams.Verbose.DataAdded += PowerShell_DataAdded;
+                        powershell.Streams.Warning.DataAdded += PowerShell_DataAdded;
+                    }
+  
                     var responses = await powershell.InvokeAsync();
 
-                    return ParseResponse(responses);
+                    return ParseResponse(responses, commands);
                 });
             }
             catch (Exception e)
@@ -61,7 +65,7 @@ namespace GItClient.Core.Base
         /// </summary>
         /// <param name="PSObjects"></param>
         /// <returns></returns>
-        private PowerShellResponses ParseResponse(PSDataCollection<PSObject> PSObjects)
+        private PowerShellResponses ParseResponse(PSDataCollection<PSObject> PSObjects, PowerShellCommands commands)
         {
             if (ErrorResponse != null) { return new PowerShellResponses(ErrorResponse); }
 
@@ -70,9 +74,19 @@ namespace GItClient.Core.Base
             var result = new List<PowerShellResponse>();
             for (var i = 0; i < PSObjects.Count; i++)
             {
-                result.Add(new PowerShellResponse(PSObjects[i].ToString(), ResponseType.Successful));
+                if (!string.IsNullOrWhiteSpace(PSObjects[i].ToString()))
+                {
+                    result.Add(new PowerShellResponse(PSObjects[i].ToString().Trim(), ResponseType.Successful));
+                }
+                
             }
-            InformUI(result);
+
+            if (!commands.InternalUsage)
+            {
+                InformUI(result);
+            }
+
+
             return new PowerShellResponses(result);
         }
 
@@ -141,6 +155,7 @@ namespace GItClient.Core.Base
         md,
         git_Version,
         git_Init,
-        git_Clone
+        git_Clone,
+        git_Log
     }
 }
