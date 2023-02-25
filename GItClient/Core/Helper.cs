@@ -69,6 +69,13 @@ namespace GItClient.Core
             return command.ToString().ToLower().Replace('_', ' ');
         }
 
+        public static Color GetRandomColor()
+        {
+            Random random = new Random();
+            var color = Color.FromRgb((byte)random.Next(50, 200), (byte)random.Next(50, 200), (byte)random.Next(50, 200));
+            return color;
+        }
+
     }
 
 

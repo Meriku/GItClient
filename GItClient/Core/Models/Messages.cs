@@ -27,17 +27,11 @@ namespace GItClient.Core.Models
         }
     }
 
-    public class RepositoryChangedMessage : ValueChangedMessage<Repository>
+    public class RepositoryChangedMessage : ValueChangedMessage<string>
     {
-        public RepositoryChangedMessage(Repository repository) : base(repository)
+        public RepositoryChangedMessage(string repositoryName) : base(repositoryName)
         {
         }
     }
 
-    public class LoadCommitsMessage : ValueChangedMessage<Repository>
-    {
-        public LoadCommitsMessage(Repository repository) : base(repository)
-        {
-        }
-    }
 }

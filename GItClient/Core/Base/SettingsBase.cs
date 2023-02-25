@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Models;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Threading.Tasks;
 
@@ -28,6 +29,9 @@ namespace GItClient.Core.Base
                 case "AppSettings":
                     result = (T)(ISetting)_configuration.AppSettings;
                     break;
+                case "RepositorySettings":
+                    result = (T)(ISetting)_configuration.RepositorySettings;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -45,6 +49,9 @@ namespace GItClient.Core.Base
                     break;
                 case "AppSettings":
                     _configuration.AppSettings = (AppSettings)(ISetting)setting;
+                    break;
+                case "RepositorySettings":
+                    _configuration.RepositorySettings = (RepositorySettings)(ISetting)setting;
                     break;
                 default:
                     throw new NotImplementedException();

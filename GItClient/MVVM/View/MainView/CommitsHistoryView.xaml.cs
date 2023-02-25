@@ -1,22 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
-using GItClient.MVVM.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GItClient.MVVM.View.MainView
 {
@@ -29,31 +20,37 @@ namespace GItClient.MVVM.View.MainView
     /// </summary>
     public partial class CommitsHistoryView : UserControl
     {
-        private GitController _gitController;
         private RepositoriesController _repositoriesController;
 
-        private int ActiveRepos = 0;
+        private Button ActiveButton;
 
         public CommitsHistoryView()
         {
             // TODO: add close buttons for tabs
             InitializeComponent();
 
-            _gitController = ControllersProvider.GetGitController();
             _repositoriesController = ControllersProvider.GetRepositoriesController();
 
             AddRepositoryTabs();
-
         }
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
-            var repoName = ((Button)sender).Content.ToString();
-            var repo = _repositoriesController.GetSpecificRepository(repoName);
-            WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(repo));
+            ActiveButton.Background.Opacity = 0.6;
 
+            var pressedButton = ((Button)sender);
+            ActiveButton = pressedButton;
+            var repoName = ActiveButton.Content.ToString();
+            ActiveButton.Background.Opacity = 1;
+
+            ChangeCurrentRepositoryAndUpdateUI(repoName);
         }
 
+        private void ChangeCurrentRepositoryAndUpdateUI(string repoName)
+        {
+            _repositoriesController.SetCurrentRepository(repoName);
+            WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(repoName));
+        }
 
         private void AddRepositoryTabs()
         {
@@ -61,57 +58,46 @@ namespace GItClient.MVVM.View.MainView
 
             if (repositories.Length == 0)
             {
-                AddWelcomeRepositoryTab();
+                AddRepositoryTab(null, 0);
                 return;
             }
 
-            foreach (var repository in repositories)
+            for (var i = 0; i < repositories.Length; i++)
             {
-                AddRepositoryTab(repository);
+                AddRepositoryTab(repositories[i], i);
+            }
+        }
+
+        private void AddRepositoryTab(Repository? repository, int index)
+        {
+            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            var button = GenerateButton();
+
+            if (repository == null)
+            {
+                button.Content = "Welcome!";
+                button.Background = new SolidColorBrush(Color.FromArgb(255, 49, 43, 64));
+            }
+            else
+            {
+                button.Content = repository.GenName;
+                button.Background = new SolidColorBrush(repository.Color);
+                button.Background.Opacity = 0.6;
+
+                if (repository.Active)
+                { 
+                    button.Background.Opacity = 1;
+                    ActiveButton = button;
+                }
+
+                button.Click += button_Repository_Click;
             }
 
-        }
-
-        private void AddRepositoryTab(Repository repository)
-        {
-            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            Random random = new Random();
-            var color = Color.FromRgb((byte)random.Next(100, 200), (byte)random.Next(100, 200), (byte)random.Next(100, 200));
-
-            var button = new Button();
-            button.Background = new SolidColorBrush(color);
-            button.Content = repository.GenName;
-
-            button.Click += button_Repository_Click;
-
             MainGrid.Children.Add(button);
             Grid.SetRow(button, 0);
-            Grid.SetColumn(button, ActiveRepos);
-
-            ActiveRepos++;
+            Grid.SetColumn(button, index);
         }
-
-
-        private void AddWelcomeRepositoryTab()
-        {
-            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            Random random = new Random();
-            var color = Color.FromRgb((byte)random.Next(100, 200), (byte)random.Next(100, 200), (byte)random.Next(100, 200));
-
-            var button = new Button();
-            button.Background = new SolidColorBrush(color);
-            button.Content = "Welcome!";
-
-            MainGrid.Children.Add(button);
-            Grid.SetRow(button, 0);
-            Grid.SetColumn(button, ActiveRepos);
-
-            //TODO: do not need to send repo
-            WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(new Repository()));
-        }
-
 
         private void Button_RemoveRepos_Click(object sender, MouseButtonEventArgs e)
         {
@@ -122,6 +108,14 @@ namespace GItClient.MVVM.View.MainView
             //    MainGrid.ColumnDefinitions.Remove(MainGrid.ColumnDefinitions.Last());
             //    ActiveRepos--;
             //}
+        }
+
+        private Button GenerateButton()
+        {
+            var button = new Button();
+            button.BorderThickness = new Thickness(0);
+            button.Margin= new Thickness(0,0,5,0);
+            return button;
         }
 
     }

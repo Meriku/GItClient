@@ -17,6 +17,7 @@ namespace GItClient.Core.Models
     {
         public AppSettings? AppSettings { get; set; }
         public UserSettings? UserSettings { get; set; }
+        public RepositorySettings RepositorySettings { get; set; }
 
         public Settings() { }
     }
@@ -64,4 +65,18 @@ namespace GItClient.Core.Models
         public bool two { get; set; }
         public bool three { get; set; }
     }
+
+    public class RepositorySettings : ISetting
+    {
+        public RepositoryImage[] ActiveRepositories { get; set; }
+
+        public RepositorySettings() { }
+        public RepositorySettings(RepositoryImage[] repos) 
+        { 
+            ActiveRepositories = repos;
+        }
+
+    }
+
+
 }

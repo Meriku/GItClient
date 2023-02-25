@@ -40,7 +40,7 @@ namespace GItClient.Core.Controllers
 
             return _gitVersion;  
         }
-        internal async Task<GitCommits> GetGitHistoryAsync(Repository repository)
+        internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
@@ -50,7 +50,7 @@ namespace GItClient.Core.Controllers
 
             var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
 
-            return result;
+            return result.Commits;
         }
 
         private string ParseVersion(PowerShellResponses input)
@@ -68,7 +68,8 @@ namespace GItClient.Core.Controllers
 
             if (!results.IsError)
             {
-                AddRepositoryToController(directory);
+                var repo = new Repository(directory);
+                _repositoriesController.AddRepository(repo);
             }
 
             return results.IsError;         
@@ -86,7 +87,9 @@ namespace GItClient.Core.Controllers
             //{
             //    AddRepositoryToController(directory);
             //}
-            AddRepositoryToController(directory);
+
+            var repo = new Repository(directory);
+            _repositoriesController.AddRepository(repo);
 
             return results.IsError;
         }
@@ -103,33 +106,10 @@ namespace GItClient.Core.Controllers
 
         internal bool OpenRepository(string directory)
         {
-            AddRepositoryToController(directory);
+            var repo = new Repository(directory);
+            _repositoriesController.AddRepository(repo);
 
             return true;
-        }
-
-        private void AddRepositoryToController(string directory)
-        {
-            Task.Run( async () => 
-            {
-                var repo = new Repository();
-                repo.Path = directory;
-                _repositoriesController.AddRepository(repo);
-
-                repo.CommitsHolder.IsLoading = true;
-
-                //TODO: try catch? 
-                await repo.CommitsHolder.semaphore.WaitAsync();
-                var commits = await GetGitHistoryAsync(repo);
-
-                Thread.Sleep(10000);
-                repo.CommitsHolder.Commits = commits.Commits;
-                repo.CommitsHolder.semaphore.Release();
-
-                repo.CommitsHolder.IsLoading = false;
-                _repositoriesController.UpdateRepository(repo);
-
-            });
         }
 
     }

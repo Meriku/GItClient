@@ -11,7 +11,7 @@ namespace GItClient.Core.Models
     public class GitCommit
     {
         public string CommitHash { get; set; }
-        public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[7..13];
+        public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[7..14];
         public string Author { get; set; }
         public string Date { get; set; }
         public string Empty1 { get; set; }
@@ -30,10 +30,10 @@ namespace GItClient.Core.Models
         public int Lenght => Commits.Length;
 
         public bool IsError { get; set; }
-        public bool IsLoading { get; set; }
+        public bool IsLoading => semaphore.CurrentCount == 0;
         public bool IsEmpty => Commits.Length == 0;
 
-        public readonly SemaphoreSlim semaphore;
+        private readonly SemaphoreSlim semaphore;
 
         public GitCommits(List<GitCommit> commits)
         {
@@ -52,6 +52,15 @@ namespace GItClient.Core.Models
             {
                 yield return commit;
             }
+        }
+
+        public async Task WaitAsync()
+        {
+            await semaphore.WaitAsync();
+        }
+        public void Release()
+        {
+            semaphore.Release();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

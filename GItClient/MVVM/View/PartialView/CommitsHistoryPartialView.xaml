@@ -6,9 +6,20 @@
              xmlns:local="clr-namespace:GItClient.MVVM.View.PartialView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+
     
-    <Grid Name="MainGrid">
+    <ScrollViewer>
+        <Grid Name="MainGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  Name="Graph"/>
+                <ColumnDefinition Width="*"  Name="Hash"/>
+                <ColumnDefinition Width="5*" Name="Message"/>
+                <ColumnDefinition Width="2*" Name="Author"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+    </ScrollViewer>
 
-
-    </Grid>
+        
+        
 </UserControl>

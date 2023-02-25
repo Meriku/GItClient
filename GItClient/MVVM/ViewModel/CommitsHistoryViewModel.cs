@@ -28,16 +28,9 @@ namespace GItClient.MVVM.ViewModel
 
         public CommitsHistoryViewModel()
         {
-
-            //var repo = new Repository();
-            //repo.Path = "C:\\Users\\Myroslav\\source\\repos\\WebPage_Online-Pizzeria";
-
-            //CurrentView = new CommitsHistoryPartialViewModel();
-
+            // TODO: implemeted custom views now
+            // will be needed in future
             CurrentView = new CommitsHistoryPartialViewModel();
-
-            WeakReferenceMessenger.Default.Register<RepositoryChangedMessage>(this, (r, m) =>
-            { CurrentView = new CommitsHistoryPartialViewModel(); });
         }
 
     }
