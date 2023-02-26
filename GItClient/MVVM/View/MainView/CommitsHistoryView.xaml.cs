@@ -36,9 +36,15 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
+            var pressedButton = ((Button)sender);
+
+            if (ActiveButton == pressedButton)
+            {
+                return;
+            }
+
             ActiveButton.Background.Opacity = 0.6;
 
-            var pressedButton = ((Button)sender);
             ActiveButton = pressedButton;
             var repoName = ActiveButton.Content.ToString();
             ActiveButton.Background.Opacity = 1;

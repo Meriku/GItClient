@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using GItClient.MVVM.Assets;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,9 +19,13 @@ namespace GItClient.MVVM.View.PartialView
     {
         private RepositoriesController _repositoriesController;
 
+        private const string EMPTY_REPOSITORIES_TEXT = "It's curently empty here :( \nInit, clone or open a new repository";
+
+
         public CommitsHistoryPartialView()
         {
             // TODO: ScrollViewer design
+
             InitializeComponent();
 
             _repositoriesController = ControllersProvider.GetRepositoriesController();
@@ -70,9 +77,9 @@ namespace GItClient.MVVM.View.PartialView
 
             var textblock = new TextBlock();
 
-            textblock.Text = "It's curently empty here :( \nInit, clone or open a new repository";
+            textblock.Text = EMPTY_REPOSITORIES_TEXT;
             textblock.Margin = new Thickness(10);
-            textblock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+            textblock.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             textblock.FontSize = 15;
             textblock.Height = 50;
             textblock.HorizontalAlignment = HorizontalAlignment.Center;
@@ -85,28 +92,29 @@ namespace GItClient.MVVM.View.PartialView
 
         private void RenderWaitingView(Repository currentRepository)
         {
-            var row = new RowDefinition();
-            row.Height = new GridLength(60);
+            var spinner = new LoadingSpinner();
 
-            var textblock = new TextBlock();
+            spinner.Name = "Spinner";
+            spinner.Color = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            spinner.Diameter = MainGrid.ActualHeight < MainGrid.ActualWidth ? MainGrid.ActualHeight / 2 : MainGrid.ActualWidth / 2;
+            spinner.Thickness = 5;
+            spinner.IsLoading = true;
+            spinner.Visibility = Visibility.Visible;
 
-            textblock.Text = "Waiting";
-            textblock.Margin = new Thickness(10);
-            textblock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
-            textblock.FontSize = 15;
-            textblock.Height = 50;
-            textblock.HorizontalAlignment = HorizontalAlignment.Center;
+            MainGrid.SizeChanged += ResizeSpinner;
 
-            MainGrid.RowDefinitions.Add(row);
-            MainGrid.Children.Add(textblock);
-            Grid.SetRow(textblock, 0);
-            Grid.SetColumn(textblock, 0);
+            MainGrid.Children.Add(spinner);
+            Grid.SetRow(spinner, 0);
+            Grid.SetColumn(spinner, 0);
+            Grid.SetColumnSpan(spinner, 4);
+
 
             Task.Run(async () => 
             {
                 await currentRepository.CommitsHolder.WaitAsync();
                 currentRepository.CommitsHolder.Release();
-                WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage("Wait"));
+
+                WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage("WaitingEnded"));
             });
         }
 
@@ -114,23 +122,25 @@ namespace GItClient.MVVM.View.PartialView
         {
             for (var i = 0; i < currentRepository.CommitsHolder.Lenght; i++) 
             {
+                MainGrid.SizeChanged -= ResizeSpinner;
+
                 var commit = currentRepository.CommitsHolder.Commits[i];
                 var row = new RowDefinition();
                 row.Height = new GridLength(12);
     
                 var textblockHash = new TextBlock();
                 textblockHash.Text = commit.ShortCommitHash;
-                textblockHash.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+                textblockHash.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                 textblockHash.FontSize = 10;
 
                 var textblockMessage = new TextBlock();
                 textblockMessage.Text = commit.CommitMessage;
-                textblockMessage.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+                textblockMessage.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                 textblockMessage.FontSize = 10;
 
                 var textblockAuthor = new TextBlock();
                 textblockAuthor.Text = commit.Author;
-                textblockAuthor.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+                textblockAuthor.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                 textblockAuthor.FontSize = 10;
 
                 MainGrid.RowDefinitions.Add(row);
@@ -149,7 +159,15 @@ namespace GItClient.MVVM.View.PartialView
 
         }
 
+        private void ResizeSpinner(object o, SizeChangedEventArgs e)
+        {
+            var gridChild = MainGrid.Children[0];
 
+            if (gridChild != null && gridChild is LoadingSpinner spinner)
+            {
+                spinner.Diameter = MainGrid.ActualHeight < MainGrid.ActualWidth ? MainGrid.ActualHeight / 2 : MainGrid.ActualWidth / 2;
+            }
+        }
 
     }
 }

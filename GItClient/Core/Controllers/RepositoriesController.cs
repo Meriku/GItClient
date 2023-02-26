@@ -44,10 +44,13 @@ namespace GItClient.Core.Controllers
 
             if (ActiveRepo == null)
             {
+                //TODO: logger
                 throw new System.Exception("Failed to load repositories from the last session.");
             }
 
-            CurrentRepository = ActiveRepo.GenName;
+            //TODO: handle if loaded with 0 repositories (it's possible)
+            //TODO: load commits here?
+            CurrentRepository = ActiveRepo == null ? "" : ActiveRepo.GenName;
         }
 
         private async Task SaveRepositories()
@@ -113,6 +116,7 @@ namespace GItClient.Core.Controllers
         {
             if (repositories.ContainsKey(repo.GenName))
             {
+                //TODO handle exception, show warning
                 throw new System.Exception("Repository is already added to repositories");
             }
 
