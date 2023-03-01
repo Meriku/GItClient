@@ -16,18 +16,16 @@ namespace GItClient.Core.Controllers
         private static Dictionary<string, Repository> repositories;
 
         private static RepositoriesSettingsController _repositoriesSettingsController;
-
-        private static SemaphoreSlim _semaphore;
+        private static GitController _gitController;
 
         private static string CurrentRepository;
-        private static string PreviousRepository;
 
         public static bool IsEmpty => repositories.Count == 0;
 
         public static void Init()
         {
             _repositoriesSettingsController = new RepositoriesSettingsController();
-            _semaphore = new SemaphoreSlim(1);
+            _gitController = new GitController();
 
             Task.Run( async () =>
             {
@@ -36,34 +34,12 @@ namespace GItClient.Core.Controllers
             });
         }
 
-        //internal RepositoriesController()
-        //{
-        //    repositories = new Dictionary<string, Repository>();
-
-        //    LoadOpenRepositories();
-        //}
-
-
         private static async Task LoadRepositoryCommits(Repository repo)
         {
-            try
-            {
-                //var _gitController = ControllersProvider.GetGitController();
-                await repo.CommitsHolder.WaitAsync();
-                var _gitController = new GitController();
-                var commits = await _gitController.GetGitHistoryAsync(repo);
-                repo.CommitsHolder.Commits = commits;
-                repo.CommitsHolder.Release();
-
-                //await _semaphore.WaitAsync();
-                //repositories[repo.GenName] = repo;
-
-            }
-            catch(Exception ex)
-            {
-                System.Console.WriteLine(ex);
-            }
-
+            await repo.CommitsHolder.WaitAsync();
+            var commits = await _gitController.GetGitHistoryAsync(repo);
+            repo.CommitsHolder.Commits = commits;
+            repo.CommitsHolder.Release();
         }
 
         public static void StartLoadRepositoryCommits(string repoName)

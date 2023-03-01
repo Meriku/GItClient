@@ -2,11 +2,13 @@
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace GItClient.MVVM.View.PartialView
@@ -19,6 +21,7 @@ namespace GItClient.MVVM.View.PartialView
     {
         private const string EMPTY_REPOSITORIES_TEXT = "It's curently empty here :( \nInit, clone or open a new repository";
 
+        private int FontSize = 12;
 
         public CommitsHistoryPartialView()
         {
@@ -97,7 +100,7 @@ namespace GItClient.MVVM.View.PartialView
             spinner.IsLoading = true;
             spinner.Visibility = Visibility.Visible;
 
-            MainGrid.SizeChanged += ResizeSpinner;
+            MainGrid.SizeChanged += GridChanged_ResizeSpinner;
 
             MainGrid.Children.Add(spinner);
             Grid.SetRow(spinner, 0);
@@ -116,28 +119,37 @@ namespace GItClient.MVVM.View.PartialView
 
         private void RenderCommitsViewImpl(Repository currentRepository)
         {
+            var fontSize = FontSize;
+            var fontFamily = new FontFamily("Roboto-Light");
+            var fontColor = new SolidColorBrush(Color.FromRgb(190, 190, 190));
+
+            var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing);
+
             for (var i = 0; i < currentRepository.CommitsHolder.Lenght; i++) 
             {
-                MainGrid.SizeChanged -= ResizeSpinner;
+                MainGrid.SizeChanged -= GridChanged_ResizeSpinner;
 
                 var commit = currentRepository.CommitsHolder.Commits[i];
                 var row = new RowDefinition();
-                row.Height = new GridLength(12);
+                row.Height = new GridLength(rowHeight);
     
                 var textblockHash = new TextBlock();
                 textblockHash.Text = commit.ShortCommitHash;
-                textblockHash.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                textblockHash.FontSize = 10;
+                textblockHash.Foreground = fontColor;
+                textblockHash.FontSize = fontSize;
+                textblockHash.FontFamily = fontFamily;
 
                 var textblockMessage = new TextBlock();
                 textblockMessage.Text = commit.CommitMessage;
-                textblockMessage.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                textblockMessage.FontSize = 10;
+                textblockMessage.Foreground = fontColor;
+                textblockMessage.FontSize = fontSize;
+                textblockMessage.FontFamily = fontFamily;
 
                 var textblockAuthor = new TextBlock();
                 textblockAuthor.Text = commit.Author;
-                textblockAuthor.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                textblockAuthor.FontSize = 10;
+                textblockAuthor.Foreground = fontColor;
+                textblockAuthor.FontSize = fontSize;
+                textblockAuthor.FontFamily = fontFamily;
 
                 MainGrid.RowDefinitions.Add(row);
                 MainGrid.Children.Add(textblockHash);
@@ -155,7 +167,7 @@ namespace GItClient.MVVM.View.PartialView
 
         }
 
-        private void ResizeSpinner(object o, SizeChangedEventArgs e)
+        private void GridChanged_ResizeSpinner(object o, SizeChangedEventArgs e)
         {
             var gridChild = MainGrid.Children[0];
 
@@ -163,6 +175,26 @@ namespace GItClient.MVVM.View.PartialView
             {
                 spinner.Diameter = MainGrid.ActualHeight < MainGrid.ActualWidth ? MainGrid.ActualHeight / 2 : MainGrid.ActualWidth / 2;
             }
+        }
+
+        private void PreviewMouseWheel_ResizeCommitsFont(object sender, MouseWheelEventArgs e)
+        {
+            if (!Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                return;
+            }
+
+            if (e.Delta > 0 && FontSize < 30)
+            {
+                FontSize++;
+                RenderCommits();
+            }
+            else if (e.Delta < 0 && FontSize > 8)
+            {
+                FontSize--;
+                RenderCommits();
+            }
+
         }
 
     }

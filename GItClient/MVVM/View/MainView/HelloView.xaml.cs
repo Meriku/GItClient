@@ -18,8 +18,6 @@ namespace GItClient.MVVM.View.MainView
             
             UpdateGitVersion();
             UpdateClientVersion();
-
-            RepositoriesController.Init();
         }
 
         private async void UpdateGitVersion()

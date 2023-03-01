@@ -45,6 +45,11 @@
             <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
                 <menuViews:HomeMenuView/>
             </DataTemplate>
+
+            <FontFamily x:Key="Roboto-Light">./Fonts/Roboto-Light.ttf#Roboto-Light</FontFamily>
+            <FontFamily x:Key="Roboto-Medium">./Fonts/Roboto-Medium.ttf#Roboto-Medium</FontFamily>
+            <FontFamily x:Key="Roboto-Regular">./Fonts/Roboto-Regular.ttf#Roboto-Regular</FontFamily>
+            <FontFamily x:Key="Roboto-Thin">./Fonts/Roboto-Thin.ttf#Roboto-Thin</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application> 

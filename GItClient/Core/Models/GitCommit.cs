@@ -13,6 +13,7 @@ namespace GItClient.Core.Models
         public string CommitHash { get; set; }
         public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[7..14];
         public string Author { get; set; }
+        public string Email { get; set; }
         public string Date { get; set; }
         public string Empty1 { get; set; }
         public DateTime ShortDate { get; set; }

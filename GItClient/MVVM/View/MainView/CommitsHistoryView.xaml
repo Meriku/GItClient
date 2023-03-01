@@ -15,11 +15,12 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="5"/>
             <RowDefinition MinHeight="200"/>
         </Grid.RowDefinitions>
 
         <Grid Name="Content_Grid"
-              Grid.Row="1"
+              Grid.Row="2"
               Grid.Column="0"
               Grid.ColumnSpan="2147483647">
             <!--Max Colums Count-->
@@ -38,7 +39,8 @@
                 Grid.Column="0"
                 CornerRadius="10"
                 Opacity="1"
-                Background="#22202f">
+                Background="#12111C"
+                Margin="0,5,0,0">
 
                 <ContentControl 
                 Name="MainContentControl" 

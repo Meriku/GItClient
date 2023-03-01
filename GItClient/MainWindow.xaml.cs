@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
+using GItClient.Core.Controllers.Static;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
 using System;
@@ -35,6 +36,9 @@ namespace GItClient
 
             InitializeComponent();
 
+            RepositoriesController.Init();
+            MainGitController.Init();
+
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
 
@@ -65,7 +69,7 @@ namespace GItClient
             Task.Run( async () =>
             {
                 var count = _animationController.IsCommandsBarOpen ? 25 : 1;
-                var text = await _gitController.GetFormattedCommandsHistory(count);
+                var text = await MainGitController.GetFormattedCommandsHistory(count);
 
                 await GitCommandsTextBlock.Dispatcher.Invoke( async () => 
                 {

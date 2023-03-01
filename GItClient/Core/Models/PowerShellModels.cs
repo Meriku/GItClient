@@ -1,11 +1,6 @@
-﻿using GItClient.Core.Controllers.Base;
-using GItClient.Core.Controllers.Static;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using GItClient.Core.Controllers.Static;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GItClient.Core.Models
 {

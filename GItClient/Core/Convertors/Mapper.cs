@@ -60,7 +60,21 @@ namespace GItClient.Core.Convertors
                     }
                     else if (responsesArray[i].Message.Contains("Author"))
                     {
-                        commit.Author = responsesArray[i].Message.Trim()[8..];
+                        var trimmedMessage = responsesArray[i].Message.Trim()[8..];
+
+                        var index = trimmedMessage.IndexOf('<');
+
+                        if (index == -1)
+                        {
+                            commit.Author = trimmedMessage;
+                        }
+                        else
+                        {
+                            commit.Author = trimmedMessage[0..index];
+                            commit.Email = trimmedMessage[(index + 1)..^1];
+                        }
+                        
+
                     }
                     else if (responsesArray[i].Message.Contains("Date"))
                     {

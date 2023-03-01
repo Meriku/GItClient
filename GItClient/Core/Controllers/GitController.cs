@@ -1,14 +1,8 @@
-﻿using GItClient.Core.Controllers.Base;
-using GItClient.Core.Controllers.Static;
+﻿using GItClient.Core.Controllers.Static;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace GItClient.Core.Controllers
 {
@@ -16,8 +10,12 @@ namespace GItClient.Core.Controllers
     /// Controller 
     /// Provides "API" for Git commands
     /// </summary>
-    internal class GitController : GitControllerBase
+    internal class GitController
     {
+        private async Task<PowerShellResponses> ExecuteAndInformUIAsync(PowerShellCommands request)
+        {
+            return await MainGitController.ExecuteAndInformUIAsync(request);
+        }
 
         internal async Task<string> GetGitVersionAsync()
         {

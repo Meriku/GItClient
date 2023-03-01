@@ -1,39 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers.SettingControllers;
-using GItClient.Core.Controllers.Static;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GItClient.Core.Controllers.Base
+namespace GItClient.Core.Controllers.Static
 {
-    internal class GitControllerBase
+    internal static class MainGitController
     {
-        private const int COMMANDS_HISTORY_LENGHT = 25;
+        private const int COMMANDS_HISTORY_LENGHT = 25;     
+        private static readonly ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
 
-        private CircularList<HistoryElement>? _gitHistory;
-        private CircularList<HistoryElement> GitHistory
+        private static CircularList<HistoryElement> GitHistory;
+
+        private static UserSettingsController _userSettingsController;
+        private static UserSettings UserSettings { get; set; }
+
+        internal static void Init()
         {
-            get
-            {
-                if (_gitHistory == null) { _gitHistory = new CircularList<HistoryElement>(COMMANDS_HISTORY_LENGHT); };
-                return _gitHistory;
-            }
-            set { _gitHistory = value; }
-
-        }
-
-        private ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
-
-        private UserSettings UserSettings { get; set; }
-
-        private UserSettingsController _userSettingsController;
-
-        protected GitControllerBase()
-        {
+            GitHistory = new CircularList<HistoryElement>(COMMANDS_HISTORY_LENGHT);
             _userSettingsController = new UserSettingsController();
-            //base.DataAdded += AddResponseToHistory;
+            PowerShellExecutor.DataAdded += AddResponseToHistory;
         }
 
         /// <summary>
@@ -43,7 +31,7 @@ namespace GItClient.Core.Controllers.Base
         /// </summary>
         /// <param name="commands">Commands to execute</param>
         /// <returns></returns>
-        protected async Task<PowerShellResponses> ExecuteAndInformUIAsync(PowerShellCommands commands)
+        internal static async Task<PowerShellResponses> ExecuteAndInformUIAsync(PowerShellCommands commands)
         {
             await PowerShellExecutor.IsWorking.WaitAsync();
             AddRequestToHistory(commands);
@@ -62,7 +50,7 @@ namespace GItClient.Core.Controllers.Base
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="responses"></param>
-        private void AddResponseToHistory(object? sender, PowerShellResponses responses)
+        private static void AddResponseToHistory(object? sender, PowerShellResponses responses)
         {
             if (sender == null) return;
 
@@ -80,7 +68,7 @@ namespace GItClient.Core.Controllers.Base
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="responses"></param>
-        private void AddRequestToHistory(PowerShellCommands requests)
+        private static void AddRequestToHistory(PowerShellCommands requests)
         {
             foreach (var request in requests.AllCommands)
             {
@@ -95,8 +83,9 @@ namespace GItClient.Core.Controllers.Base
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        internal Task<string[]> GetFormattedCommandsHistory(int count = 1)
+        internal static Task<string[]> GetFormattedCommandsHistory(int count = 1)
         {
+            _userSettingsController ??= new UserSettingsController();
             UserSettings = _userSettingsController.GetUserSettings();
 
             var result = new List<string>(count);
