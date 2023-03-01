@@ -9,7 +9,7 @@
              PreviewMouseWheel="PreviewMouseWheel_ResizeCommitsFont">
 
 
-    
+
     <ScrollViewer>
         <Grid Name="MainGrid">
             <Grid.ColumnDefinitions>
@@ -18,10 +18,10 @@
                 <ColumnDefinition Width="5*" Name="Message"/>
                 <ColumnDefinition Width="2*" Name="Author"/>
             </Grid.ColumnDefinitions>
-
         </Grid>
     </ScrollViewer>
 
-        
-        
+
+
+
 </UserControl>

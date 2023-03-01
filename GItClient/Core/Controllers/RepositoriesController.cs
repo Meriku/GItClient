@@ -126,7 +126,21 @@ namespace GItClient.Core.Controllers
             {
                 throw new System.Exception("Repository is absent in repositories");
             }
-            
+
+        }
+        internal static void RemoveRepository(string genName)
+        {
+            if (repositories.ContainsKey(genName))
+            {
+                repositories.Remove(genName);
+                CurrentRepository = repositories.First().Value.GenName;
+                //TODO: handle exception if repositories is empty
+            }
+            else
+            {
+                throw new System.Exception("Repository is absent in repositories");
+            }
+
         }
 
         internal static Repository[] GetAllOpenRepositories()

@@ -30,24 +30,6 @@ namespace GItClient.MVVM.View.MainView
             AddRepositoryTabs();
         }
 
-        private void button_Repository_Click(object sender, RoutedEventArgs e)
-        {
-            var pressedButton = ((Button)sender);
-
-            if (ActiveButton == pressedButton)
-            {
-                return;
-            }
-
-            ActiveButton.Background.Opacity = 0.6;
-
-            ActiveButton = pressedButton;
-            var repoName = ActiveButton.Content.ToString();
-            ActiveButton.Background.Opacity = 1;
-
-            ChangeCurrentRepositoryAndUpdateUI(repoName);
-        }
-
         private void ChangeCurrentRepositoryAndUpdateUI(string repoName)
         {
             RepositoriesController.SetCurrentRepository(repoName);
@@ -56,6 +38,8 @@ namespace GItClient.MVVM.View.MainView
 
         private void AddRepositoryTabs()
         {
+            MainGrid.ColumnDefinitions.Clear();
+
             var repositories = RepositoriesController.GetAllOpenRepositories();
 
             if (repositories.Length == 0)
@@ -83,6 +67,7 @@ namespace GItClient.MVVM.View.MainView
             }
             else
             {
+
                 button.Content = repository.GenName;
                 button.Background = new SolidColorBrush(repository.Color);
                 button.Background.Opacity = 0.6;
@@ -94,6 +79,7 @@ namespace GItClient.MVVM.View.MainView
                 }
 
                 button.Click += button_Repository_Click;
+                button.PreviewMouseRightButtonDown += button_Repository_Close;
             }
 
             MainGrid.Children.Add(button);
@@ -101,15 +87,37 @@ namespace GItClient.MVVM.View.MainView
             Grid.SetColumn(button, index);
         }
 
-        private void Button_RemoveRepos_Click(object sender, MouseButtonEventArgs e)
-        {
-            // TODO: interaction logic when press close button on the tab
 
-            //if (MainGrid.ColumnDefinitions.Any())
-            //{
-            //    MainGrid.ColumnDefinitions.Remove(MainGrid.ColumnDefinitions.Last());
-            //    ActiveRepos--;
-            //}
+        private void button_Repository_Click(object sender, RoutedEventArgs e)
+        {
+            var pressedButton = ((Button)sender);
+
+            if (ActiveButton == pressedButton)
+            {
+                return;
+            }
+
+            ActiveButton.Background.Opacity = 0.6;
+
+            ActiveButton = pressedButton;
+            var repoName = ActiveButton.Content.ToString();
+            ActiveButton.Background.Opacity = 1;
+
+            ChangeCurrentRepositoryAndUpdateUI(repoName);
+        }
+
+
+        private void button_Repository_Close(object sender, RoutedEventArgs e)
+        {
+            //TODO: currently assign to right mouse click, to add button 
+            var pressedButton = ((Button)sender);
+
+            RepositoriesController.RemoveRepository(pressedButton.Content.ToString());
+
+            AddRepositoryTabs();
+
+            var activeRepo = RepositoriesController.GetCurrentRepository();
+            ChangeCurrentRepositoryAndUpdateUI(activeRepo.GenName);
         }
 
         private Button GenerateButton()

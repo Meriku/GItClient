@@ -24,9 +24,9 @@
         <WindowChrome     
         CaptionHeight="1"  
         CornerRadius ="15"
-        ResizeBorderThickness="4"         
-        GlassFrameThickness="0">
-        </WindowChrome>
+        ResizeBorderThickness="6"         
+        GlassFrameThickness="0"/>
+
     </WindowChrome.WindowChrome>
 
     <Border Background="#272537" CornerRadius="15">
