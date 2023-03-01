@@ -9,11 +9,11 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text;
-using GItClient.Core.Controllers;
 using System.Net.Mail;
 using GItClient.Core.Models;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using GItClient.Core.Controllers.SettingControllers;
 
 namespace GItClient.MVVM.Pages
 {
@@ -47,7 +47,7 @@ namespace GItClient.MVVM.Pages
                       (MouseButtonEventArgs)e.StagingItem.Input);
             };
 
-            _userSettingsController = ControllersProvider.GetUserSettingsController();
+            _userSettingsController = new UserSettingsController();
         }
 
         private async void button_Finish_Click(object sender, RoutedEventArgs e)
@@ -62,9 +62,9 @@ namespace GItClient.MVVM.Pages
                 await _userSettingsController.SetAndSaveUserSettings(UserName, Email, Directory);
             });
 
-            var newWindow = new MainWindow();
-            Application.Current.MainWindow = newWindow;
-            newWindow.Show();
+            //var newWindow = new MainWindow();
+            //Application.Current.MainWindow = newWindow;
+            //newWindow.Show();
             this.Close();
         }
 

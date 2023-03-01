@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Controllers;
+using GItClient.Core.Controllers.SettingControllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -33,9 +34,9 @@ namespace GItClient.MVVM.View.MainView
         {
             InitializeComponent();
 
-            _userSettingsController = ControllersProvider.GetUserSettingsController();
-            _gitController = ControllersProvider.GetGitController();
-            _directoryController = ControllersProvider.GetDirectoryController();
+            _userSettingsController = new UserSettingsController();
+            _gitController = new GitController();
+            _directoryController = new DirectoryController();
 
             UserSettings = _userSettingsController.GetUserSettings();
 

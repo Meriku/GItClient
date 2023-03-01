@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using GItClient.Core.Controllers.Static;
+using System;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Windows.Shapes;
-using GItClient.Core.Base;
-using GItClient.Core.Controllers;
-using Microsoft.Extensions.Logging;
 
 namespace GItClient.Core
 {

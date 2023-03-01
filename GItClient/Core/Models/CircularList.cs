@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace GItClient.Core.Models
 {
@@ -77,6 +79,10 @@ namespace GItClient.Core.Models
         }
         public IEnumerable<T> GetReversed()
         {
+            if (Head == null)
+            {
+                yield break;
+            }
             var current = Head.Previous;
             for (var i = 0; i < Count; i++)
             {

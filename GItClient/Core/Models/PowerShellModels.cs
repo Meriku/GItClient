@@ -1,4 +1,5 @@
-﻿using GItClient.Core.Base;
+﻿using GItClient.Core.Controllers.Base;
+using GItClient.Core.Controllers.Static;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;

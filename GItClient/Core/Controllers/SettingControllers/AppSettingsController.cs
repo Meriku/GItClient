@@ -1,7 +1,7 @@
 ﻿using GItClient.Core.Base;
 using GItClient.Core.Models;
 
-namespace GItClient.Core.Controllers
+namespace GItClient.Core.Controllers.SettingControllers
 {
     /// <summary>
     /// Controller
@@ -12,14 +12,14 @@ namespace GItClient.Core.Controllers
     {
         private AppSettings? _appSettings;
 
-        private AppSettings AppSettings 
-        { 
+        private AppSettings AppSettings
+        {
             get
             {
                 if (_appSettings == null) { UpdateAppSettings(); };
                 return _appSettings;
             }
-            set { _appSettings = value; } 
+            set { _appSettings = value; }
         }
 
         internal AppSettings GetAppSettings()
@@ -34,7 +34,7 @@ namespace GItClient.Core.Controllers
 
         private async void UpdateAppSettings()
         {
-            _appSettings = await base.GetSpecificSetting();
+            _appSettings = await GetSpecificSetting();
         }
 
     }

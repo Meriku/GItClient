@@ -10,7 +10,7 @@ namespace GItClient.Core.Controllers
     /// Creates all animation for WPF
     /// MaxCommandsBar Height and Width calculates using wax window size
     /// </summary>
-    internal class AnimationController
+    public class AnimationController
     {
         private const double MinCommandsBarHeight = 30;
         private const double MinCommandsBarWidth = 250;

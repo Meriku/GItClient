@@ -1,4 +1,6 @@
 ﻿using GItClient.Core.Controllers;
+using GItClient.Core.Controllers.SettingControllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,7 +17,7 @@ namespace GItClient
         {
             base.OnStartup(e);
 
-            var userSettinsController = ControllersProvider.GetUserSettingsController();
+            var userSettinsController = new UserSettingsController();
             var profileCreated = userSettinsController.IsInitialSettingsFilled();
 
             this.StartupUri = profileCreated ?

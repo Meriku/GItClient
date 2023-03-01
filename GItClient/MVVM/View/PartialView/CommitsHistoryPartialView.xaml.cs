@@ -17,8 +17,6 @@ namespace GItClient.MVVM.View.PartialView
     /// </summary>
     public partial class CommitsHistoryPartialView : UserControl
     {
-        private RepositoriesController _repositoriesController;
-
         private const string EMPTY_REPOSITORIES_TEXT = "It's curently empty here :( \nInit, clone or open a new repository";
 
 
@@ -27,8 +25,6 @@ namespace GItClient.MVVM.View.PartialView
             // TODO: ScrollViewer design
 
             InitializeComponent();
-
-            _repositoriesController = ControllersProvider.GetRepositoriesController();
 
             RenderCommits();
 
@@ -43,13 +39,13 @@ namespace GItClient.MVVM.View.PartialView
                 MainGrid.RowDefinitions.Clear();
                 MainGrid.Children.Clear();
 
-                if (_repositoriesController.IsEmpty)
+                if (RepositoriesController.IsEmpty)
                 {
                     RenderWelcomeView();
                     return;
                 }
 
-                var CurrentRepository = _repositoriesController.GetCurrentRepository();
+                var CurrentRepository = RepositoriesController.GetCurrentRepository();
                 if (CurrentRepository.CommitsHolder.IsEmpty)
                 {
                     if (CurrentRepository.CommitsHolder.IsLoading)
@@ -59,7 +55,7 @@ namespace GItClient.MVVM.View.PartialView
                     }
                     else
                     {
-                        _repositoriesController.StartLoadRepositoryCommits(CurrentRepository.GenName);
+                        RepositoriesController.StartLoadRepositoryCommits(CurrentRepository.GenName);
                         RenderWaitingView(CurrentRepository);
                         return;
                     }

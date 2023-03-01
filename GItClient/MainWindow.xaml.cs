@@ -38,10 +38,10 @@ namespace GItClient
             MaximizedMinimizedWindow = new RelayCommand(headerControlBar_MouseLeftDoubleClick);
             headerBorder.InputBindings.Add(new InputBinding(MaximizedMinimizedWindow, new MouseGesture(MouseAction.LeftDoubleClick)));
 
-            _animationController = ControllersProvider.GetAnimationController();
-            _gitController = ControllersProvider.GetGitController();
-            _textController = ControllersProvider.GetTextController();
-
+            _animationController = new AnimationController();
+            _textController = new TextController();
+            _gitController = new GitController();
+           
             _semaphore = new SemaphoreSlim(1);
 
             WeakReferenceMessenger.Default.Register<MainViewChangedMessage>(this, (r, m) =>

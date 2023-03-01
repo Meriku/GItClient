@@ -1,4 +1,5 @@
-﻿using GItClient.Core.Base;
+﻿using GItClient.Core.Controllers.Base;
+using GItClient.Core.Controllers.Static;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using System.Collections.Generic;
@@ -17,28 +18,17 @@ namespace GItClient.Core.Controllers
     /// </summary>
     internal class GitController : GitControllerBase
     {
-        protected string? _gitVersion;
-        internal List<Repository> _openRepositories = new List<Repository>();
-
-        private RepositoriesController _repositoriesController;
-
-        internal GitController()
-        {
-            _repositoriesController = ControllersProvider.GetRepositoriesController();
-        }
 
         internal async Task<string> GetGitVersionAsync()
         {
-            if (_gitVersion != null) return _gitVersion;
-
             var request = new PowerShellCommands();
             request.AddCommand(CommandsPowerShell.git_Version);
 
             var results = await ExecuteAndInformUIAsync(request);
 
-            _gitVersion = ParseVersion(results); 
+            var gitVersion = ParseVersion(results); 
 
-            return _gitVersion;  
+            return gitVersion;  
         }
         internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
@@ -69,7 +59,7 @@ namespace GItClient.Core.Controllers
             if (!results.IsError)
             {
                 var repo = new Repository(directory);
-                _repositoriesController.AddRepository(repo);
+                RepositoriesController.AddRepository(repo);
             }
 
             return results.IsError;         
@@ -89,7 +79,7 @@ namespace GItClient.Core.Controllers
             //}
 
             var repo = new Repository(directory);
-            _repositoriesController.AddRepository(repo);
+            RepositoriesController.AddRepository(repo);
 
             return results.IsError;
         }
@@ -107,7 +97,7 @@ namespace GItClient.Core.Controllers
         internal bool OpenRepository(string directory)
         {
             var repo = new Repository(directory);
-            _repositoriesController.AddRepository(repo);
+            RepositoriesController.AddRepository(repo);
 
             return true;
         }

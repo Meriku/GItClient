@@ -1,5 +1,5 @@
-﻿using GItClient.Core.Models;
-using MS.WindowsAPICodePack.Internal;
+﻿using GItClient.Core.Controllers.Static;
+using GItClient.Core.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -11,13 +11,13 @@ namespace GItClient.Core.Base
     /// Generic class which gives particular Setting
     /// All calls to settings should be made using this class
     /// </summary>
-    internal class SettingsBase<T> : ConfigurationBase where T : ISetting
+    internal class SettingsBase<T> where T : ISetting
     {
         private Settings? _configuration;
 
         protected async Task<T> GetSpecificSetting()
         {
-            _configuration ??= await base.GetConfiguration();
+            _configuration ??= await Configuration.GetConfiguration();
             T result = default;
 
             Type type = typeof(T);
@@ -39,7 +39,7 @@ namespace GItClient.Core.Base
         }
         protected async Task SetSpecificSetting(T setting)
         {
-            _configuration ??= await base.GetConfiguration();
+            _configuration ??= await Configuration.GetConfiguration();
 
             Type type = typeof(T);
             switch (type.Name)
@@ -57,7 +57,7 @@ namespace GItClient.Core.Base
                     throw new NotImplementedException();
             }
 
-            await base.WriteConfiguration(_configuration);
+            await Configuration.SaveConfiguration(_configuration);
         }
     }
 }

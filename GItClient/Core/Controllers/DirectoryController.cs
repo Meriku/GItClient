@@ -1,4 +1,5 @@
-﻿using GItClient.Core.Models;
+﻿using GItClient.Core.Controllers.SettingControllers;
+using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 
@@ -15,7 +16,7 @@ namespace GItClient.Core.Controllers
 
         public DirectoryController()
         {
-            _userSettingsController = ControllersProvider.GetUserSettingsController();            
+            _userSettingsController = new UserSettingsController();
         }
 
         internal CommonOpenFileDialog GetDirectoryDialog(string path = "")

@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace GItClient.Core.Controllers
+namespace GItClient.Core.Controllers.SettingControllers
 {
     /// <summary>
     /// Controller
@@ -52,12 +52,12 @@ namespace GItClient.Core.Controllers
         }
         private async void UpdateUserSettings()
         {
-            _userSettings = await base.GetSpecificSetting();          
+            _userSettings = await GetSpecificSetting();
         }
         private async Task SaveUserSettings(UserSettings userSettings)
         {
             if (userSettings == null) { throw new ArgumentNullException(); }
-            await base.SetSpecificSetting(userSettings);
+            await SetSpecificSetting(userSettings);
         }
     }
 }

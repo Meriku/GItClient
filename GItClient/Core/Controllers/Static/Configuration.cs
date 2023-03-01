@@ -3,29 +3,24 @@ using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GItClient.Core.Base
+namespace GItClient.Core.Controllers.Static
 {
-    internal class ConfigurationBase
+    internal static class Configuration
     {
-        private Settings? _configuration;
-        private readonly SemaphoreSlim _semaphore;
-        private ILogger _logger = LoggerProvider.GetLogger("ConfigurationBase");
-
-        protected ConfigurationBase()
-        {
-            _semaphore = new SemaphoreSlim(1);
-            _configuration = GetConfiguration().Result;
-        }
-
+        private static Settings? _configuration;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private static readonly ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
         /// <summary>
         /// Return cached _configuration if exist
         /// Or call method to read _configuration from the file
         /// </summary>
-        protected Task<Settings> GetConfiguration()
+
+        internal static Task<Settings> GetConfiguration()
         {
             if (_configuration != null) return Task.FromResult(_configuration);
 
@@ -34,13 +29,18 @@ namespace GItClient.Core.Base
             return readTask;
         }
 
+        internal static async Task SaveConfiguration(Settings configuration)
+        {
+            _configuration = configuration;
+            await WriteConfiguration();
+        }
+
         /// <summary>
         /// Write new _configuration to the file
         /// And update cache
-        /// </summary>
-        protected async Task WriteConfiguration(Settings configuration)
+        /// </summary> 
+        private static async Task WriteConfiguration()
         {
-            _configuration = configuration;
             var appsettings = JsonConvert.SerializeObject(_configuration, Formatting.Indented);
 
             await _semaphore.WaitAsync();
@@ -63,7 +63,7 @@ namespace GItClient.Core.Base
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"> Incorrect appsettings.json </exception>
-        private async Task<Settings> ReadConfiguration()
+        private static async Task<Settings> ReadConfiguration()
         {
             var appsettings = string.Empty;
 
@@ -87,7 +87,7 @@ namespace GItClient.Core.Base
             {
                 _logger.LogError("Incorrect appsettings.json file.");
                 throw new Exception("Incorrect appsettings file.");
-            }               
+            }
 
             return settings;
         }

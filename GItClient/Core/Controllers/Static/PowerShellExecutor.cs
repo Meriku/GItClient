@@ -4,17 +4,21 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace GItClient.Core.Base
+namespace GItClient.Core.Controllers.Static
 {
-    internal class PowerShellBase
+    internal static class PowerShellExecutor
     {
-        private ILogger _logger = LoggerProvider.GetLogger("PowerShellBase");
+        private static readonly ILogger _logger = LoggerProvider.GetLogger("PowerShellBase");
+        
+        private static PowerShellResponse? ErrorResponse;
 
-        protected event EventHandler<PowerShellResponses> DataAdded;
+        internal static readonly SemaphoreSlim IsWorking = new SemaphoreSlim(1);
 
-        private PowerShellResponse? ErrorResponse;
+        internal static event EventHandler<PowerShellResponses> DataAdded;
+
 
         /// <summary>
         /// Create PowerShell instance
@@ -23,7 +27,7 @@ namespace GItClient.Core.Base
         /// <param name="commands"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        internal async Task<PowerShellResponses> Execute(PowerShellCommands commands)
+        internal static async Task<PowerShellResponses> Execute(PowerShellCommands commands)
         {
             ErrorResponse = null;
             try
@@ -48,8 +52,9 @@ namespace GItClient.Core.Base
                     }
   
                     var responses = await powershell.InvokeAsync();
+                    var result = await ParseResponse(responses, commands);
 
-                    return ParseResponse(responses, commands);
+                    return result;
                 });
             }
             catch (Exception e)
@@ -65,18 +70,20 @@ namespace GItClient.Core.Base
         /// </summary>
         /// <param name="PSObjects"></param>
         /// <returns></returns>
-        private PowerShellResponses ParseResponse(PSDataCollection<PSObject> PSObjects, PowerShellCommands commands)
+        private static async Task<PowerShellResponses> ParseResponse(PSDataCollection<PSObject> PSObjects, PowerShellCommands commands)
         {
             if (ErrorResponse != null) { return new PowerShellResponses(ErrorResponse); }
 
-            if (PSObjects.Count == 0) { return new PowerShellResponses(); }
+            var collection = PSObjects.ReadAll();
+
+            if (collection.Count == 0) { return new PowerShellResponses(); }
 
             var result = new List<PowerShellResponse>();
-            for (var i = 0; i < PSObjects.Count; i++)
+            for (var i = 0; i < collection.Count; i++)
             {
-                if (!string.IsNullOrWhiteSpace(PSObjects[i].ToString()))
+                if (!string.IsNullOrWhiteSpace(collection[i].ToString()))
                 {
-                    result.Add(new PowerShellResponse(PSObjects[i].ToString().Trim(), ResponseType.Successful));
+                    result.Add(new PowerShellResponse(collection[i].ToString().Trim(), ResponseType.Successful));
                 }
                 
             }
@@ -97,7 +104,7 @@ namespace GItClient.Core.Base
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="Exception">Unknown type of PSDataCollection</exception>
-        private void PowerShell_DataAdded(object? sender, DataAddedEventArgs e)
+        private static void PowerShell_DataAdded(object? sender, DataAddedEventArgs e)
         {
             var result = new List<PowerShellResponse>();
             switch (sender)
@@ -140,11 +147,11 @@ namespace GItClient.Core.Base
         /// to subscribe on this event and use PowerShell responses
         /// </summary>
         /// <param name="result"></param>
-        private void InformUI(List<PowerShellResponse> result)
+        private static void InformUI(List<PowerShellResponse> result)
         {
             if (result.Count > 0)
             {
-                DataAdded.Invoke(this, new PowerShellResponses(result));
+                DataAdded?.Invoke(null, new PowerShellResponses(result));
             }
         }
     }

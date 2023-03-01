@@ -1,5 +1,6 @@
 ﻿using GItClient.Core;
 using GItClient.Core.Controllers;
+using GItClient.Core.Controllers.SettingControllers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ namespace GItClient.MVVM.ViewModel
 
         public WelcomeViewModel()
         {
-            var _userSettingsController = ControllersProvider.GetUserSettingsController();
+            var _userSettingsController = new UserSettingsController();
             _defaultDriveName = _userSettingsController.GetDefaultDirectory();
         }
 

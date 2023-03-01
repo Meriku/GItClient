@@ -1,13 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using GItClient.Core.Controllers;
+using GItClient.Core.Controllers.SettingControllers;
+using GItClient.Core.Controllers.Static;
 using GItClient.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GItClient.Core.Base
+namespace GItClient.Core.Controllers.Base
 {
-    internal class GitControllerBase : PowerShellBase
+    internal class GitControllerBase
     {
         private const int COMMANDS_HISTORY_LENGHT = 25;
 
@@ -22,7 +23,7 @@ namespace GItClient.Core.Base
             set { _gitHistory = value; }
 
         }
-        
+
         private ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
 
         private UserSettings UserSettings { get; set; }
@@ -31,8 +32,8 @@ namespace GItClient.Core.Base
 
         protected GitControllerBase()
         {
-            _userSettingsController = ControllersProvider.GetUserSettingsController();
-            base.DataAdded += AddResponseToHistory;
+            _userSettingsController = new UserSettingsController();
+            //base.DataAdded += AddResponseToHistory;
         }
 
         /// <summary>
@@ -44,12 +45,15 @@ namespace GItClient.Core.Base
         /// <returns></returns>
         protected async Task<PowerShellResponses> ExecuteAndInformUIAsync(PowerShellCommands commands)
         {
+            await PowerShellExecutor.IsWorking.WaitAsync();
             AddRequestToHistory(commands);
 
-            var result = await Execute(commands);
+            var result = await PowerShellExecutor.Execute(commands);
+            PowerShellExecutor.IsWorking.Release();
 
             return result;
         }
+
 
 
         /// <summary>
@@ -99,7 +103,7 @@ namespace GItClient.Core.Base
 
             foreach (var command in GitHistory.GetReversed())
             {
-                switch(command.Type)
+                switch (command.Type)
                 {
                     case HistoryType.Request:
                         result.Add(command.DateTime.ToString("T") + " " + command.Value);

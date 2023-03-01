@@ -20,16 +20,12 @@ namespace GItClient.MVVM.View.MainView
     /// </summary>
     public partial class CommitsHistoryView : UserControl
     {
-        private RepositoriesController _repositoriesController;
-
         private Button ActiveButton;
 
         public CommitsHistoryView()
         {
             // TODO: add close buttons for tabs
             InitializeComponent();
-
-            _repositoriesController = ControllersProvider.GetRepositoriesController();
 
             AddRepositoryTabs();
         }
@@ -54,13 +50,13 @@ namespace GItClient.MVVM.View.MainView
 
         private void ChangeCurrentRepositoryAndUpdateUI(string repoName)
         {
-            _repositoriesController.SetCurrentRepository(repoName);
+            RepositoriesController.SetCurrentRepository(repoName);
             WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(repoName));
         }
 
         private void AddRepositoryTabs()
         {
-            var repositories = _repositoriesController.GetAllOpenRepositories();
+            var repositories = RepositoriesController.GetAllOpenRepositories();
 
             if (repositories.Length == 0)
             {

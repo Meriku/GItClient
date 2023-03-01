@@ -1,85 +1,86 @@
-﻿using GItClient.Core.Base;
+﻿using GItClient.Core.Controllers.SettingControllers;
 using GItClient.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Printing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
 {
 
-    
 
-    internal class RepositoriesController : SettingsBase<RepositorySettings>
+
+    internal static class RepositoriesController
     {
-        private Dictionary<string, Repository> repositories;
+        private static Dictionary<string, Repository> repositories;
 
-        private string CurrentRepository;
-        private string PreviousRepository;
+        private static RepositoriesSettingsController _repositoriesSettingsController;
 
-        public bool IsEmpty => repositories.Count == 0;
+        private static SemaphoreSlim _semaphore;
 
+        private static string CurrentRepository;
+        private static string PreviousRepository;
 
+        public static bool IsEmpty => repositories.Count == 0;
 
-        internal RepositoriesController()
+        public static void Init()
         {
-            repositories = new Dictionary<string, Repository>();
+            _repositoriesSettingsController = new RepositoriesSettingsController();
+            _semaphore = new SemaphoreSlim(1);
 
-            LoadOpenRepositories();
+            Task.Run( async () =>
+            {
+                repositories = await _repositoriesSettingsController.LoadOpenRepositories();
+                StartLoadAllRepositoriesCommits();
+            });
         }
 
+        //internal RepositoriesController()
+        //{
+        //    repositories = new Dictionary<string, Repository>();
 
-        private async void LoadOpenRepositories()
+        //    LoadOpenRepositories();
+        //}
+
+
+        private static async Task LoadRepositoryCommits(Repository repo)
         {
-            var RepositoriesImage = await base.GetSpecificSetting();
-
-            if (RepositoriesImage.ActiveRepositories.Length > 0)
+            try
             {
-                var Repositories = RepositoriesImage.ActiveRepositories.Select(x => new Repository(x));
+                //var _gitController = ControllersProvider.GetGitController();
+                await repo.CommitsHolder.WaitAsync();
+                var _gitController = new GitController();
+                var commits = await _gitController.GetGitHistoryAsync(repo);
+                repo.CommitsHolder.Commits = commits;
+                repo.CommitsHolder.Release();
 
-                repositories = Repositories.ToDictionary(k => k.GenName, v => v);
+                //await _semaphore.WaitAsync();
+                //repositories[repo.GenName] = repo;
+
+            }
+            catch(Exception ex)
+            {
+                System.Console.WriteLine(ex);
             }
 
-            var ActiveRepo = repositories.Values.FirstOrDefault(x => x.Active);
+        }
 
-            if (ActiveRepo == null)
+        public static void StartLoadRepositoryCommits(string repoName)
+        {
+            Task.Run(() => LoadRepositoryCommits(repositories[repoName]));
+        }
+
+        public static async Task StartLoadAllRepositoriesCommits()
+        {
+            foreach (var repo in repositories.Values)
             {
-                //TODO: logger
-                throw new System.Exception("Failed to load repositories from the last session.");
+                // TODO: sync for now, issue with powershell which blocks async
+                await LoadRepositoryCommits(repo);
             }
-
-            //TODO: handle if loaded with 0 repositories (it's possible)
-            //TODO: load commits here?
-            CurrentRepository = ActiveRepo == null ? "" : ActiveRepo.GenName;
         }
 
-        private async Task SaveRepositories()
-        {
-            var repositoriesImage = repositories.Values.Select(x => new RepositoryImage(x)).ToArray();
-
-            var Setting = new RepositorySettings(repositoriesImage);
-
-            await base.SetSpecificSetting(Setting);
-        }
-
-
-        private async Task LoadRepositoryCommits(string repoName)
-        {
-            var repo = repositories[repoName];
-
-            var _gitController = ControllersProvider.GetGitController();
-            await repo.CommitsHolder.WaitAsync();
-            var commits = await _gitController.GetGitHistoryAsync(repo);
-            repo.CommitsHolder.Commits = commits;
-            repo.CommitsHolder.Release();
-        }
-
-        public void StartLoadRepositoryCommits(string repoName)
-        {
-            Task.Run(() => LoadRepositoryCommits(repoName));
-        }
-
-        internal void SetCurrentRepository(string repoName)
+        internal static void SetCurrentRepository(string repoName)
         {
             if (string.IsNullOrWhiteSpace(repoName))
             {
@@ -94,16 +95,20 @@ namespace GItClient.Core.Controllers
             repositories[CurrentRepository].Active = true;
         }
 
-        internal Repository GetCurrentRepository()
+        internal static Repository GetCurrentRepository()
         {
             if (repositories.Count == 0)
             {
                 throw new System.Exception("Repository holder is empty");
             }
+            if (CurrentRepository == null)
+            {
+                return repositories.First().Value;
+            }
             return repositories[CurrentRepository];
         }
 
-        internal Repository GetSpecificRepository(string name)
+        internal static Repository GetSpecificRepository(string name)
         {
             if (repositories.ContainsKey(name))
             {
@@ -112,7 +117,7 @@ namespace GItClient.Core.Controllers
             throw new System.Exception("Repository is absent in repositories");
         }
 
-        internal void AddRepository(Repository repo)
+        internal static void AddRepository(Repository repo)
         {
             if (repositories.ContainsKey(repo.GenName))
             {
@@ -129,13 +134,13 @@ namespace GItClient.Core.Controllers
             repositories[CurrentRepository] = repo;
             repositories[CurrentRepository].Active = true;
 
-            Task.Run( () => SaveRepositories() );
+            Task.Run( async () => await _repositoriesSettingsController.SaveOpenRepositories(repositories) );
 
             
         }
 
 
-        internal void UpdateRepository(Repository repo)
+        internal static void UpdateRepository(Repository repo)
         {
             if (repositories.ContainsKey(repo.GenName))
             {
@@ -148,7 +153,7 @@ namespace GItClient.Core.Controllers
             
         }
 
-        internal Repository[] GetAllOpenRepositories()
+        internal static Repository[] GetAllOpenRepositories()
         {
             return repositories.Values.ToArray();
         }
