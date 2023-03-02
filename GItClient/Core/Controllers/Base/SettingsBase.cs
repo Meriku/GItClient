@@ -13,24 +13,22 @@ namespace GItClient.Core.Base
     /// </summary>
     internal class SettingsBase<T> where T : ISetting
     {
-        private Settings? _configuration;
-
         protected async Task<T> GetSpecificSetting()
         {
-            _configuration ??= await Configuration.GetConfiguration();
+            var configuration = await Configuration.GetConfiguration();
             T result = default;
 
             Type type = typeof(T);
             switch (type.Name)
             {
                 case "UserSettings":
-                    result = (T)(ISetting)_configuration.UserSettings;
+                    result = (T)(ISetting)configuration.UserSettings;
                     break;
                 case "AppSettings":
-                    result = (T)(ISetting)_configuration.AppSettings;
+                    result = (T)(ISetting)configuration.AppSettings;
                     break;
                 case "RepositorySettings":
-                    result = (T)(ISetting)_configuration.RepositorySettings;
+                    result = (T)(ISetting)configuration.RepositorySettings;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -39,25 +37,25 @@ namespace GItClient.Core.Base
         }
         protected async Task SetSpecificSetting(T setting)
         {
-            _configuration ??= await Configuration.GetConfiguration();
+            var configuration = await Configuration.GetConfiguration();
 
             Type type = typeof(T);
             switch (type.Name)
             {
                 case "UserSettings":
-                    _configuration.UserSettings = (UserSettings)(ISetting)setting;
+                    configuration.UserSettings = (UserSettings)(ISetting)setting;
                     break;
                 case "AppSettings":
-                    _configuration.AppSettings = (AppSettings)(ISetting)setting;
+                    configuration.AppSettings = (AppSettings)(ISetting)setting;
                     break;
                 case "RepositorySettings":
-                    _configuration.RepositorySettings = (RepositorySettings)(ISetting)setting;
+                    configuration.RepositorySettings = (RepositorySettings)(ISetting)setting;
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
-            await Configuration.SaveConfiguration(_configuration);
+            await Configuration.SaveConfiguration(configuration);
         }
     }
 }

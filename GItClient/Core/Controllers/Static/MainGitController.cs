@@ -52,8 +52,6 @@ namespace GItClient.Core.Controllers.Static
         /// <param name="responses"></param>
         private static void AddResponseToHistory(object? sender, PowerShellResponses responses)
         {
-            if (sender == null) return;
-
             foreach (var response in responses.AllResponses)
             {
                 GitHistory.Add(new HistoryElement(response.Message, HistoryType.Response));

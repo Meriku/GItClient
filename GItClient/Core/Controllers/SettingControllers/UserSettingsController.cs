@@ -44,7 +44,7 @@ namespace GItClient.Core.Controllers.SettingControllers
         }
         internal UserSettings GetUserSettings()
         {
-            return UserSettings;
+            return UserSettings.Clone();
         }
         internal bool IsInitialSettingsFilled()
         {
