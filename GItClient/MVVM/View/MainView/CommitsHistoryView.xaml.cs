@@ -5,6 +5,7 @@ using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
 using System;
 using System.Management.Automation;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -107,8 +108,8 @@ namespace GItClient.MVVM.View.MainView
                     ActiveBorder = border;
                 }
 
-                border.PreviewMouseLeftButtonDown += button_Repository_Click;
-                border.PreviewMouseRightButtonDown += button_Repository_Close;
+                border.MouseLeftButtonDown += button_Repository_Click;
+                button.Click += button_Repository_Close;
             }
 
             Tabs_Grid.Children.Add(border);
@@ -116,6 +117,28 @@ namespace GItClient.MVVM.View.MainView
             Grid.SetColumn(border, index);
         }
 
+        private void RemoveTab(string repoName)
+        {
+            var index = -1;
+
+            for (var i = 0; i < Tabs_Grid.Children.Count; i++)
+            {
+                if (Tabs_Grid.Children[i] is Border border)
+                {
+                    if (border.Name.Equals(repoName))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+            }
+
+            if (index >= 0)
+            {
+                Tabs_Grid.Children.RemoveAt(index);
+                Tabs_Grid.ColumnDefinitions.RemoveAt(index);
+            }
+        }
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
@@ -129,7 +152,7 @@ namespace GItClient.MVVM.View.MainView
             ActiveBorder.Background.Opacity = 0.6;
 
             ActiveBorder = pressedBorder;
-            var repoName = ActiveBorder.Name;
+            var repoName = pressedBorder.Name;
             ActiveBorder.Background.Opacity = 1;
 
             ChangeCurrentRepositoryAndUpdateUI(repoName);
@@ -138,24 +161,20 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Repository_Close(object sender, RoutedEventArgs e)
         {
-            //TODO: currently assign to right mouse click, to add button 
             var pressedButton = ((Button)sender);
+            var repoName = ((Border)((Grid)pressedButton.Parent).Parent).Name;
 
-            RepositoriesController.RemoveRepository(pressedButton.Content.ToString());
+            RepositoriesController.RemoveRepository(repoName);
+            RemoveTab(repoName);
 
-            AddRepositoryTabs();
+            //AddRepositoryTabs();
 
             var activeRepo = RepositoriesController.GetCurrentRepository();
             ChangeCurrentRepositoryAndUpdateUI(activeRepo.GenName);
+
+            e.Handled = true;
         }
 
-        private Button GenerateButton()
-        {
-            var button = new Button();
-            button.BorderThickness = new Thickness(0);
-            button.Margin= new Thickness(0,0,5,0);
-            return button;
-        }
 
     }
 }

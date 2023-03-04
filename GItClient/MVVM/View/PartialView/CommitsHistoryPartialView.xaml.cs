@@ -124,6 +124,10 @@ namespace GItClient.MVVM.View.PartialView
             var fontColor = new SolidColorBrush(Color.FromRgb(190, 190, 190));
 
             var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing);
+        
+            var EmptyFirstRow = new RowDefinition();
+            EmptyFirstRow.Height = new GridLength(5);
+            MainGrid.RowDefinitions.Add(EmptyFirstRow);
 
             for (var i = 0; i < currentRepository.CommitsHolder.Lenght; i++) 
             {
@@ -157,11 +161,13 @@ namespace GItClient.MVVM.View.PartialView
                 MainGrid.Children.Add(textblockAuthor);
                 // TOOD: MainGrid.Children.Add(graph);
 
-                Grid.SetRow(textblockHash, i);
+                Grid.SetRow(textblockHash, i + 1);
                 Grid.SetColumn(textblockHash, 1);
-                Grid.SetRow(textblockMessage, i);
+
+                Grid.SetRow(textblockMessage, i + 1);
                 Grid.SetColumn(textblockMessage, 2);
-                Grid.SetRow(textblockAuthor, i);
+
+                Grid.SetRow(textblockAuthor, i + 1);
                 Grid.SetColumn(textblockAuthor, 3);
             }
 
