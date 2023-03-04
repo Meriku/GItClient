@@ -21,6 +21,7 @@
                 <ResourceDictionary Source="Theme/ToggleButtonTheme.xaml"/>
                 <ResourceDictionary Source="Theme/LoadingSpinnerTheme.xaml"/>
                 <ResourceDictionary Source="Theme/ScrollViewerTheme.xaml"/>
+                <ResourceDictionary Source="Theme/CrossButtonTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type viewModel:HelloViewModel}">
                 <mainViews:HelloView/>

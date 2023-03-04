@@ -15,14 +15,20 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
-            <RowDefinition Height="5"/>
             <RowDefinition MinHeight="200"/>
         </Grid.RowDefinitions>
 
+
+        <Grid Name="Tabs_Grid"
+              Grid.Row="0"
+              Grid.Column="0">
+            
+        </Grid>
+        
+        
         <Grid Name="Content_Grid"
-              Grid.Row="2"
-              Grid.Column="0"
-              Grid.ColumnSpan="2147483647">
+              Grid.Row="1"
+              Grid.Column="0">
             <!--Max Colums Count-->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -43,9 +49,9 @@
                 Margin="0,5,0,0">
 
                 <ContentControl 
-                Name="MainContentControl" 
-                HorizontalContentAlignment="Center"
-                Content="{Binding CurrentView}"/>
+                    Name="MainContentControl" 
+                    HorizontalContentAlignment="Center"
+                    Content="{Binding CurrentView}"/>
                 
             </Border>
 

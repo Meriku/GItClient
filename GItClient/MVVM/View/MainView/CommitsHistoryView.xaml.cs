@@ -2,9 +2,11 @@
 using GItClient.Core;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using GItClient.MVVM.Assets;
 using System;
 using System.Management.Automation;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,7 +22,7 @@ namespace GItClient.MVVM.View.MainView
     /// </summary>
     public partial class CommitsHistoryView : UserControl
     {
-        private Button ActiveButton;
+        private Border ActiveBorder;
 
         public CommitsHistoryView()
         {
@@ -38,7 +40,7 @@ namespace GItClient.MVVM.View.MainView
 
         private void AddRepositoryTabs()
         {
-            MainGrid.ColumnDefinitions.Clear();
+            Tabs_Grid.ColumnDefinitions.Clear();
 
             var repositories = RepositoriesController.GetAllOpenRepositories();
 
@@ -56,52 +58,79 @@ namespace GItClient.MVVM.View.MainView
 
         private void AddRepositoryTab(Repository? repository, int index)
         {
-            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            var column = new ColumnDefinition();
+            Tabs_Grid.ColumnDefinitions.Add(column);
 
-            var button = GenerateButton();
+            var border = new Border();
+            var grid = new Grid();
+            var label = new TextBlock();
+            var button = new CrossButton();
+
+
+            button.Width = 13;
+            button.Height = 13;
+            button.HorizontalAlignment = HorizontalAlignment.Right;
+            button.Margin = new Thickness(0,0,6,0);
+
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.VerticalAlignment = VerticalAlignment.Center;
+
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            border.Child = grid;
+
+            grid.Children.Add(label);
+            grid.Children.Add(button);
+            Grid.SetRow(label, 0);
+            Grid.SetColumn(label, 0);
+            Grid.SetColumnSpan(label, 2);
+            Grid.SetRow(button, 0);
+            Grid.SetColumn(button, 1);
 
             if (repository == null)
             {
-                button.Content = "Welcome!";
-                button.Background = new SolidColorBrush(Color.FromArgb(255, 49, 43, 64));
+                border.Name = "Welcome!";
+                label.Text = "Welcome!";
+                border.Background = new SolidColorBrush(Color.FromArgb(255, 49, 43, 64));
             }
             else
             {
-
-                button.Content = repository.GenName;
-                button.Background = new SolidColorBrush(repository.Color);
-                button.Background.Opacity = 0.6;
+                border.Name = repository.GenName;
+                label.Text = repository.GenName;
+                border.Background = new SolidColorBrush(repository.Color);
+                border.Background.Opacity = 0.6;
 
                 if (repository.Active)
-                { 
-                    button.Background.Opacity = 1;
-                    ActiveButton = button;
+                {
+                    border.Background.Opacity = 1;
+                    ActiveBorder = border;
                 }
 
-                button.Click += button_Repository_Click;
-                button.PreviewMouseRightButtonDown += button_Repository_Close;
+                border.PreviewMouseLeftButtonDown += button_Repository_Click;
+                border.PreviewMouseRightButtonDown += button_Repository_Close;
             }
 
-            MainGrid.Children.Add(button);
-            Grid.SetRow(button, 0);
-            Grid.SetColumn(button, index);
+            Tabs_Grid.Children.Add(border);
+            Grid.SetRow(border, 0);
+            Grid.SetColumn(border, index);
         }
 
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
-            var pressedButton = ((Button)sender);
+            var pressedBorder = ((Border)sender);
 
-            if (ActiveButton == pressedButton)
+            if (ActiveBorder == pressedBorder)
             {
                 return;
             }
 
-            ActiveButton.Background.Opacity = 0.6;
+            ActiveBorder.Background.Opacity = 0.6;
 
-            ActiveButton = pressedButton;
-            var repoName = ActiveButton.Content.ToString();
-            ActiveButton.Background.Opacity = 1;
+            ActiveBorder = pressedBorder;
+            var repoName = ActiveBorder.Name;
+            ActiveBorder.Background.Opacity = 1;
 
             ChangeCurrentRepositoryAndUpdateUI(repoName);
         }
