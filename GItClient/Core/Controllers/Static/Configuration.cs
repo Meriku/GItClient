@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers.Static
 {
-    internal static class Configuration
+    public static class Configuration
     {
         private static Settings? _configuration;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private static readonly ILogger _logger = LoggerProvider.GetLogger("GitControllerBase");
+
+        public static Action ConfigurationUpdated;
         /// <summary>
         /// Return cached _configuration if exist
         /// Or call method to read _configuration from the file
@@ -33,6 +35,8 @@ namespace GItClient.Core.Controllers.Static
         {
             _configuration = configuration;
             await WriteConfiguration();
+
+            ConfigurationUpdated?.Invoke();
         }
 
         /// <summary>

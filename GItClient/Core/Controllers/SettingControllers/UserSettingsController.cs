@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Base;
+using GItClient.Core.Controllers.Static;
 using GItClient.Core.Models;
 using System;
 using System.IO;
@@ -22,6 +23,11 @@ namespace GItClient.Core.Controllers.SettingControllers
                 return _userSettings;
             }
             set { _userSettings = value; }
+        }
+
+        public UserSettingsController()
+        {
+            Configuration.ConfigurationUpdated += UpdateUserSettings;
         }
 
         internal string GetDefaultDirectory()

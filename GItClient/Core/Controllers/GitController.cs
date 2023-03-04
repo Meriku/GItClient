@@ -66,14 +66,15 @@ namespace GItClient.Core.Controllers
         internal async Task<bool> CloneRepositoryAsync(string directory, string link)
         {
             var request = new PowerShellCommands();
-            request.AddCommand(CommandsPowerShell.git_Clone, new string[] { "--progress", link, directory});
+            request.AddCommand(CommandsPowerShell.git_Clone, new string[] { "--recurse-submodules", link, directory, "--verbose"});
 
             var results = await ExecuteAndInformUIAsync(request);
 
-            // TODO: Somehow cloning stream goes to Error Stream
+            // TODO: output somehow goes to ERROR stream
             //if (!results.IsError)
             //{
-            //    AddRepositoryToController(directory);
+            //    var repo = new Repository(directory);
+            //    RepositoriesController.AddRepository(repo);
             //}
 
             var repo = new Repository(directory);

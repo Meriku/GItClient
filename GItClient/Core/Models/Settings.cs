@@ -51,7 +51,9 @@ namespace GItClient.Core.Models
 
         public UserSettings Clone()
         {
-            return new UserSettings(this.Username, this.Email, this.Directory);
+            var cloned = new UserSettings(this.Username, this.Email, this.Directory);
+            cloned.Optional = this.Optional;
+            return cloned;
         }
 
         public override string ToString()

@@ -85,6 +85,7 @@ namespace GItClient.Core.Controllers.Static
         {
             _userSettingsController ??= new UserSettingsController();
             UserSettings = _userSettingsController.GetUserSettings();
+            // TODO: fix updating UserSettings
 
             var result = new List<string>(count);
 
