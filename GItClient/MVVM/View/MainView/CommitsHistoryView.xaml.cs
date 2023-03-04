@@ -167,8 +167,6 @@ namespace GItClient.MVVM.View.MainView
             RepositoriesController.RemoveRepository(repoName);
             RemoveTab(repoName);
 
-            //AddRepositoryTabs();
-
             var activeRepo = RepositoriesController.GetCurrentRepository();
             ChangeCurrentRepositoryAndUpdateUI(activeRepo.GenName);
 

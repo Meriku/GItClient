@@ -173,6 +173,25 @@ namespace GItClient.MVVM.View.PartialView
 
         }
 
+        private void ResizeGridText()
+        {
+            var fontSize = FontSize;
+            var fontFamily = new FontFamily("Roboto-Light");
+            var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing);
+
+            for (var i = 1; i < MainGrid.RowDefinitions.Count; i++)
+            {
+                MainGrid.RowDefinitions[i].Height = new GridLength(rowHeight);
+            }
+            foreach (var child in MainGrid.Children)
+            {
+                if (child is TextBlock textBlock)
+                {
+                    textBlock.FontSize = fontSize;
+                }
+            }
+        }
+
         private void GridChanged_ResizeSpinner(object o, SizeChangedEventArgs e)
         {
             var gridChild = MainGrid.Children[0];
@@ -193,12 +212,12 @@ namespace GItClient.MVVM.View.PartialView
             if (e.Delta > 0 && FontSize < 30)
             {
                 FontSize++;
-                RenderCommits();
+                ResizeGridText();
             }
             else if (e.Delta < 0 && FontSize > 8)
             {
                 FontSize--;
-                RenderCommits();
+                ResizeGridText();
             }
 
         }
