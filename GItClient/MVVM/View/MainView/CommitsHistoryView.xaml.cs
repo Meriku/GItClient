@@ -1,18 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using GItClient.Core;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
-using GItClient.MVVM.Assets;
-using System;
-using System.Management.Automation;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace GItClient.MVVM.View.MainView
 {

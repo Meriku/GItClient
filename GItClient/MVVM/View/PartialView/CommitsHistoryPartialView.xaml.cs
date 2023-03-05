@@ -123,8 +123,8 @@ namespace GItClient.MVVM.View.PartialView
             var fontFamily = new FontFamily("Roboto-Light");
             var fontColor = new SolidColorBrush(Color.FromRgb(190, 190, 190));
 
-            var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing);
-        
+            var rowHeight = GetRowHeight();
+
             var EmptyFirstRow = new RowDefinition();
             EmptyFirstRow.Height = new GridLength(5);
             MainGrid.RowDefinitions.Add(EmptyFirstRow);
@@ -175,9 +175,7 @@ namespace GItClient.MVVM.View.PartialView
 
         private void ResizeGridText()
         {
-            var fontSize = FontSize;
-            var fontFamily = new FontFamily("Roboto-Light");
-            var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing);
+            var rowHeight = GetRowHeight();
 
             for (var i = 1; i < MainGrid.RowDefinitions.Count; i++)
             {
@@ -187,7 +185,7 @@ namespace GItClient.MVVM.View.PartialView
             {
                 if (child is TextBlock textBlock)
                 {
-                    textBlock.FontSize = fontSize;
+                    textBlock.FontSize = FontSize;
                 }
             }
         }
@@ -220,6 +218,14 @@ namespace GItClient.MVVM.View.PartialView
                 ResizeGridText();
             }
 
+        }
+
+        private double GetRowHeight()
+        {
+            var fontSize = FontSize;
+            var fontFamily = new FontFamily("Roboto-Light");
+            var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing) + 5;
+            return rowHeight;
         }
 
     }

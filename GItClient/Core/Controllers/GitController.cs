@@ -2,6 +2,7 @@
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using System.Linq;
+using System.Management.Automation;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Controllers
@@ -32,13 +33,24 @@ namespace GItClient.Core.Controllers
         {
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
-            request.AddCommand(CommandsPowerShell.git_Log, "--decorate=short");
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--decorate=short", "--encoding=cp866" });
 
             var results = await ExecuteAndInformUIAsync(request);
 
             var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
 
             return result.Commits;
+        }
+
+        internal async Task<bool> CheckIfRepositoryExist(string directory)
+        {
+            var request = new PowerShellCommands(2, internalUsage: true);
+            request.AddCommand(CommandsPowerShell.cd, directory);
+            request.AddCommand(CommandsPowerShell.git_Revparse, "--git-dir");
+
+            var results = await ExecuteAndInformUIAsync(request);
+
+            return results.AllResponses.Any(r => r.Message.Equals(".git"));
         }
 
         private string ParseVersion(PowerShellResponses input)

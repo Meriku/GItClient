@@ -36,22 +36,24 @@ namespace GItClient.Core.Models
 
     public class UserSettings : ISetting
     {
-        public UserSettings(string? username = null, string? email = null, string? directory = null) 
+        public UserSettings(string? username = null, string? email = null, string? directory = null, string? baseEncoding = null) 
         {
             Username = username ?? "";
             Email = email ?? "";
             Directory = directory ?? "";
+            BaseEncoding = baseEncoding ?? "UTF-8";
             Optional = new UserSettingsOptional();
         }
 
         public string Username { get; set; }
         public string Email { get; set; }
         public string Directory { get; set; }
+        public string BaseEncoding { get; set; }
         public UserSettingsOptional Optional { get; set; }
 
         public UserSettings Clone()
         {
-            var cloned = new UserSettings(this.Username, this.Email, this.Directory);
+            var cloned = new UserSettings(this.Username, this.Email, this.Directory, this.BaseEncoding);
             cloned.Optional = this.Optional;
             return cloned;
         }

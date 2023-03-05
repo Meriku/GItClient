@@ -1,22 +1,13 @@
-﻿using GItClient.Core.Controllers;
+﻿using GItClient.Core;
+using GItClient.Core.Controllers;
 using GItClient.Core.Controllers.SettingControllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GItClient.MVVM.View.MainView
 {
@@ -66,8 +57,54 @@ namespace GItClient.MVVM.View.MainView
 
         private void button_Open_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: show info that repo is already added
-            _gitController.OpenRepository(UserSettings.Directory);
+            var button = (Button)sender;
+            button.IsEnabled = false;
+
+            Task.Run(async () => 
+            {
+                var isRepoExist = await CheckIfExist();
+                var isOpened = CheckIfOpen();
+
+                if (isRepoExist && !isOpened) 
+                {
+                    _gitController.OpenRepository(UserSettings.Directory);
+                }
+
+                Dispatcher.Invoke(() => { button.IsEnabled = true; });
+            });
+        }
+
+        private bool CheckIfOpen()
+        {
+            var genName = Helper.GetGeneratedNameFromPath(UserSettings.Directory);
+            var isAlreadyOpen = RepositoriesController.IsRepositoryAdded(genName);
+
+            if (isAlreadyOpen)
+            {
+                var messageBoxText = "This repository is already opened";
+                var caption = "Error";
+                var button = MessageBoxButton.OK;
+                var icon = MessageBoxImage.Warning;
+
+                var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            }
+            return isAlreadyOpen;
+        }
+
+        private async Task<bool> CheckIfExist()
+        {
+            var isExist = await _gitController.CheckIfRepositoryExist(UserSettings.Directory);
+
+            if (!isExist)
+            {
+                var messageBoxText = "Folder does not contain any repository";
+                var caption = "Error";
+                var button = MessageBoxButton.OK;
+                var icon = MessageBoxImage.Warning;
+
+                var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            }
+            return isExist;
         }
     }
 }

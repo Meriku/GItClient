@@ -57,6 +57,10 @@ namespace GItClient.Core
 
         public static string ToPWString(this CommandsPowerShell command)
         {
+            if (command == CommandsPowerShell.git_Revparse)
+            {
+                return "git rev-parse";
+            }
             return command.ToString().ToLower().Replace('_', ' ');
         }
 
@@ -65,6 +69,11 @@ namespace GItClient.Core
             Random random = new Random();
             var color = Color.FromRgb((byte)random.Next(50, 200), (byte)random.Next(50, 200), (byte)random.Next(50, 200));
             return color;
+        }
+
+        public static string GetGeneratedNameFromPath(string path)
+        {
+            return string.IsNullOrWhiteSpace(path) ? "" : path[(path.LastIndexOf('\\') + 1)..];
         }
 
     }

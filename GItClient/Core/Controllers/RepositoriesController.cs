@@ -25,6 +25,7 @@ namespace GItClient.Core.Controllers
 
         public static void Init()
         {
+            repositories = new Dictionary<string, Repository>();
             _repositoriesSettingsController = new RepositoriesSettingsController();
             _gitController = new GitController();
 
@@ -148,10 +149,19 @@ namespace GItClient.Core.Controllers
             }
 
         }
+        internal static bool IsRepositoryAdded(string genName)
+        {
+            return repositories.ContainsKey(genName);
+        }
 
         internal static Repository[] GetAllOpenRepositories()
         {
-            return repositories.Values.ToArray();
+            var repository = new Repository[0];
+            if (repositories != null)
+            {
+                repository = repositories.Values.ToArray();
+            }
+            return repository;
         }
 
 

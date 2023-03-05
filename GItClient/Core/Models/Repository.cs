@@ -29,7 +29,7 @@ namespace GItClient.Core.Models
     public class Repository 
     {
         public string Name { get; set; }
-        public string GenName => string.IsNullOrWhiteSpace(Path) ? "" : Path[(Path.LastIndexOf('\\') + 1)..];
+        public string GenName => Helper.GetGeneratedNameFromPath(Path);
         public string Link { get; set; }
         public string Path { get; set; }
         public bool Active { get; set; }

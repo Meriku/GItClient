@@ -36,6 +36,8 @@ namespace GItClient.Core.Controllers.Static
                 {
                     using PowerShell powershell = PowerShell.Create();
 
+                    powershell.Runspace.SessionStateProxy.PSVariable.Set("OutputEncoding", System.Text.Encoding.UTF8);
+
                     foreach (var command in commands.AllCommands)
                     {
                         powershell.AddScript(command);
@@ -163,6 +165,7 @@ namespace GItClient.Core.Controllers.Static
         git_Version,
         git_Init,
         git_Clone,
-        git_Log
+        git_Log,
+        git_Revparse
     }
 }
