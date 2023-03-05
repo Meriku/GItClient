@@ -31,70 +31,29 @@ namespace GItClient.Core.Convertors
         private static GitCommits GetGitCommitsFromPowerShellResponses(PowerShellResponses responses)
         {
             var responsesArray = responses.AllResponses.ToArray();
-
-            var startIndex = 0;
-
             var result = new List<GitCommit>();
-            while (true)
+            //TODO: solve another encoding problem
+
+            foreach (var response in responsesArray)
             {
                 var commit = new GitCommit();
-                for (var i = startIndex; ; i++)
-                {
-                    if (i >= responsesArray.Length)
-                    {
-                        startIndex = i;
-                        break;
-                    }
+                commit.CommitHash = response.Message[0..40];
 
-                    if (responsesArray[i].Message.Contains("commit"))
-                    {
-                        if (string.IsNullOrWhiteSpace(commit.CommitHash))
-                        {
-                            commit.CommitHash = responsesArray[i].Message.Trim();
-                        }
-                        else
-                        {
-                            startIndex = i;
-                            break;
-                        }
-                    }
-                    else if (responsesArray[i].Message.Contains("Author"))
-                    {
-                        var trimmedMessage = responsesArray[i].Message.Trim()[8..];
+                var subjectEndIndex = response.Message.IndexOf('¦', 41);
+                commit.Subject = response.Message[41..subjectEndIndex];
 
-                        var index = trimmedMessage.IndexOf('<');
+                var bodyEndIndex = response.Message.IndexOf('¦', subjectEndIndex + 1);
+                commit.Body = response.Message[(subjectEndIndex + 1)..bodyEndIndex];
 
-                        if (index == -1)
-                        {
-                            commit.Author = trimmedMessage;
-                        }
-                        else
-                        {
-                            commit.Author = trimmedMessage[0..index];
-                            commit.Email = trimmedMessage[(index + 1)..^1];
-                        }
-                        
+                var authorEndIndex = response.Message.IndexOf('¦', bodyEndIndex + 1);
+                commit.Author = response.Message[(bodyEndIndex + 1)..authorEndIndex];
 
-                    }
-                    else if (responsesArray[i].Message.Contains("Date"))
-                    {
-                        commit.Date = responsesArray[i].Message.Trim();
-                    }
-                    else if (DateTime.TryParse(responsesArray[i].Message, out var date))
-                    {
-                        commit.ShortDate = date;
-                    }
-                    else
-                    {
-                        commit.CommitMessage += responsesArray[i].Message.Trim() + " ";
-                    }
-                }
+                var emailEndIndex = response.Message.IndexOf('¦', authorEndIndex + 1);
+                commit.Email = response.Message[(authorEndIndex + 1)..emailEndIndex];
+
+                commit.Date = response.Message[(emailEndIndex + 1)..];
+            
                 result.Add(commit);
-
-                if (startIndex >= responsesArray.Length)
-                {
-                    break;
-                }
             }
 
             return new GitCommits(result);

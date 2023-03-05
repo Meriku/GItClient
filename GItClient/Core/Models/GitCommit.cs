@@ -15,10 +15,8 @@ namespace GItClient.Core.Models
         public string Author { get; set; }
         public string Email { get; set; }
         public string Date { get; set; }
-        public string Empty1 { get; set; }
-        public DateTime ShortDate { get; set; }
-        public string CommitMessage { get; set; }
-        public string Empty2 { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
 
         public GitCommit()
         {

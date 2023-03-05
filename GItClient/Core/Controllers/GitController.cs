@@ -33,7 +33,7 @@ namespace GItClient.Core.Controllers
         {
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
-            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--decorate=short", "--encoding=cp866" });
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--pretty=%H¦%s¦%b¦%aN¦%aE¦%aD" });
 
             var results = await ExecuteAndInformUIAsync(request);
 

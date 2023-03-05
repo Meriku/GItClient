@@ -144,7 +144,7 @@ namespace GItClient.MVVM.View.PartialView
                 textblockHash.FontFamily = fontFamily;
 
                 var textblockMessage = new TextBlock();
-                textblockMessage.Text = commit.CommitMessage;
+                textblockMessage.Text = commit.Subject;
                 textblockMessage.Foreground = fontColor;
                 textblockMessage.FontSize = fontSize;
                 textblockMessage.FontFamily = fontFamily;
@@ -155,10 +155,17 @@ namespace GItClient.MVVM.View.PartialView
                 textblockAuthor.FontSize = fontSize;
                 textblockAuthor.FontFamily = fontFamily;
 
+                var textblockDate = new TextBlock();
+                textblockDate.Text = commit.Date;
+                textblockDate.Foreground = fontColor;
+                textblockDate.FontSize = fontSize;
+                textblockDate.FontFamily = fontFamily;
+
                 MainGrid.RowDefinitions.Add(row);
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
                 MainGrid.Children.Add(textblockAuthor);
+                MainGrid.Children.Add(textblockDate);
                 // TOOD: MainGrid.Children.Add(graph);
 
                 Grid.SetRow(textblockHash, i + 1);
@@ -169,6 +176,9 @@ namespace GItClient.MVVM.View.PartialView
 
                 Grid.SetRow(textblockAuthor, i + 1);
                 Grid.SetColumn(textblockAuthor, 3);
+
+                Grid.SetRow(textblockDate, i + 1);
+                Grid.SetColumn(textblockDate, 4);
             }
 
         }
