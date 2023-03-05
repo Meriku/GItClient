@@ -86,7 +86,7 @@ namespace GItClient.MVVM.View.PartialView
             MainGrid.RowDefinitions.Add(row);
             MainGrid.Children.Add(textblock);
             Grid.SetRow(textblock, 0);
-            Grid.SetColumn(textblock, 0);
+            Grid.SetColumn(textblock, 2);
         }
 
         private void RenderWaitingView(Repository currentRepository)

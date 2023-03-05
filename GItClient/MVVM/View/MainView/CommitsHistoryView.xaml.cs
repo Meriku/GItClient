@@ -66,30 +66,27 @@ namespace GItClient.MVVM.View.MainView
         {
             var tab = new UITab();
             tab.Parent = Tabs_Grid;
+            tab.AddTabToParent(index);
 
             Tabs.Add(tab);
 
             if (repository == null)
             {
-                tab.Name = "Welcome!";
+                tab.ConvertToDefault();
+                return;
             }
-            else
+
+            tab.Name = repository.GenName;
+            tab.Background = new SolidColorBrush(repository.Color);
+
+            if (repository.Active)
             {
-                tab.Name = repository.GenName;
-                tab.Background = new SolidColorBrush(repository.Color);
-
-                if (repository.Active)
-                {
-                    tab.Activate();
-                    ActiveTab = tab;
-                }
-
-                tab.LeftButtonDown = button_Repository_Click;
-                tab.CloseClick = button_Repository_Close;
+                tab.Activate();
+                ActiveTab = tab;
             }
 
-            tab.AddTabToParent(index);
-
+            tab.LeftButtonDown = button_Repository_Click;
+            tab.CloseClick = button_Repository_Close;
         }
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
@@ -120,12 +117,26 @@ namespace GItClient.MVVM.View.MainView
             tab.Remove();
             Tabs.Remove(tab);
 
-            var activeRepo = RepositoriesController.GetCurrentRepository();
-            ChangeCurrentRepositoryAndUpdateUI(activeRepo.GenName);
+            if (ActiveTab == tab && Tabs.Count > 0)
+            {
+                var lastTab = Tabs.Last();
+                lastTab.Activate();
+                RepositoriesController.SetCurrentRepository(lastTab.Name);
+                ActiveTab = lastTab;
+
+                WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(""));
+            }
 
             for (var i = 0; i < Tabs.Count; i++)
             {
                 Tabs[i].SetColumn(i);
+            }
+
+            if (Tabs.Count == 0)
+            {
+                // Adding Welcome Tab, if no repository open
+                AddRepositoryTabs();
+                WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage(""));
             }
 
             e.Handled = true;

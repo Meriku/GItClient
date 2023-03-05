@@ -54,6 +54,8 @@ namespace GItClient.Core.Models
 
         private ColumnDefinition Column { get; set; }
 
+        public bool IsActive => Opacity == 1;
+
         public UITab()
         {
             TabBorder = new Border();
@@ -119,6 +121,12 @@ namespace GItClient.Core.Models
         public void Deactivate()
         {
             Opacity = 0.3;
+        }
+
+        public void ConvertToDefault()
+        {
+            Name = "Welcome!";
+            TabButton.Visibility = Visibility.Hidden;
         }
 
     }

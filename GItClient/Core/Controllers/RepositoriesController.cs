@@ -18,8 +18,9 @@ namespace GItClient.Core.Controllers
         private static RepositoriesSettingsController _repositoriesSettingsController;
         private static GitController _gitController;
 
-        private static string CurrentRepository;
+        private static string? CurrentRepository;
 
+        public static int Count => repositories.Count;
         public static bool IsEmpty => repositories.Count == 0;
 
         public static void Init()
@@ -30,6 +31,7 @@ namespace GItClient.Core.Controllers
             Task.Run( async () =>
             {
                 repositories = await _repositoriesSettingsController.LoadOpenRepositories();
+                CurrentRepository = Count > 0 ? repositories.Last().Key : null;
                 StartLoadAllRepositoriesCommits();
             });
         }
@@ -133,8 +135,12 @@ namespace GItClient.Core.Controllers
             if (repositories.ContainsKey(genName))
             {
                 repositories.Remove(genName);
-                CurrentRepository = repositories.First().Value.GenName;
-                //TODO: handle exception if repositories is empty
+                var repository = repositories.LastOrDefault();
+     
+                if (CurrentRepository == genName)
+                {
+                    CurrentRepository = repository.Key != null ? repository.Key : null;
+                }
             }
             else
             {
