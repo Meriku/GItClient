@@ -23,13 +23,19 @@
               Grid.Row="0"
               Grid.Column="0">
             
+            <Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
         </Grid>
         
         
         <Grid Name="Content_Grid"
               Grid.Row="1"
               Grid.Column="0">
-            <!--Max Colums Count-->
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>

@@ -11,6 +11,8 @@ using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GItClient.MVVM.View.MainView
 {
@@ -23,11 +25,13 @@ namespace GItClient.MVVM.View.MainView
     /// </summary>
     public partial class CommitsHistoryView : UserControl
     {
-        private Border ActiveBorder;
+        private UITab ActiveTab;
+        private List<UITab> Tabs;
 
         public CommitsHistoryView()
         {
-            // TODO: add close buttons for tabs
+            Tabs = new List<UITab>();
+
             InitializeComponent();
 
             AddRepositoryTabs();
@@ -42,6 +46,7 @@ namespace GItClient.MVVM.View.MainView
         private void AddRepositoryTabs()
         {
             Tabs_Grid.ColumnDefinitions.Clear();
+            Tabs_Grid.Children.Clear();
 
             var repositories = RepositoriesController.GetAllOpenRepositories();
 
@@ -59,116 +64,69 @@ namespace GItClient.MVVM.View.MainView
 
         private void AddRepositoryTab(Repository? repository, int index)
         {
-            var column = new ColumnDefinition();
-            Tabs_Grid.ColumnDefinitions.Add(column);
+            var tab = new UITab();
+            tab.Parent = Tabs_Grid;
 
-            var border = new Border();
-            var grid = new Grid();
-            var label = new TextBlock();
-            var button = new CrossButton();
-
-
-            button.Width = 13;
-            button.Height = 13;
-            button.HorizontalAlignment = HorizontalAlignment.Right;
-            button.Margin = new Thickness(0,0,6,0);
-
-            label.HorizontalAlignment = HorizontalAlignment.Center;
-            label.VerticalAlignment = VerticalAlignment.Center;
-
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            border.Child = grid;
-
-            grid.Children.Add(label);
-            grid.Children.Add(button);
-            Grid.SetRow(label, 0);
-            Grid.SetColumn(label, 0);
-            Grid.SetColumnSpan(label, 2);
-            Grid.SetRow(button, 0);
-            Grid.SetColumn(button, 1);
+            Tabs.Add(tab);
 
             if (repository == null)
             {
-                border.Name = "Welcome!";
-                label.Text = "Welcome!";
-                border.Background = new SolidColorBrush(Color.FromArgb(255, 49, 43, 64));
+                tab.Name = "Welcome!";
             }
             else
             {
-                border.Name = repository.GenName;
-                label.Text = repository.GenName;
-                border.Background = new SolidColorBrush(repository.Color);
-                border.Background.Opacity = 0.6;
+                tab.Name = repository.GenName;
+                tab.Background = new SolidColorBrush(repository.Color);
 
                 if (repository.Active)
                 {
-                    border.Background.Opacity = 1;
-                    ActiveBorder = border;
+                    tab.Activate();
+                    ActiveTab = tab;
                 }
 
-                border.MouseLeftButtonDown += button_Repository_Click;
-                button.Click += button_Repository_Close;
+                tab.LeftButtonDown = button_Repository_Click;
+                tab.CloseClick = button_Repository_Close;
             }
 
-            Tabs_Grid.Children.Add(border);
-            Grid.SetRow(border, 0);
-            Grid.SetColumn(border, index);
-        }
+            tab.AddTabToParent(index);
 
-        private void RemoveTab(string repoName)
-        {
-            var index = -1;
-
-            for (var i = 0; i < Tabs_Grid.Children.Count; i++)
-            {
-                if (Tabs_Grid.Children[i] is Border border)
-                {
-                    if (border.Name.Equals(repoName))
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-            }
-
-            if (index >= 0)
-            {
-                Tabs_Grid.Children.RemoveAt(index);
-                Tabs_Grid.ColumnDefinitions.RemoveAt(index);
-            }
         }
 
         private void button_Repository_Click(object sender, RoutedEventArgs e)
         {
-            var pressedBorder = ((Border)sender);
+            var tab = ((UITab)sender);
 
-            if (ActiveBorder == pressedBorder)
+            if (ActiveTab == tab)
             {
                 return;
             }
 
-            ActiveBorder.Background.Opacity = 0.6;
+            ActiveTab.Deactivate();
 
-            ActiveBorder = pressedBorder;
-            var repoName = pressedBorder.Name;
-            ActiveBorder.Background.Opacity = 1;
+            ActiveTab = tab;
+            ActiveTab.Activate();
 
+            var repoName = tab.Name;
             ChangeCurrentRepositoryAndUpdateUI(repoName);
         }
 
 
         private void button_Repository_Close(object sender, RoutedEventArgs e)
         {
-            var pressedButton = ((Button)sender);
-            var repoName = ((Border)((Grid)pressedButton.Parent).Parent).Name;
+            var tab = ((UITab)sender);
+            var repoName = tab.Name;
 
             RepositoriesController.RemoveRepository(repoName);
-            RemoveTab(repoName);
+            tab.Remove();
+            Tabs.Remove(tab);
 
             var activeRepo = RepositoriesController.GetCurrentRepository();
             ChangeCurrentRepositoryAndUpdateUI(activeRepo.GenName);
+
+            for (var i = 0; i < Tabs.Count; i++)
+            {
+                Tabs[i].SetColumn(i);
+            }
 
             e.Handled = true;
         }
