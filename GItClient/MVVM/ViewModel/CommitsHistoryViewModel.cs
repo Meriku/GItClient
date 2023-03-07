@@ -31,6 +31,9 @@ namespace GItClient.MVVM.ViewModel
             // TODO: implemeted custom views now
             // will be needed in future
             CurrentView = new CommitsHistoryPartialViewModel();
+
+            WeakReferenceMessenger.Default.Register<CommitsPartialViewChangedMessage>(this, (r, m) =>
+            { CurrentView = m.Value; });
         }
 
     }

@@ -31,7 +31,7 @@ namespace GItClient.Core.Controllers
         }
         internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
-            var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", Mapper.Separator);
+            var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
             request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--encoding=cp866" });
@@ -41,6 +41,20 @@ namespace GItClient.Core.Controllers
             var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
 
             return result.Commits;
+        }
+
+        internal async Task<Tree<GitCommitBase>> GetGitCommitsTreeAsync(Repository repository)
+        {
+            var gitCommitFormat = string.Format("--pretty=%H{0}%P", GitLogParser.Separator);
+            var request = new PowerShellCommands(2, internalUsage: true);
+            request.AddCommand(CommandsPowerShell.cd, repository.Path);
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--encoding=cp866" });
+
+            var results = await ExecuteAndInformUIAsync(request);
+
+            var tree = GitLogParser.CreateTree(results);
+
+            return tree;
         }
 
         internal async Task<bool> CheckIfRepositoryExist(string directory)

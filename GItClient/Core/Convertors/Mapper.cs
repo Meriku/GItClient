@@ -9,7 +9,6 @@ namespace GItClient.Core.Convertors
 {
     public static class Mapper
     {
-        public const char Separator = '~';
 
         public static TResult Map<TInput, TResult>(TInput input)
         {
@@ -31,6 +30,7 @@ namespace GItClient.Core.Convertors
 
         private static GitCommits GetGitCommitsFromPowerShellResponses(PowerShellResponses responses)
         {
+
             var responsesArray = responses.AllResponses.ToArray();
             var result = new List<GitCommit>();
 
@@ -47,7 +47,7 @@ namespace GItClient.Core.Convertors
                         commit.Branch = response.Message[8..];
                         r++;
                         response = responsesArray[r];
-                        var responseSplited = response.Message.Split(Separator);
+                        var responseSplited = response.Message.Split(GitLogParser.Separator);
                         commit.Author = responseSplited[1];
                         commit.Email = responseSplited[2];
                         commit.Date = responseSplited[3];
@@ -69,7 +69,7 @@ namespace GItClient.Core.Convertors
                     {
                         if (startPoint > response.Message.Length) { break; }
 
-                        var index = response.Message.IndexOf(Separator, startPoint);
+                        var index = response.Message.IndexOf(GitLogParser.Separator, startPoint);
                         startPoint = index + 1;
 
                         if (index == -1) { break; }

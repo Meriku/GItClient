@@ -34,4 +34,10 @@ namespace GItClient.Core.Models
         }
     }
 
+    public class CommitsPartialViewChangedMessage : ValueChangedMessage<IViewModel>
+    {
+        public CommitsPartialViewChangedMessage(IViewModel viewmodel) : base(viewmodel)
+        {
+        }
+    }
 }

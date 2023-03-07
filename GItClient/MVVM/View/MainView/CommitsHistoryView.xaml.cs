@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using GItClient.MVVM.ViewModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace GItClient.MVVM.View.MainView
@@ -28,6 +30,22 @@ namespace GItClient.MVVM.View.MainView
             InitializeComponent();
 
             AddRepositoryTabs();
+        }
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            var window = Window.GetWindow(this);
+            window.KeyDown += HandleKeyPress;
+        }
+        private void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                WeakReferenceMessenger.Default.Send(new CommitsPartialViewChangedMessage(new CommitsHistoryPartialViewModel()));
+            }
+            if (e.Key == Key.Up)
+            {
+                WeakReferenceMessenger.Default.Send(new CommitsPartialViewChangedMessage(new CommitsHistoryTreeViewModel()));
+            }
         }
 
         private void ChangeCurrentRepositoryAndUpdateUI(string repoName)

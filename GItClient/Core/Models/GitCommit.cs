@@ -8,9 +8,43 @@ using System.Threading.Tasks;
 
 namespace GItClient.Core.Models
 {
-    public class GitCommit
+
+    public interface IGetHash
+    {
+        public string GetHash();
+    }
+
+    public interface IGetParentHashes
+    {
+        public string[] GetParentHashes();
+    }
+
+    public class GitCommitBase : IGetHash, IGetParentHashes
     {
         public string CommitHash { get; set; }
+        public string[] ParentCommitHashes { get; set; }
+
+        public GitCommitBase(string commitHash, string[] parentCommitHashes) 
+        { 
+            CommitHash= commitHash;
+            ParentCommitHashes= parentCommitHashes;
+        }
+
+        public GitCommitBase() { }
+
+        public string GetHash()
+        {
+            return CommitHash;
+        }
+
+        public string[] GetParentHashes()
+        {
+            return ParentCommitHashes;
+        }
+    }
+
+    public class GitCommit : GitCommitBase
+    {
         public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[0..7];
         public string Author { get; set; }
         public string Email { get; set; }

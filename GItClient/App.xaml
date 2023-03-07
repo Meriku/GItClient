@@ -44,6 +44,9 @@
             <DataTemplate DataType="{x:Type viewModel:CommitsHistoryPartialViewModel}">
                 <partialViews:CommitsHistoryPartialView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:CommitsHistoryTreeViewModel}">
+                <partialViews:CommitsHistoryTreeView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:HomeMenuViewModel}">
                 <menuViews:HomeMenuView/>
             </DataTemplate>
