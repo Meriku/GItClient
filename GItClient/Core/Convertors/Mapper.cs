@@ -9,6 +9,7 @@ namespace GItClient.Core.Convertors
 {
     public static class Mapper
     {
+        public const char Separator = '~';
 
         public static TResult Map<TInput, TResult>(TInput input)
         {
@@ -32,27 +33,32 @@ namespace GItClient.Core.Convertors
         {
             var responsesArray = responses.AllResponses.ToArray();
             var result = new List<GitCommit>();
-            //TODO: solve another encoding problem
 
             foreach (var response in responsesArray)
             {
                 var commit = new GitCommit();
                 commit.CommitHash = response.Message[0..40];
 
-                var subjectEndIndex = response.Message.IndexOf('¦', 41);
+                var subjectEndIndex = response.Message.IndexOf(Separator, 41);
+                //var safeSubjectEndIndex = subjectEndIndex == -1 ? 41 : subjectEndIndex;
                 commit.Subject = response.Message[41..subjectEndIndex];
 
-                var bodyEndIndex = response.Message.IndexOf('¦', subjectEndIndex + 1);
+                var bodyEndIndex = response.Message.IndexOf(Separator, subjectEndIndex + 1);
                 commit.Body = response.Message[(subjectEndIndex + 1)..bodyEndIndex];
 
-                var authorEndIndex = response.Message.IndexOf('¦', bodyEndIndex + 1);
+                var authorEndIndex = response.Message.IndexOf(Separator, bodyEndIndex + 1);
                 commit.Author = response.Message[(bodyEndIndex + 1)..authorEndIndex];
 
-                var emailEndIndex = response.Message.IndexOf('¦', authorEndIndex + 1);
+                var emailEndIndex = response.Message.IndexOf(Separator, authorEndIndex + 1);
                 commit.Email = response.Message[(authorEndIndex + 1)..emailEndIndex];
 
                 commit.Date = response.Message[(emailEndIndex + 1)..];
-            
+                
+                if (DateTime.TryParse(commit.Date, out var shortDate))
+                {
+                    commit.ShortDate = shortDate;
+                }
+                
                 result.Add(commit);
             }
 

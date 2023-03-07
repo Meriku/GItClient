@@ -156,7 +156,7 @@ namespace GItClient.MVVM.View.PartialView
                 textblockAuthor.FontFamily = fontFamily;
 
                 var textblockDate = new TextBlock();
-                textblockDate.Text = commit.Date;
+                textblockDate.Text = commit.ShortDate.ToString("g");
                 textblockDate.Foreground = fontColor;
                 textblockDate.FontSize = fontSize;
                 textblockDate.FontFamily = fontFamily;

@@ -31,9 +31,10 @@ namespace GItClient.Core.Controllers
         }
         internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
+            var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", Mapper.Separator);
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
-            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--pretty=%H¦%s¦%b¦%aN¦%aE¦%aD" });
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--encoding=cp866" });
 
             var results = await ExecuteAndInformUIAsync(request);
 

@@ -11,10 +11,11 @@ namespace GItClient.Core.Models
     public class GitCommit
     {
         public string CommitHash { get; set; }
-        public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[7..14];
+        public string ShortCommitHash => string.IsNullOrWhiteSpace(CommitHash) ? "" : CommitHash[0..7];
         public string Author { get; set; }
         public string Email { get; set; }
         public string Date { get; set; }
+        public DateTime ShortDate { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
 
