@@ -8,12 +8,12 @@
              d:DesignHeight="450" d:DesignWidth="800">
     
     <ScrollViewer>
-        <TreeView Name="CommitsTree" 
-                  Margin="10"
-                  Background="Transparent"
-                  Foreground="White">
-            
-        </TreeView>
+
+        <Canvas Name="MainCanvas">
+
+        </Canvas>
+
     </ScrollViewer>
+    
     
 </UserControl>

@@ -10,18 +10,18 @@ namespace GItClient.Core.Models
 {
     public class Tree<T> where T : IGetHash, IGetParentHashes
     {
-        public Node<T> Head { get; set; }
+        public TreeNode<T> Head { get; set; }
 
-        public Dictionary<string, Node<T>> AllNodes { get; set; }
+        public Dictionary<string, TreeNode<T>> AllNodes { get; set; }
 
         public Tree() 
         {
-            AllNodes = new Dictionary<string, Node<T>>();
+            AllNodes = new Dictionary<string, TreeNode<T>>();
         }
 
         public void Add(T data)
         {
-            var node = new Node<T>(data);
+            var node = new TreeNode<T>(data);
             AllNodes[node.GetHash()] = node;
 
             if (Head == null)
@@ -42,20 +42,20 @@ namespace GItClient.Core.Models
 
     }
 
-    public class Node<T> where T : IGetHash, IGetParentHashes
+    public class TreeNode<T> where T : IGetHash, IGetParentHashes
     {
 
         public T Data { get; set; }
 
-        public List<Node<T>> Children { get; set; }
+        public List<TreeNode<T>> Children { get; set; }
 
-        public Node(T data)
+        public TreeNode(T data)
         {
             Data = data;
-            Children = new List<Node<T>>();
+            Children = new List<TreeNode<T>>();
         }
 
-        public void AddChild(Node<T> node)
+        public void AddChild(TreeNode<T> node)
         {
             Children.Add(node);
         }
