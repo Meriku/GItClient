@@ -136,7 +136,13 @@ namespace GItClient.MVVM.View.PartialView
                 var commit = currentRepository.CommitsHolder.Commits[i];
                 var row = new RowDefinition();
                 row.Height = new GridLength(rowHeight);
-    
+
+                var textblockBranch = new TextBlock();
+                textblockBranch.Text = commit.Branch ?? "";
+                textblockBranch.Foreground = fontColor;
+                textblockBranch.FontSize = fontSize;
+                textblockBranch.FontFamily = fontFamily;
+
                 var textblockHash = new TextBlock();
                 textblockHash.Text = commit.ShortCommitHash;
                 textblockHash.Foreground = fontColor;
@@ -162,11 +168,15 @@ namespace GItClient.MVVM.View.PartialView
                 textblockDate.FontFamily = fontFamily;
 
                 MainGrid.RowDefinitions.Add(row);
+                MainGrid.Children.Add(textblockBranch);
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
                 MainGrid.Children.Add(textblockAuthor);
                 MainGrid.Children.Add(textblockDate);
                 // TOOD: MainGrid.Children.Add(graph);
+
+                Grid.SetRow(textblockBranch, i + 1);
+                Grid.SetColumn(textblockBranch, 0);
 
                 Grid.SetRow(textblockHash, i + 1);
                 Grid.SetColumn(textblockHash, 1);

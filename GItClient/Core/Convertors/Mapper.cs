@@ -34,36 +34,105 @@ namespace GItClient.Core.Convertors
             var responsesArray = responses.AllResponses.ToArray();
             var result = new List<GitCommit>();
 
-            foreach (var response in responsesArray)
+            try
             {
-                var commit = new GitCommit();
-                commit.CommitHash = response.Message[0..40];
-
-                var subjectEndIndex = response.Message.IndexOf(Separator, 41);
-                //var safeSubjectEndIndex = subjectEndIndex == -1 ? 41 : subjectEndIndex;
-                commit.Subject = response.Message[41..subjectEndIndex];
-
-                var bodyEndIndex = response.Message.IndexOf(Separator, subjectEndIndex + 1);
-                commit.Body = response.Message[(subjectEndIndex + 1)..bodyEndIndex];
-
-                var authorEndIndex = response.Message.IndexOf(Separator, bodyEndIndex + 1);
-                commit.Author = response.Message[(bodyEndIndex + 1)..authorEndIndex];
-
-                var emailEndIndex = response.Message.IndexOf(Separator, authorEndIndex + 1);
-                commit.Email = response.Message[(authorEndIndex + 1)..emailEndIndex];
-
-                commit.Date = response.Message[(emailEndIndex + 1)..];
-                
-                if (DateTime.TryParse(commit.Date, out var shortDate))
+                for (var r = 0; r < responsesArray.Length; r++)
                 {
-                    commit.ShortDate = shortDate;
+                    var response = responsesArray[r];
+                    var commit = new GitCommit();
+
+                    //TODO: branhes don't work correctly right now. Fix
+                    if (response.Message.Contains("branch :"))
+                    {
+                        commit.Branch = response.Message[8..];
+                        r++;
+                        response = responsesArray[r];
+                        var responseSplited = response.Message.Split(Separator);
+                        commit.Author = responseSplited[1];
+                        commit.Email = responseSplited[2];
+                        commit.Date = responseSplited[3];
+                        if (DateTime.TryParse(responseSplited[3], out var shortDate))
+                        {
+                            commit.ShortDate = shortDate;
+                        }
+                        result.Add(commit);
+                        commit = new GitCommit();
+                        r++;
+                        response = responsesArray[r];
+                    }
+
+                    
+
+                    var indexes = new List<int>() { 0 };
+                    var startPoint = 0;
+                    while (true)
+                    {
+                        if (startPoint > response.Message.Length) { break; }
+
+                        var index = response.Message.IndexOf(Separator, startPoint);
+                        startPoint = index + 1;
+
+                        if (index == -1) { break; }
+
+                        indexes.Add(index);
+                    }
+
+                    for (var i = 0; i < indexes.Count; i++)
+                    {
+                        var message = String.Empty;
+                        if (i + 1 == indexes.Count)
+                        {
+                            message = response.Message[(indexes[i] + 1)..];
+                        }
+                        else
+                        {
+                            if ((indexes[i] + 1) != indexes[i + 1])
+                            {
+                                message = response.Message[(indexes[i] + 1)..indexes[i + 1]];
+                            }
+                        }
+
+                        switch (i)
+                        {
+                            case 0:
+                                commit.CommitHash = message;
+                                break;
+                            case 1:
+                                commit.Subject = message;
+                                break;
+                            case 2:
+                                commit.Body = message;
+                                break;
+                            case 3:
+                                commit.Author = message;
+                                break;
+                            case 4:
+                                commit.Email = message;
+                                break;
+                            case 5:
+                                commit.Date = message;
+                                if (DateTime.TryParse(message, out var shortDate))
+                                {
+                                    commit.ShortDate = shortDate;
+                                }
+                                break;
+                        }
+                    }
+
+                    result.Add(commit);
                 }
-                
-                result.Add(commit);
             }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
 
             return new GitCommits(result);
         }
+
+
+        
 
     }
 }

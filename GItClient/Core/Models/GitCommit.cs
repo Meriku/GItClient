@@ -19,6 +19,8 @@ namespace GItClient.Core.Models
         public string Subject { get; set; }
         public string Body { get; set; }
 
+        public string? Branch { get; set; }
+
         public GitCommit()
         {
 
