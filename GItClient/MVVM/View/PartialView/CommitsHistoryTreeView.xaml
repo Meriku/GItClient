@@ -8,10 +8,14 @@
              d:DesignHeight="450" d:DesignWidth="800">
     
     <ScrollViewer>
-
         <Canvas Name="MainCanvas">
-
+            <Grid Name="MainGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            </Grid>
         </Canvas>
+
 
     </ScrollViewer>
     

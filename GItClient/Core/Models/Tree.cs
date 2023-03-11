@@ -13,10 +13,13 @@ namespace GItClient.Core.Models
         public TreeNode<T> Head { get; set; }
 
         public Dictionary<string, TreeNode<T>> AllNodes { get; set; }
+        public Dictionary<int, List<TreeNode<T>>> AllNodesByGeneration { get; set; }
+
 
         public Tree() 
         {
             AllNodes = new Dictionary<string, TreeNode<T>>();
+            AllNodesByGeneration = new Dictionary<int, List<TreeNode<T>>>();
         }
 
         public void Add(T data)
@@ -27,6 +30,9 @@ namespace GItClient.Core.Models
             if (Head == null)
             {
                 Head = node;
+                node.Generation = 0;
+                AllNodesByGeneration[node.Generation] = new List<TreeNode<T>> { node };
+
                 return;
             }
             else
@@ -34,9 +40,17 @@ namespace GItClient.Core.Models
                 var parentHashes = node.GetParentHashes();
                 foreach (var hash in parentHashes)
                 {
-                    AllNodes[hash].AddChild(node);
+                    var parent = AllNodes[hash];
+                    node.AddParent(parent);
+                    parent.AddChild(node);
                 }
+                node.CalculateGeneration();
 
+                if (!AllNodesByGeneration.ContainsKey(node.Generation))
+                {
+                    AllNodesByGeneration[node.Generation] = new List<TreeNode<T>>();
+                }
+                AllNodesByGeneration[node.Generation].Add(node);
             }
         }
 
@@ -48,18 +62,29 @@ namespace GItClient.Core.Models
         public T Data { get; set; }
 
         public List<TreeNode<T>> Children { get; set; }
+        public List<TreeNode<T>> Parents { get; set; }
+
+        public int Generation { get; set; }
 
         public TreeNode(T data)
         {
             Data = data;
             Children = new List<TreeNode<T>>();
+            Parents = new List<TreeNode<T>>();
         }
 
         public void AddChild(TreeNode<T> node)
         {
             Children.Add(node);
         }
-
+        public void AddParent(TreeNode<T> node)
+        {
+            Parents.Add(node);
+        }
+        public void CalculateGeneration()
+        {
+            Generation = Parents.Count > 0 ? Parents[0].Generation + 1 : 0;
+        }
         public string GetHash()
         {
             return Data.GetHash();
