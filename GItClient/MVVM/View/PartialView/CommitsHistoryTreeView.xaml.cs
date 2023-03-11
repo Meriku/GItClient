@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Ink;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
@@ -47,43 +48,67 @@ namespace GItClient.MVVM.View.PartialView
     
             Dispatcher.Invoke(() =>
             {
-                var head = tree.Head;
-                
+                var AllNodes = new Dictionary<string, TreeViewItem<GitCommitBase>>();
+
                 for (var i = 0; ; i++)
                 {
-                    MainGrid.RowDefinitions.Add(new RowDefinition());
-
+                    
                     if (!tree.AllNodesByGeneration.ContainsKey(i))
-                    {
+                    {            
                         break;
                     }
+
+                    MainCanvas.Height = i * 30;
 
                     var nodes = tree.AllNodesByGeneration[i];
 
                     for (var n = 0; n < nodes.Count; n++)
                     {
-                        if (MainGrid.ColumnDefinitions.Count <= n)
-                        {
-                            MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                        }
+                        var y = i * 30;
+                        var x = n * 30;
 
                         var viewNode = new TreeViewItem<GitCommitBase>(nodes[n]);
 
-                        MainGrid.Children.Add(viewNode.Body);
-                        Grid.SetRow(viewNode.Body, i);
-                        Grid.SetColumn(viewNode.Body, n);
+                        MainCanvas.Children.Add(viewNode.Body);
+                        Canvas.SetTop(viewNode.Body, y);
+                        Canvas.SetLeft(viewNode.Body, x);
 
+                        AllNodes[viewNode.GetHash()] = viewNode;
                     }
-                    
-
-
-
                 }
+
+                DrawLines(AllNodes);
+
 
             });
         }
 
+        public void DrawLines(Dictionary<string, TreeViewItem<GitCommitBase>> allNodes)
+        {
+            foreach (var node in allNodes.Values)
+            {
+                var childHashes = node.Data.Children.Select(x => x.GetHash()).ToArray();
 
+                for (var i = 0; i < childHashes.Length; i++)
+                {
+                    var childNode = allNodes[childHashes[i]];
+
+                    var line = new Line();
+
+                    line.Y1 = Canvas.GetTop(node.Body) + 8;
+                    line.X1 = Canvas.GetLeft(node.Body) + 8;
+                    line.Y2 = Canvas.GetTop(childNode.Body) + 8;
+                    line.X2 = Canvas.GetLeft(childNode.Body) + 8;
+
+                    line.Stroke = new SolidColorBrush(Colors.White);
+                    line.StrokeThickness = 1;
+
+                    MainCanvas.Children.Add(line);
+
+                }
+            }
+
+        }
 
     }
 }
@@ -114,8 +139,8 @@ public class TreeViewItem<T> where T : IGetHash, IGetParentHashes
         Data = data;
 
         Body = new Ellipse();
-        Body.Height = 20;
-        Body.Width = 20;
+        Body.Height = 16;
+        Body.Width = 16;
         Body.Fill = new SolidColorBrush(Colors.White);
 
         Body.ToolTip = new ToolTip() { Content = Data.GetHash(), Foreground = new SolidColorBrush(Colors.Black) };     
