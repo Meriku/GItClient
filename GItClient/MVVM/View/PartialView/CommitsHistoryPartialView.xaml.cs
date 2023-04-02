@@ -3,6 +3,7 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
 using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace GItClient.MVVM.View.PartialView
 {
@@ -37,7 +39,7 @@ namespace GItClient.MVVM.View.PartialView
 
         private void RenderCommits()
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.Invoke( async () =>
             {
                 MainGrid.RowDefinitions.Clear();
                 MainGrid.Children.Clear();
@@ -65,7 +67,7 @@ namespace GItClient.MVVM.View.PartialView
                 }
 
 
-                RenderCommitsViewImpl(CurrentRepository);
+                await RenderCommitsViewImpl(CurrentRepository);
             });
         }
 
@@ -78,14 +80,14 @@ namespace GItClient.MVVM.View.PartialView
 
             textblock.Text = EMPTY_REPOSITORIES_TEXT;
             textblock.Margin = new Thickness(10);
-            textblock.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            textblock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
             textblock.FontSize = 15;
             textblock.Height = 50;
             textblock.HorizontalAlignment = HorizontalAlignment.Center;
 
             MainGrid.RowDefinitions.Add(row);
             MainGrid.Children.Add(textblock);
-            Grid.SetRow(textblock, 0);
+            Grid.SetRow(textblock, 1);
             Grid.SetColumn(textblock, 2);
         }
 
@@ -94,7 +96,7 @@ namespace GItClient.MVVM.View.PartialView
             var spinner = new LoadingSpinner();
 
             spinner.Name = "Spinner";
-            spinner.Color = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            spinner.Color = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
             spinner.Diameter = MainGrid.ActualHeight < MainGrid.ActualWidth ? MainGrid.ActualHeight / 2 : MainGrid.ActualWidth / 2;
             spinner.Thickness = 5;
             spinner.IsLoading = true;
@@ -103,7 +105,7 @@ namespace GItClient.MVVM.View.PartialView
             MainGrid.SizeChanged += GridChanged_ResizeSpinner;
 
             MainGrid.Children.Add(spinner);
-            Grid.SetRow(spinner, 0);
+            Grid.SetRow(spinner, 1);
             Grid.SetColumn(spinner, 0);
             Grid.SetColumnSpan(spinner, 4);
 
@@ -117,17 +119,21 @@ namespace GItClient.MVVM.View.PartialView
             });
         }
 
-        private void RenderCommitsViewImpl(Repository currentRepository)
+        private async Task RenderCommitsViewImpl(Repository currentRepository)
         {
             var fontSize = FontSize;
-            var fontFamily = new FontFamily("Roboto-Light");
-            var fontColor = new SolidColorBrush(Color.FromRgb(190, 190, 190));
+            var fontFamily = new System.Windows.Media.FontFamily("Roboto-Light");
+            var fontColor = new SolidColorBrush(System.Windows.Media.Color.FromRgb(190, 190, 190));
 
             var rowHeight = GetRowHeight();
 
             var EmptyFirstRow = new RowDefinition();
             EmptyFirstRow.Height = new GridLength(5);
             MainGrid.RowDefinitions.Add(EmptyFirstRow);
+
+            //tree
+            var gitController = new GitController();
+            var tree = await gitController.GetGitCommitsTreeAsync(currentRepository);
 
             for (var i = 0; i < currentRepository.CommitsHolder.Lenght; i++) 
             {
@@ -137,35 +143,11 @@ namespace GItClient.MVVM.View.PartialView
                 var row = new RowDefinition();
                 row.Height = new GridLength(rowHeight);
 
-                var textblockBranch = new TextBlock();
-                textblockBranch.Text = commit.Branch ?? "";
-                textblockBranch.Foreground = fontColor;
-                textblockBranch.FontSize = fontSize;
-                textblockBranch.FontFamily = fontFamily;
-
-                var textblockHash = new TextBlock();
-                textblockHash.Text = commit.ShortCommitHash;
-                textblockHash.Foreground = fontColor;
-                textblockHash.FontSize = fontSize;
-                textblockHash.FontFamily = fontFamily;
-
-                var textblockMessage = new TextBlock();
-                textblockMessage.Text = commit.Subject;
-                textblockMessage.Foreground = fontColor;
-                textblockMessage.FontSize = fontSize;
-                textblockMessage.FontFamily = fontFamily;
-
-                var textblockAuthor = new TextBlock();
-                textblockAuthor.Text = commit.Author;
-                textblockAuthor.Foreground = fontColor;
-                textblockAuthor.FontSize = fontSize;
-                textblockAuthor.FontFamily = fontFamily;
-
-                var textblockDate = new TextBlock();
-                textblockDate.Text = commit.ShortDate.ToString("g");
-                textblockDate.Foreground = fontColor;
-                textblockDate.FontSize = fontSize;
-                textblockDate.FontFamily = fontFamily;
+                var textblockBranch = CreateTextBlock(commit.Branch ?? "");
+                var textblockHash = CreateTextBlock(commit.ShortCommitHash);
+                var textblockMessage = CreateTextBlock(commit.Subject);
+                var textblockAuthor = CreateTextBlock(commit.Author);
+                var textblockDate = CreateTextBlock(commit.ShortDate.ToString("g"));
 
                 MainGrid.RowDefinitions.Add(row);
                 MainGrid.Children.Add(textblockBranch);
@@ -174,9 +156,24 @@ namespace GItClient.MVVM.View.PartialView
                 MainGrid.Children.Add(textblockAuthor);
                 MainGrid.Children.Add(textblockDate);
                 // TOOD: MainGrid.Children.Add(graph);
+                if (tree.AllNodes.ContainsKey(commit.CommitHash))
+                {
+                    var node = new Ellipse() 
+                    {
+                        Height = 8,
+                        Width = 8,
+                        Fill = new SolidColorBrush(Colors.Wheat),
+                        ToolTip = new ToolTip() { Content = commit.Subject, Foreground = new SolidColorBrush(Colors.Black)}
+                    };
 
-                Grid.SetRow(textblockBranch, i + 1);
-                Grid.SetColumn(textblockBranch, 0);
+                    MainGrid.Children.Add(node);
+                    Grid.SetRow(node, i + 1);
+                    Grid.SetColumn(node, 0);
+
+                }
+
+                //Grid.SetRow(textblockBranch, i + 1);
+                //Grid.SetColumn(textblockBranch, 0);
 
                 Grid.SetRow(textblockHash, i + 1);
                 Grid.SetColumn(textblockHash, 1);
@@ -191,8 +188,24 @@ namespace GItClient.MVVM.View.PartialView
                 Grid.SetColumn(textblockDate, 4);
             }
 
+
         }
 
+        
+        private TextBlock CreateTextBlock(string text)
+        {
+            var fontSize = FontSize;
+            var fontFamily = new System.Windows.Media.FontFamily("Roboto-Light");
+            var fontColor = new SolidColorBrush(System.Windows.Media.Color.FromRgb(190, 190, 190));
+
+            var textblock = new TextBlock();
+            textblock.Foreground = fontColor;
+            textblock.FontSize = fontSize;
+            textblock.FontFamily = fontFamily;
+            textblock.Text = text;
+
+            return textblock;
+        }
         private void ResizeGridText()
         {
             var rowHeight = GetRowHeight();
@@ -243,7 +256,7 @@ namespace GItClient.MVVM.View.PartialView
         private double GetRowHeight()
         {
             var fontSize = FontSize;
-            var fontFamily = new FontFamily("Roboto-Light");
+            var fontFamily = new System.Windows.Media.FontFamily("Roboto-Light");
             var rowHeight = Math.Ceiling(fontSize * fontFamily.LineSpacing) + 5;
             return rowHeight;
         }
