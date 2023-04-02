@@ -35,6 +35,8 @@ namespace GItClient.Core.Convertors
 
             }
 
+            tree.CalculateGenerations();
+
             return tree;
 
         }

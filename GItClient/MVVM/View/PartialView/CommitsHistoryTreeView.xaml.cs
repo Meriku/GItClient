@@ -22,6 +22,9 @@ namespace GItClient.MVVM.View.PartialView
     /// </summary>
     public partial class CommitsHistoryTreeView : UserControl
     {
+
+        public const int ELLIPSE_SIZE = 8;
+
         private Dictionary<string, GitCommit> CurrentRepositoryCommits;
         public CommitsHistoryTreeView()
         {
@@ -56,7 +59,7 @@ namespace GItClient.MVVM.View.PartialView
 
                 var lastY = 0;
 
-                for (var i = 0; ; i++)
+                for (var i = tree.AllNodesByGeneration.Count - 1; ; i--)
                 {
                     
                     if (!tree.AllNodesByGeneration.ContainsKey(i))
@@ -69,17 +72,24 @@ namespace GItClient.MVVM.View.PartialView
 
                     for (var n = 0; n < nodes.Count; n++)
                     {
-                        var x = n * 30;
+                        //horizontal position
+                        var x = n * ELLIPSE_SIZE * 2;
 
                         var hash = nodes[n].GetHash();
-                        var message = hash;
+                        TreeViewItem<GitCommitBase> viewNode = null;
+
                         if (CurrentRepositoryCommits.ContainsKey(hash))
                         {
                             var commit = CurrentRepositoryCommits[hash];
-                            message = commit.Subject + " " + commit.Date + " " + commit.Author;
+                            var message = commit.Subject + " " + commit.Date + " " + commit.Author;
+                            viewNode = new TreeViewItem<GitCommitBase>(nodes[n], message, ELLIPSE_SIZE, Colors.White);
+                        }
+                        else
+                        {
+                            viewNode = new TreeViewItem<GitCommitBase>(nodes[n], hash, ELLIPSE_SIZE, Colors.Red);
                         }
 
-                        var viewNode = new TreeViewItem<GitCommitBase>(nodes[n], message);                
+                                      
 
                         MainCanvas.Children.Add(viewNode.Body);
                         Canvas.SetTop(viewNode.Body, lastY);
@@ -87,7 +97,8 @@ namespace GItClient.MVVM.View.PartialView
 
                         AllNodes[viewNode.GetHash()] = viewNode;
 
-                        lastY += 30;
+                        //vertical position
+                        lastY += ELLIPSE_SIZE * 2;
                     }
                 }
 
@@ -111,10 +122,10 @@ namespace GItClient.MVVM.View.PartialView
 
                     var line = new Line();
 
-                    line.Y1 = Canvas.GetTop(node.Body) + 8;
-                    line.X1 = Canvas.GetLeft(node.Body) + 8;
-                    line.Y2 = Canvas.GetTop(childNode.Body) + 8;
-                    line.X2 = Canvas.GetLeft(childNode.Body) + 8;
+                    line.Y1 = Canvas.GetTop(node.Body) + ELLIPSE_SIZE / 2;
+                    line.X1 = Canvas.GetLeft(node.Body) + ELLIPSE_SIZE / 2;
+                    line.Y2 = Canvas.GetTop(childNode.Body) + ELLIPSE_SIZE / 2;
+                    line.X2 = Canvas.GetLeft(childNode.Body) + ELLIPSE_SIZE / 2;
 
                     line.Stroke = new SolidColorBrush(Colors.White);
                     line.StrokeThickness = 1;
@@ -150,14 +161,14 @@ public class TreeViewItem<T> where T : IGetHash, IGetParentHashes
     public int RowIndex { get; set; }
     public int ColumnIndex { get; set; }
 
-    public TreeViewItem(TreeNode<T> data, string message)
+    public TreeViewItem(TreeNode<T> data, string message, int size, Color color)
     {
         Data = data;
 
         Body = new Ellipse();
-        Body.Height = 16;
-        Body.Width = 16;
-        Body.Fill = new SolidColorBrush(Colors.White);
+        Body.Height = size;
+        Body.Width = size;
+        Body.Fill = new SolidColorBrush(color);
 
         Body.ToolTip = new ToolTip() { Content = message, Foreground = new SolidColorBrush(Colors.Black) };     
     }

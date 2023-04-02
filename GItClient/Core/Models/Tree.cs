@@ -31,8 +31,6 @@ namespace GItClient.Core.Models
             {
                 Head = node;
                 node.Generation = 0;
-                AllNodesByGeneration[node.Generation] = new List<TreeNode<T>> { node };
-
                 return;
             }
             else
@@ -44,17 +42,25 @@ namespace GItClient.Core.Models
                     node.AddParent(parent);
                     parent.AddChild(node);
                 }
-                node.CalculateGeneration();
+            }
+        }
 
+        public void CalculateGenerations()
+        {
+            foreach (var node in AllNodes.Values)
+            {
+                node.CalculateGeneration();
                 if (!AllNodesByGeneration.ContainsKey(node.Generation))
                 {
                     AllNodesByGeneration[node.Generation] = new List<TreeNode<T>>();
                 }
+
                 AllNodesByGeneration[node.Generation].Add(node);
             }
         }
-
     }
+
+
 
     public class TreeNode<T> where T : IGetHash, IGetParentHashes
     {
@@ -83,7 +89,7 @@ namespace GItClient.Core.Models
         }
         public void CalculateGeneration()
         {
-            Generation = Parents.Count > 0 ? Parents[0].Generation + 1 : 0;
+            Generation = Parents.Count == 0 ? 0 : Parents.Select(x => x.Generation).Max() + 1;
         }
         public string GetHash()
         {
