@@ -61,57 +61,30 @@ namespace GItClient.Core.Convertors
                         response = responsesArray[r];
                     }
 
-                    
-
-                    var indexes = new List<int>() { 0 };
-                    var startPoint = 0;
-                    while (true)
+                   
+                    var strings = response.Message.Split(GitLogParser.Separator);
+                    for (var i = 0; i < strings.Length; i++)
                     {
-                        if (startPoint > response.Message.Length) { break; }
-
-                        var index = response.Message.IndexOf(GitLogParser.Separator, startPoint);
-                        startPoint = index + 1;
-
-                        if (index == -1) { break; }
-
-                        indexes.Add(index);
-                    }
-
-                    for (var i = 0; i < indexes.Count; i++)
-                    {
-                        var message = String.Empty;
-                        if (i + 1 == indexes.Count)
-                        {
-                            message = response.Message[(indexes[i] + 1)..];
-                        }
-                        else
-                        {
-                            if ((indexes[i] + 1) != indexes[i + 1])
-                            {
-                                message = response.Message[(indexes[i] + 1)..indexes[i + 1]];
-                            }
-                        }
-
                         switch (i)
                         {
                             case 0:
-                                commit.CommitHash = message;
+                                commit.CommitHash = strings[i];
                                 break;
                             case 1:
-                                commit.Subject = message;
+                                commit.Subject = strings[i];
                                 break;
                             case 2:
-                                commit.Body = message;
+                                commit.Body = strings[i];
                                 break;
                             case 3:
-                                commit.Author = message;
+                                commit.Author = strings[i];
                                 break;
                             case 4:
-                                commit.Email = message;
+                                commit.Email = strings[i];
                                 break;
                             case 5:
-                                commit.Date = message;
-                                if (DateTime.TryParse(message, out var shortDate))
+                                commit.Date = strings[i];
+                                if (DateTime.TryParse(strings[i], out var shortDate))
                                 {
                                     commit.ShortDate = shortDate;
                                 }

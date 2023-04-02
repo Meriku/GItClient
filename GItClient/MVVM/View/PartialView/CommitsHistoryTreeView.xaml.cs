@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using GItClient.Core.Controllers;
 using GItClient.Core.Models;
+using Microsoft.WindowsAPICodePack.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace GItClient.MVVM.View.PartialView
     /// </summary>
     public partial class CommitsHistoryTreeView : UserControl
     {
+        private Dictionary<string, GitCommit> CurrentRepositoryCommits;
         public CommitsHistoryTreeView()
         {
             InitializeComponent();
@@ -37,6 +39,8 @@ namespace GItClient.MVVM.View.PartialView
             { 
                 var currentRepository = RepositoriesController.GetCurrentRepository();
                 var gitController = new GitController();
+                //TODO: temp
+                CurrentRepositoryCommits = currentRepository.CommitsHolder.Commits.Where(x => x.CommitHash != null).ToDictionary(x => x.CommitHash, x => x);
                 var tree = await gitController.GetGitCommitsTreeAsync(currentRepository);
                 RenderCommitsTree(tree);
             });
@@ -50,6 +54,8 @@ namespace GItClient.MVVM.View.PartialView
             {
                 var AllNodes = new Dictionary<string, TreeViewItem<GitCommitBase>>();
 
+                var lastY = 0;
+
                 for (var i = 0; ; i++)
                 {
                     
@@ -58,24 +64,34 @@ namespace GItClient.MVVM.View.PartialView
                         break;
                     }
 
-                    MainCanvas.Height = i * 30;
-
+                   
                     var nodes = tree.AllNodesByGeneration[i];
 
                     for (var n = 0; n < nodes.Count; n++)
                     {
-                        var y = i * 30;
                         var x = n * 30;
 
-                        var viewNode = new TreeViewItem<GitCommitBase>(nodes[n]);
+                        var hash = nodes[n].GetHash();
+                        var message = hash;
+                        if (CurrentRepositoryCommits.ContainsKey(hash))
+                        {
+                            var commit = CurrentRepositoryCommits[hash];
+                            message = commit.Subject + " " + commit.Date + " " + commit.Author;
+                        }
+
+                        var viewNode = new TreeViewItem<GitCommitBase>(nodes[n], message);                
 
                         MainCanvas.Children.Add(viewNode.Body);
-                        Canvas.SetTop(viewNode.Body, y);
+                        Canvas.SetTop(viewNode.Body, lastY);
                         Canvas.SetLeft(viewNode.Body, x);
 
                         AllNodes[viewNode.GetHash()] = viewNode;
+
+                        lastY += 30;
                     }
                 }
+
+                MainCanvas.Height = lastY;
 
                 DrawLines(AllNodes);
 
@@ -134,7 +150,7 @@ public class TreeViewItem<T> where T : IGetHash, IGetParentHashes
     public int RowIndex { get; set; }
     public int ColumnIndex { get; set; }
 
-    public TreeViewItem(TreeNode<T> data)
+    public TreeViewItem(TreeNode<T> data, string message)
     {
         Data = data;
 
@@ -143,7 +159,7 @@ public class TreeViewItem<T> where T : IGetHash, IGetParentHashes
         Body.Width = 16;
         Body.Fill = new SolidColorBrush(Colors.White);
 
-        Body.ToolTip = new ToolTip() { Content = Data.GetHash(), Foreground = new SolidColorBrush(Colors.Black) };     
+        Body.ToolTip = new ToolTip() { Content = message, Foreground = new SolidColorBrush(Colors.Black) };     
     }
 
     public string GetHash()
