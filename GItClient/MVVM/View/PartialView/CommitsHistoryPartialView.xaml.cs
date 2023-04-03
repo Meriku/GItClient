@@ -3,7 +3,9 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +26,9 @@ namespace GItClient.MVVM.View.PartialView
         private const string EMPTY_REPOSITORIES_TEXT = "It's curently empty here :( \nInit, clone or open a new repository";
 
         private int FontSize = 12;
+        public const int ELLIPSE_SIZE = 8;
+
+        private Dictionary<int, System.Windows.Media.Color> ColorByGeneration;
 
         public CommitsHistoryPartialView()
         {
@@ -35,6 +40,15 @@ namespace GItClient.MVVM.View.PartialView
 
             WeakReferenceMessenger.Default.Register<RepositoryChangedMessage>(this, (r, m) =>
             { RenderCommits(); });
+
+            ColorByGeneration = new Dictionary<int, System.Windows.Media.Color> {
+                { 0, Colors.White},
+                { 1, Colors.Yellow},
+                { 2, Colors.Green},
+                { 3, Colors.Red},
+                { 4, Colors.Blue},
+                { 5, Colors.Violet}
+            };
         }
 
         private void RenderCommits()
@@ -42,6 +56,8 @@ namespace GItClient.MVVM.View.PartialView
             Dispatcher.Invoke( async () =>
             {
                 MainGrid.RowDefinitions.Clear();
+
+                MainCanvas.Children.Clear();
                 MainGrid.Children.Clear();
 
                 if (RepositoriesController.IsEmpty)
@@ -121,6 +137,15 @@ namespace GItClient.MVVM.View.PartialView
 
         private async Task RenderCommitsViewImpl(Repository currentRepository)
         {
+            MainGrid.SizeChanged -= GridChanged_ResizeSpinner;
+
+            MainGrid.Children.Add(MainCanvas);
+            Grid.SetRow(MainCanvas, 0);
+            Grid.SetRowSpan(MainCanvas, int.MaxValue);
+            Grid.SetColumn(MainCanvas, 0);
+
+            var graphNodes = new Dictionary<string, TreeViewItem>();
+
             var fontSize = FontSize;
             var fontFamily = new System.Windows.Media.FontFamily("Roboto-Light");
             var fontColor = new SolidColorBrush(System.Windows.Media.Color.FromRgb(190, 190, 190));
@@ -134,12 +159,17 @@ namespace GItClient.MVVM.View.PartialView
             //tree
             var gitController = new GitController();
             var tree = await gitController.GetGitCommitsTreeAsync(currentRepository);
-
-            for (var i = 0; i < currentRepository.CommitsHolder.Lenght; i++) 
+            var commitsWithoutEmpty = currentRepository.CommitsHolder.Commits.Where(x => x.CommitHash != null).ToArray(); //TODO: temp
+            var lastY = 0;
+            for (var i = 0; i < commitsWithoutEmpty.Length; i++) 
             {
-                MainGrid.SizeChanged -= GridChanged_ResizeSpinner;
+                var commit = commitsWithoutEmpty[i];
 
-                var commit = currentRepository.CommitsHolder.Commits[i];
+                if (commit.CommitHash == null)
+                {
+                    continue;
+                }
+                    
                 var row = new RowDefinition();
                 row.Height = new GridLength(rowHeight);
 
@@ -150,25 +180,41 @@ namespace GItClient.MVVM.View.PartialView
                 var textblockDate = CreateTextBlock(commit.ShortDate.ToString("g"));
 
                 MainGrid.RowDefinitions.Add(row);
-                MainGrid.Children.Add(textblockBranch);
+                //MainGrid.Children.Add(textblockBranch);
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
                 MainGrid.Children.Add(textblockAuthor);
                 MainGrid.Children.Add(textblockDate);
                 // TOOD: MainGrid.Children.Add(graph);
+
                 if (tree.AllNodes.ContainsKey(commit.CommitHash))
                 {
-                    var node = new Ellipse() 
+                    var generation = tree.AllNodes[commit.CommitHash].Generation;
+                    var indexInGeneration = tree.AllNodesByGeneration[generation].IndexOf(tree.AllNodes[commit.CommitHash]);
+
+                    var body = new Ellipse() 
                     {
                         Height = 8,
                         Width = 8,
-                        Fill = new SolidColorBrush(Colors.Wheat),
-                        ToolTip = new ToolTip() { Content = commit.Subject, Foreground = new SolidColorBrush(Colors.Black)}
+                        Fill = new SolidColorBrush(ColorByGeneration[indexInGeneration]),
+                        ToolTip = new ToolTip() { Content = commit.Subject, Foreground = new SolidColorBrush(Colors.Black)},
+                        HorizontalAlignment = HorizontalAlignment.Left,
                     };
 
-                    MainGrid.Children.Add(node);
-                    Grid.SetRow(node, i + 1);
-                    Grid.SetColumn(node, 0);
+                    var node = new TreeViewItem();
+                    node.Body = body;
+                    node.Commit = tree.AllNodes[commit.CommitHash].Data;
+
+                    graphNodes[commit.CommitHash] = node;
+
+                    //MainGrid.Children.Add(node.Body);
+                    //Grid.SetRow(node.Body, i + 1);
+                    //Grid.SetColumn(node.Body, 0);
+                    MainCanvas.Children.Add(node.Body);
+                    Canvas.SetTop(node.Body, lastY);
+                    Canvas.SetLeft(node.Body, 10 * indexInGeneration + 5);
+
+                    lastY += (int)rowHeight;
 
                 }
 
@@ -188,10 +234,55 @@ namespace GItClient.MVVM.View.PartialView
                 Grid.SetColumn(textblockDate, 4);
             }
 
+            
+
+            DrawLines(graphNodes, out int maxWidth);
+
+            MainGrid.ColumnDefinitions[0].Width = new GridLength(maxWidth);
+
+        }
+        public void DrawLines(Dictionary<string, TreeViewItem> allNodes, out int maxWidth)
+        {
+            var maxHeight = 0;
+            maxWidth = 0;
+
+            var maxParents = 1;
+            foreach (var node in allNodes.Values)
+            {
+                if (node.Commit.ParentCommitHashes == null)
+                {
+                    continue;
+                }
+
+                for (var i = 0; i < node.Commit.ParentCommitHashes.Length; i++)
+                {
+                    if (i > maxParents) { maxParents = i; }
+
+                    var parent = allNodes[node.Commit.ParentCommitHashes[i]];
+
+                    var line = new Line();
+
+                    line.Y1 = Canvas.GetTop(node.Body) + ELLIPSE_SIZE / 2;
+                    line.X1 = Canvas.GetLeft(node.Body) + ELLIPSE_SIZE / 2;
+                    line.Y2 = Canvas.GetTop(parent.Body) + ELLIPSE_SIZE / 2;
+                    line.X2 = Canvas.GetLeft(parent.Body) + ELLIPSE_SIZE / 2;
+
+                    line.Stroke = new SolidColorBrush(Colors.White);
+                    line.StrokeThickness = 1;
+
+                    maxHeight = (int)Math.Max(line.Y1, line.Y2);
+
+                    MainCanvas.Children.Add(line);
+
+                }
+            }
+
+            maxWidth = maxParents * (ELLIPSE_SIZE * 2) + 20;
+
+            MainCanvas.Height = maxHeight + ELLIPSE_SIZE;
 
         }
 
-        
         private TextBlock CreateTextBlock(string text)
         {
             var fontSize = FontSize;
@@ -262,4 +353,13 @@ namespace GItClient.MVVM.View.PartialView
         }
 
     }
+
+    public class TreeViewItem 
+    {
+        public Ellipse Body { get; set; }
+        public GitCommitBase Commit { get; set; }
+
+        public TreeViewItem() { }
+    }
+
 }

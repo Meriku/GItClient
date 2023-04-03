@@ -12,14 +12,21 @@
 
     <ScrollViewer>
         <Grid Name="MainGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"  Name="Graph"/>
-                <ColumnDefinition Width="1*"  Name="Hash"/>
-                <ColumnDefinition Width="5*" Name="Message"/>
-                <ColumnDefinition Width="1*" Name="Author"/>
-                <ColumnDefinition Width="1*" Name="Date"/>
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"  Name="Graph"/>
+                    <ColumnDefinition Width="1*"  Name="Hash"/>
+                    <ColumnDefinition Width="5*" Name="Message"/>
+                    <ColumnDefinition Width="1*" Name="Author"/>
+                    <ColumnDefinition Width="1*" Name="Date"/>
+                </Grid.ColumnDefinitions>
+
+            <Canvas Name="MainCanvas"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="9999999">
+            </Canvas>
         </Grid>
+
     </ScrollViewer>
 
 
