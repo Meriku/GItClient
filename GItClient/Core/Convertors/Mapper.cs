@@ -9,7 +9,6 @@ namespace GItClient.Core.Convertors
 {
     public static class Mapper
     {
-
         public static TResult Map<TInput, TResult>(TInput input)
         {
             switch (typeof(TResult).Name)
@@ -34,6 +33,7 @@ namespace GItClient.Core.Convertors
             var responsesArray = responses.AllResponses.ToArray();
             var result = new List<GitCommit>();
 
+            var currentBranch = "master";
             try
             {
                 for (var r = 0; r < responsesArray.Length; r++)
@@ -44,25 +44,33 @@ namespace GItClient.Core.Convertors
                     //TODO: branhes don't work correctly right now. Fix
                     if (response.Message.Contains("branch :"))
                     {
-                        commit.Branch = response.Message[8..];
+                        currentBranch = response.Message[8..];
                         r++;
-                        response = responsesArray[r];
-                        var responseSplited = response.Message.Split(GitLogParser.Separator);
-                        commit.Author = responseSplited[1];
-                        commit.Email = responseSplited[2];
-                        commit.Date = responseSplited[3];
-                        if (DateTime.TryParse(responseSplited[3], out var shortDate))
-                        {
-                            commit.ShortDate = shortDate;
-                        }
-                        result.Add(commit);
+
+                        //response = responsesArray[r];
+                        //var responseSplited = response.Message.Split(GitLogParser.Separator);
+                        //commit.Author = responseSplited[1];
+                        //commit.Email = responseSplited[2];
+                        //commit.Date = responseSplited[3];
+                        //if (DateTime.TryParse(responseSplited[3], out var shortDate))
+                        //{
+                        //    commit.ShortDate = shortDate;
+                        //}
+                        //result.Add(commit);
+
+                        
+                        r++;
                         commit = new GitCommit();
-                        r++;
                         response = responsesArray[r];
+                    }
+                    else
+                    {
+                        currentBranch = "master";
                     }
 
                    
                     var strings = response.Message.Split(GitLogParser.Separator);
+                    commit.Branch = currentBranch;
                     for (var i = 0; i < strings.Length; i++)
                     {
                         switch (i)

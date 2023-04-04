@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.PowerShell.Commands;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,9 +60,6 @@ namespace GItClient.Core.Models
             }
         }
     }
-
-
-
     public class TreeNode<T> where T : IGetHash, IGetParentHashes
     {
 
@@ -98,6 +96,66 @@ namespace GItClient.Core.Models
         public string[] GetParentHashes()
         {
             return Data.GetParentHashes();
+        }
+    }
+
+    public class CommitsTree
+    {
+        public CommitsTreeNode Head { get; set; }
+        public CommitsTreeNode Tail { get; set; }
+
+        public List<CommitsTreeNode> AllNodes { get; set; }
+        public Dictionary<string, List<CommitsTreeNode>> AllNodesByBranch { get; set; }
+
+        public CommitsTree()
+        {
+            AllNodes = new List<CommitsTreeNode>();
+            AllNodesByBranch = new Dictionary<string, List<CommitsTreeNode>>();
+        }
+
+        public void Add(GitCommit commit)
+        {
+            var node = new CommitsTreeNode(commit);
+            AllNodes.Add(node);
+
+            if (Head == null)
+            {
+                Head = node;
+                Tail = node;
+                AllNodesByBranch[node.Data.Branch] = new List<CommitsTreeNode> { node };
+                return;
+            }
+
+            if (AllNodesByBranch.ContainsKey(node.Data.Branch))
+            {
+                AllNodesByBranch[node.Data.Branch].Last().AddChild(node);
+                AllNodesByBranch[node.Data.Branch].Add(node);
+            }
+            else
+            {
+                Tail.AddChild(node);
+                AllNodesByBranch[node.Data.Branch] = new List<CommitsTreeNode> { node };
+            }
+            
+            Tail = node;
+            
+        }
+    }
+    public class CommitsTreeNode
+    {
+        public GitCommit Data { get; set; }
+
+        public List<CommitsTreeNode> Children { get; set; }
+
+        public CommitsTreeNode(GitCommit data)
+        {
+            Data = data;
+            Children = new List<CommitsTreeNode>();
+        }
+
+        public void AddChild(CommitsTreeNode node)
+        {
+            Children.Add(node);
         }
     }
 }

@@ -160,6 +160,8 @@ namespace GItClient.MVVM.View.PartialView
             var gitController = new GitController();
             var tree = await gitController.GetGitCommitsTreeAsync(currentRepository);
             var commitsWithoutEmpty = currentRepository.CommitsHolder.Commits.Where(x => x.CommitHash != null).ToArray(); //TODO: temp
+            currentRepository.RecalculateBranches();
+
             var lastY = 0;
             for (var i = 0; i < commitsWithoutEmpty.Length; i++) 
             {
@@ -192,12 +194,14 @@ namespace GItClient.MVVM.View.PartialView
                     var generation = tree.AllNodes[commit.CommitHash].Generation;
                     var indexInGeneration = tree.AllNodesByGeneration[generation].IndexOf(tree.AllNodes[commit.CommitHash]);
 
-                    var body = new Ellipse() 
+                    var body = new Ellipse()
                     {
                         Height = 8,
                         Width = 8,
-                        Fill = new SolidColorBrush(ColorByGeneration[indexInGeneration]),
-                        ToolTip = new ToolTip() { Content = commit.Subject, Foreground = new SolidColorBrush(Colors.Black)},
+                        Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
+                        //commit.Branch == "master" ? new SolidColorBrush(ColorByGeneration[indexInGeneration]) : new SolidColorBrush(Colors.Red),
+                        //ToolTip = new ToolTip() { Content = commit.Subject, Foreground = new SolidColorBrush(Colors.Black)},
+                        ToolTip = new ToolTip() { Content = commit.Branch, Foreground = new SolidColorBrush(Colors.Black) },
                         HorizontalAlignment = HorizontalAlignment.Left,
                     };
 
@@ -212,7 +216,8 @@ namespace GItClient.MVVM.View.PartialView
                     //Grid.SetColumn(node.Body, 0);
                     MainCanvas.Children.Add(node.Body);
                     Canvas.SetTop(node.Body, lastY);
-                    Canvas.SetLeft(node.Body, 10 * indexInGeneration + 5);
+                    Canvas.SetLeft(node.Body, commit.Branch == "master" ? 15 : 25);
+                    //Canvas.SetLeft(node.Body, 10 * indexInGeneration + 5);
 
                     lastY += (int)rowHeight;
 
@@ -272,12 +277,12 @@ namespace GItClient.MVVM.View.PartialView
 
                     maxHeight = (int)Math.Max(line.Y1, line.Y2);
 
-                    MainCanvas.Children.Add(line);
+                    //MainCanvas.Children.Add(line);
 
                 }
             }
 
-            maxWidth = maxParents * (ELLIPSE_SIZE * 2) + 20;
+            maxWidth = maxParents * (ELLIPSE_SIZE * 2) + 40;
 
             MainCanvas.Height = maxHeight + ELLIPSE_SIZE;
 

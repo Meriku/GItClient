@@ -10,7 +10,7 @@ namespace GItClient.Core.Convertors
     internal static class GitLogParser
     {
         public const char Separator = '~';
-        public static Tree<GitCommitBase> CreateTree(PowerShellResponses responses)
+        public static Tree<GitCommitBase> CreateTreeOld(PowerShellResponses responses)
         {
             // Each line in responses contain hash and parent hash (if first commit - only hash)
 
@@ -41,7 +41,18 @@ namespace GItClient.Core.Convertors
 
         }
 
+        public static CommitsTree CreateTree(GitCommit[] commits)
+        {
+            var tree = new CommitsTree();
 
+            for (var i = commits.Length - 1; i >= 0; i--)
+            {
+                tree.Add(commits[i]);
+            }
+
+            return tree;
+
+        }
 
     }
 }
