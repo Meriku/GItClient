@@ -35,9 +35,9 @@ namespace GItClient.Core.Models
         public bool Active { get; set; }
         public Color Color { get; set; }
 
-        //public Dictionary<string, Branch> BranchesByName { get; set; }
+        public Dictionary<string, Branch> BranchesByName { get; set; }
 
-        //public Dictionary<string, List<GitCommit>> CommitsByBranchName { get; set; }
+        public Dictionary<string, List<GitCommit>> CommitsByBranchName { get; set; }
 
         public int CommitsCount { get; set; }
 
@@ -59,10 +59,10 @@ namespace GItClient.Core.Models
 
         public void RecalculateBranches()
         {
-            //var result = CommitsHolder.Commits.GroupBy(x => x.Branch);
-            //CommitsByBranchName = result.ToDictionary(x => x.Key, x => x.ToList());
+            var result = CommitsHolder.Commits.GroupBy(x => x.Branch);
+            CommitsByBranchName = result.ToDictionary(x => x.Key, x => x.ToList());
 
-            //BranchesByName = CommitsByBranchName.Keys.ToDictionary(x => x, x => new Branch(x));
+            BranchesByName = CommitsByBranchName.Keys.ToDictionary(x => x, x => new Branch(x));
         }
 
     }

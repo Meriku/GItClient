@@ -52,7 +52,7 @@ namespace GItClient.Core.Controllers
 
             var results = await ExecuteAndInformUIAsync(request);
 
-            var tree = GitLogParser.CreateTree(results);
+            var tree = GitLogParser.CreateTreeOld(results);
 
             return tree;
         }

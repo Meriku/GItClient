@@ -41,8 +41,9 @@ namespace GItClient.Core.Convertors
 
         }
 
-        public static CommitsTree CreateTree(GitCommit[] commits)
+        public static CommitsTree CreateTree(Repository repository)
         {
+            var commits = repository.CommitsHolder.Commits;
             var tree = new CommitsTree();
 
             for (var i = commits.Length - 1; i >= 0; i--)

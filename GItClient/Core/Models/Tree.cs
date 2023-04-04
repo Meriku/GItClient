@@ -104,19 +104,19 @@ namespace GItClient.Core.Models
         public CommitsTreeNode Head { get; set; }
         public CommitsTreeNode Tail { get; set; }
 
-        public List<CommitsTreeNode> AllNodes { get; set; }
+        public Dictionary<string, CommitsTreeNode> AllNodes { get; set; }
         public Dictionary<string, List<CommitsTreeNode>> AllNodesByBranch { get; set; }
 
         public CommitsTree()
         {
-            AllNodes = new List<CommitsTreeNode>();
+            AllNodes = new Dictionary<string, CommitsTreeNode>();
             AllNodesByBranch = new Dictionary<string, List<CommitsTreeNode>>();
         }
 
         public void Add(GitCommit commit)
         {
             var node = new CommitsTreeNode(commit);
-            AllNodes.Add(node);
+            AllNodes[node.Data.CommitHash] = node;
 
             if (Head == null)
             {
@@ -146,16 +146,23 @@ namespace GItClient.Core.Models
         public GitCommit Data { get; set; }
 
         public List<CommitsTreeNode> Children { get; set; }
+        public List<CommitsTreeNode> Parents { get; set; }
 
         public CommitsTreeNode(GitCommit data)
         {
             Data = data;
             Children = new List<CommitsTreeNode>();
+            Parents = new List<CommitsTreeNode>();
         }
 
         public void AddChild(CommitsTreeNode node)
         {
             Children.Add(node);
+            node.AddParent(this);
+        }
+        public void AddParent(CommitsTreeNode node)
+        {
+            Parents.Add(node);
         }
     }
 }
