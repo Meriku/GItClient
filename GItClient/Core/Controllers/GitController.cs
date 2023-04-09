@@ -33,7 +33,7 @@ namespace GItClient.Core.Controllers
         {
             //var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
             var gitCommitFormat = string.Format("--format=%H%n%P{0}%an{0}%ae{0}%ad{0}%s{0}%b", GitLogParser.SEPARATOR);
-
+            // git log --all --format=%H%n%P~%an~%ae~%ad~%s~%b --date=iso-strict
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
             //request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--no-merges",  "--encoding=cp866" });

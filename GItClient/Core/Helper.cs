@@ -67,7 +67,7 @@ namespace GItClient.Core
         public static Color GetRandomColor()
         {
             Random random = new Random();
-            var color = Color.FromRgb((byte)random.Next(50, 200), (byte)random.Next(50, 200), (byte)random.Next(50, 200));
+            var color = Color.FromRgb((byte)random.Next(100, 250), (byte)random.Next(100, 250), (byte)random.Next(100, 250));
             return color;
         }
 

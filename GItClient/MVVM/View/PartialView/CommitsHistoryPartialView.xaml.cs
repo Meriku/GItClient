@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using GItClient.Core;
 using GItClient.Core.Controllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
@@ -140,154 +141,150 @@ namespace GItClient.MVVM.View.PartialView
 
         private async Task RenderCommitsViewImpl(Repository currentRepository)
         {
-            var commits = currentRepository.CommitsHolder.Commits;
-
             MainGrid.SizeChanged -= GridChanged_ResizeSpinner;
 
+            var EmptyFirstRow = new RowDefinition() { Height = new GridLength(5) };
+            MainGrid.RowDefinitions.Add(EmptyFirstRow);
+
+            // Canvas for ellipses and lines for graph
             MainGrid.Children.Add(MainCanvas);
             Grid.SetRow(MainCanvas, 0);
             Grid.SetRowSpan(MainCanvas, int.MaxValue);
             Grid.SetColumn(MainCanvas, 0);
 
-            var graphNodes = new Dictionary<string, TreeViewItem>();
-
+            // Variables for commits text, style
             var fontSize = FontSize;
             var fontFamily = new System.Windows.Media.FontFamily("Roboto-Light");
             var fontColor = new SolidColorBrush(System.Windows.Media.Color.FromRgb(190, 190, 190));
+            var gridRowHeight = GetRowHeight();
 
-            var rowHeight = GetRowHeight();
+            var tree = GitLogParser.CreateTree(currentRepository); // first the oldest
+            var commits = tree.AllNodes.Values.ToArray();
+            //currentRepository.CommitsHolder.Commits; // first the newest
+            var graphNodes = new Dictionary<string, TreeViewItem>();
 
-            var EmptyFirstRow = new RowDefinition();
-            EmptyFirstRow.Height = new GridLength(5);
-            MainGrid.RowDefinitions.Add(EmptyFirstRow);
-
-            ////tree
-            var tree = GitLogParser.CreateTree(currentRepository);
-            //var keys = tree.AllNodes.Keys.ToArray();
-            
-
-            //add rows
             for (var i = 0; i < commits.Length; i++)
             {
-                var row = new RowDefinition() { Height = new GridLength(rowHeight) };
-                MainGrid.RowDefinitions.Add(row);
+                var currentRow = new RowDefinition() { Height = new GridLength(gridRowHeight) };
+                MainGrid.RowDefinitions.Add(currentRow);
             }
 
-            var Height = MainGrid.RowDefinitions.Sum(x => x.ActualHeight);
-            for (var i = commits.Length - 1; i >= 0 ; i--) 
+            for (var i = 0; i < commits.Length; i++)
             {
+                var rowsCount = MainGrid.RowDefinitions.Count - 1;
                 var commit = commits[i];
 
-                var textblockHash = CreateTextBlock(commit.ShortHash);
-                var textblockMessage = CreateTextBlock(commit.Subject);
-                var textblockAuthor = CreateTextBlock(commit.AuthorName);
-                var textblockDate = CreateTextBlock(commit.ShortDateString);
+                var textblockHash = CreateTextBlock(commit.Data.ShortHash);
+                var textblockMessage = CreateTextBlock(commit.Data.Subject);
+                var textblockAuthor = CreateTextBlock(commit.Data.AuthorName);
+                var textblockDate = CreateTextBlock(commit.Data.ShortDateString);
 
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
                 MainGrid.Children.Add(textblockAuthor);
                 MainGrid.Children.Add(textblockDate);
 
-                //ellipse           
-
-                var body = new Ellipse()
-                {
-                    Height = ELLIPSE_SIZE,
-                    Width = ELLIPSE_SIZE,
-                    //Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
-                    Fill = new SolidColorBrush(Colors.White),
-                    ToolTip = new ToolTip() { Content = commit.Branch ?? "", Foreground = new SolidColorBrush(Colors.Black) },
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    
-                };
-
-                var node = new TreeViewItem();
-                node.Body = body;
-                node.CommitNode = tree.AllNodes[commit.Hash];
-                graphNodes[commit.Hash] = node;
-                MainCanvas.Children.Add(node.Body);
-
-                var parents = tree.AllNodes[commit.Hash].Parents;
-                if (parents.Count == 0)
-                {
-                    Canvas.SetLeft(node.Body, 10);
-                }
-                else if (parents.Count == 1)
-                {
-                    var parent = parents.First();
-                    var thisNodeIndex = parent.Children.IndexOf(tree.AllNodes[commit.Hash]);
-
-                    Canvas.SetLeft(node.Body, 10 * thisNodeIndex);
-                }
-                else if (parents.Count > 1)
-                {
-                    //TODO
-                    var parent = parents.Last();
-                    var parentNode = graphNodes[parent.Hash];
-
-                    var left = Canvas.GetLeft(parentNode.Body);
-                    Canvas.SetLeft(node.Body, left);
-                }
-                Canvas.SetZIndex(node.Body, 10);
-
-                Grid.SetRow(textblockHash, i + 1);
+                Grid.SetRow(textblockHash, rowsCount - i);
                 Grid.SetColumn(textblockHash, 1);
 
-                Grid.SetRow(textblockMessage, i + 1);
+                Grid.SetRow(textblockMessage, rowsCount - i);
                 Grid.SetColumn(textblockMessage, 2);
 
-                Grid.SetRow(textblockAuthor, i + 1);
+                Grid.SetRow(textblockAuthor, rowsCount - i);
                 Grid.SetColumn(textblockAuthor, 3);
 
-                Grid.SetRow(textblockDate, i + 1);
+                Grid.SetRow(textblockDate, rowsCount - i);
                 Grid.SetColumn(textblockDate, 4);
+
+                var treeNode = tree.AllNodes[commit.Hash];
+                var graphNode = new TreeViewItem()
+                {
+                    Body = CreateEllipse(commit.Data),
+                    CommitNode = tree.AllNodes[commit.Hash]
+                };
+                graphNodes[commit.Hash] = graphNode;
+                MainCanvas.Children.Add(graphNode.Body);
+
+                Canvas.SetTop(graphNode.Body, (rowsCount - 1 - i) * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
+                Canvas.SetZIndex(graphNode.Body, 10);
+
+                if (treeNode.Parents.Count == 0)
+                {
+                    Canvas.SetLeft(graphNode.Body, 10);
+                }
+                else if (treeNode.Parents.Count == 1)
+                {
+                    var parent = treeNode.Parents.Last();
+                    var parentBody = graphNodes[parent.Hash].Body;
+                    var parentLeft = Canvas.GetLeft(parentBody);
+                    graphNode.Body.Fill = parentBody.Fill;
+
+                    if (parent.Children.Count == 1)
+                    {
+                        Canvas.SetLeft(graphNode.Body, parentLeft);                   
+                    }
+                    else
+                    {
+                        var index = parent.Children.Count - 1 - parent.Children.IndexOf(treeNode);
+                        Canvas.SetLeft(graphNode.Body, parentLeft + 10 * index);
+                        Canvas.SetLeft(graphNode.Body, parentLeft + 10 * index);
+
+                        graphNode.Body.Fill = new SolidColorBrush(Helper.GetRandomColor());
+                    }
+                }
+                else
+                {
+                    var parent = treeNode.Parents.First();
+                    var parentBody = graphNodes[parent.Hash].Body;
+                    var parentLeft = Canvas.GetLeft(parentBody);
+                    graphNode.Body.Fill = parentBody.Fill;
+
+                    Canvas.SetLeft(graphNode.Body, parentLeft);
+                }
+
             }
+
 
             
 
-            DrawLines(graphNodes, rowHeight, out int maxWidth);
 
-            MainGrid.ColumnDefinitions[0].Width = new GridLength(maxWidth);
+
+            
+            //var rowHeight = GetRowHeight();
+
+            ////tree
+            
+            //var keys = tree.AllNodes.Keys.ToArray();
+            
+
+
+
+           DrawLines(graphNodes, gridRowHeight);
+
+            MainGrid.ColumnDefinitions[0].Width = new GridLength(50);
 
         }
-        public void DrawLines(Dictionary<string, TreeViewItem> allNodes, double rowHeight, out int maxWidth)
+        public void DrawLines(Dictionary<string, TreeViewItem> allNodes, double rowHeight)
         {
-            var maxHeight = 0;
-            maxWidth = 0;
-
-            var Height = MainGrid.RowDefinitions[0].Height.Value + ELLIPSE_SIZE / 2;
-            var maxChild = 1;
-            foreach (var node in allNodes.Values.Reverse())
+            foreach (var node in allNodes.Values)
             {
-                Canvas.SetTop(node.Body, Height);
-                Height += rowHeight;
-                for (var i = 0; i < node.CommitNode.Children.Count; i++)
+                for (var i = 0; i < node.CommitNode.Parents.Count; i++)
                 {
-                    maxChild = Math.Max(maxChild, node.CommitNode.Children.Count);
-
-                    var childHash = node.CommitNode.Children[i].Data.Hash;
-                    var child = allNodes[childHash];
+                    var parent = node.CommitNode.Parents[i];
+                    var parentNode = allNodes[parent.Hash];
 
                     var line = new Line();
-
                     line.Y1 = Canvas.GetTop(node.Body) + ELLIPSE_SIZE / 2;
                     line.X1 = Canvas.GetLeft(node.Body) + ELLIPSE_SIZE / 2;
-                    line.Y2 = Canvas.GetTop(child.Body) + ELLIPSE_SIZE / 2;
-                    line.X2 = Canvas.GetLeft(child.Body) + ELLIPSE_SIZE / 2;
+                    line.Y2 = Canvas.GetTop(parentNode.Body) + ELLIPSE_SIZE / 2;
+                    line.X2 = Canvas.GetLeft(parentNode.Body) + ELLIPSE_SIZE / 2;
 
                     line.Stroke = new SolidColorBrush(Colors.White);
                     line.StrokeThickness = 1;
 
-                    maxHeight = (int)Math.Max(line.Y1, line.Y2);
-
                     MainCanvas.Children.Add(line);
                 }
             }
-
-            maxWidth = maxChild * (20) + 40;
-
-            MainCanvas.Height = maxHeight + ELLIPSE_SIZE;
-
         }
 
         private TextBlock CreateTextBlock(string text)
@@ -304,6 +301,19 @@ namespace GItClient.MVVM.View.PartialView
 
             return textblock;
         }
+        private Ellipse CreateEllipse(GitCommit commit)
+        {
+            return new Ellipse()
+            {
+                Height = ELLIPSE_SIZE,
+                Width = ELLIPSE_SIZE,
+                //Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
+                Fill = new SolidColorBrush(Colors.White),
+                ToolTip = new ToolTip() { Content = commit.Hash + " " + commit.Branch ?? "", Foreground = new SolidColorBrush(Colors.Black) },
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+        }
+
         private void ResizeGridText()
         {
             var rowHeight = GetRowHeight();
@@ -365,6 +375,8 @@ namespace GItClient.MVVM.View.PartialView
     {
         public Ellipse Body { get; set; }
         public CommitsTreeNode CommitNode { get; set; }
+
+        public int CollumnIndex { get; set; }
 
         public TreeViewItem() { }
     }
