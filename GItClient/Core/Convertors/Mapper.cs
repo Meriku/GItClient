@@ -45,38 +45,55 @@ namespace GItClient.Core.Convertors
                     if (response.Message.Contains("branch :"))
                     {
                         currentBranch = response.Message[8..];
-                        r++;
-
-                        //response = responsesArray[r];
-                        //var responseSplited = response.Message.Split(GitLogParser.Separator);
-                        //commit.Author = responseSplited[1];
-                        //commit.Email = responseSplited[2];
-                        //commit.Date = responseSplited[3];
-                        //if (DateTime.TryParse(responseSplited[3], out var shortDate))
-                        //{
-                        //    commit.ShortDate = shortDate;
-                        //}
-                        //result.Add(commit);
-
-                        
-                        r++;
-                        commit = new GitCommit();
-                        response = responsesArray[r];
                     }
-                    else
+
+                    //if (response.Message.Contains("Merge branch"))
+                    //{
+                    //    commit.Branch = currentBranch;
+                    //    var stringsMerge = response.Message.Split(GitLogParser.Separator);
+
+                    //    for (var i = 0; i < stringsMerge.Length; i++)
+                    //    {
+                    //        switch (i)
+                    //        {
+                    //            case 0:
+                    //                commit.CommitHash = stringsMerge[i];
+                    //                break;
+                    //            case 1:
+                    //                commit.Subject = stringsMerge[i];
+                    //                break;
+                    //            case 2:
+                    //                commit.Body = stringsMerge[i];
+                    //                break;
+                    //            case 3:
+                    //                commit.Author = stringsMerge[i];
+                    //                break;
+                    //            case 4:
+                    //                commit.Email = stringsMerge[i];
+                    //                break;
+                    //            case 5:
+                    //                commit.Date = stringsMerge[i];
+                    //                if (DateTime.TryParse(stringsMerge[i], out var shortDate))
+                    //                {
+                    //                    commit.ShortDate = shortDate;
+                    //                }
+                    //                break;
+                    //        }
+                    //    }
+                    //}
+
+                    var strings = response.Message.Split(GitLogParser.SEPARATOR);
+                    if (strings[0].Length != 40) // 40 - standart hash length
                     {
-                        currentBranch = "master";
+                        continue;
                     }
-
-                   
-                    var strings = response.Message.Split(GitLogParser.Separator);
                     commit.Branch = currentBranch;
                     for (var i = 0; i < strings.Length; i++)
                     {
                         switch (i)
                         {
                             case 0:
-                                commit.CommitHash = strings[i];
+                                commit.Hash = strings[i];
                                 break;
                             case 1:
                                 commit.Subject = strings[i];
@@ -85,17 +102,10 @@ namespace GItClient.Core.Convertors
                                 commit.Body = strings[i];
                                 break;
                             case 3:
-                                commit.Author = strings[i];
+                                commit.AuthorName = strings[i];
                                 break;
                             case 4:
-                                commit.Email = strings[i];
-                                break;
-                            case 5:
-                                commit.Date = strings[i];
-                                if (DateTime.TryParse(strings[i], out var shortDate))
-                                {
-                                    commit.ShortDate = shortDate;
-                                }
+                                commit.AuthorEmail = strings[i];
                                 break;
                         }
                     }

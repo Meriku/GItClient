@@ -1,4 +1,5 @@
 ﻿using GItClient.Core.Models;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,35 +10,39 @@ namespace GItClient.Core.Convertors
 {
     internal static class GitLogParser
     {
-        public const char Separator = '~';
-        public static Tree<GitCommitBase> CreateTreeOld(PowerShellResponses responses)
+        public const char SEPARATOR = '~';
+        public const int HASH_LENGTH = 40;
+
+        public static GitCommits ConvertPSResponsesToGitCommits(PowerShellResponses responses)
         {
-            // Each line in responses contain hash and parent hash (if first commit - only hash)
+            var PSResponses = responses.AllResponses.ToArray();
+            var result = new List<GitCommit>();
 
-            var lines = responses.AllResponses.Select(x => x.Message).ToArray();
-            var tree = new Tree<GitCommitBase>();
-
-            for (var i = lines.Length - 1; i >= 0; i--)
+            var tempCommit = new GitCommit();
+            for (var i = 0; i < PSResponses.Length; i++)
             {
-                var line = lines[i];
-
-                var hash = line[0..40];
-                var parentHashesArray = Array.Empty<string>();
-
-                if (line.Length > 45)
+                if (PSResponses[i].Message.Length == HASH_LENGTH)
                 {
-                    var parentHashes = line.Split(Separator)[1];
-                    parentHashesArray = parentHashes.Split(' ');
+                    tempCommit = new GitCommit() { Hash = PSResponses[i].Message };
+                    result.Add(tempCommit);
                 }
-
-                var commit = new GitCommitBase(hash, parentHashesArray);
-                tree.Add(commit);
-
+                else if (PSResponses[i].Message.StartsWith("branch :"))
+                {
+                    tempCommit.Branch = PSResponses[i].Message[8..];
+                }
+                else
+                {
+                    var commitBodyArray = PSResponses[i].Message.Split(SEPARATOR);
+                    tempCommit.ParentHashes = commitBodyArray[0].Length > 0 ? commitBodyArray[0].Split(' ') : Array.Empty<string>();
+                    tempCommit.AuthorName = commitBodyArray[1];
+                    tempCommit.AuthorEmail = commitBodyArray[2];
+                    tempCommit.Date = commitBodyArray[3];
+                    tempCommit.Subject = commitBodyArray[4];
+                    tempCommit.Body = commitBodyArray[5];
+                }        
             }
 
-            tree.CalculateGenerations();
-
-            return tree;
+            return new GitCommits(result);
 
         }
 

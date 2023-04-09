@@ -31,30 +31,20 @@ namespace GItClient.Core.Controllers
         }
         internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
-            var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
+            //var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
+            var gitCommitFormat = string.Format("--format=%H%n%P{0}%an{0}%ae{0}%ad{0}%s{0}%b", GitLogParser.SEPARATOR);
+
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
-            request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--encoding=cp866" });
+            //request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--no-merges",  "--encoding=cp866" });
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--all", gitCommitFormat, "--date=iso-strict", "--encoding=cp866" });
 
             var results = await ExecuteAndInformUIAsync(request);
 
-            var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
+            //var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
+            var result = GitLogParser.ConvertPSResponsesToGitCommits(results);
 
             return result.Commits;
-        }
-
-        internal async Task<Tree<GitCommitBase>> GetGitCommitsTreeAsync(Repository repository)
-        {
-            var gitCommitFormat = string.Format("--pretty=%H{0}%P", GitLogParser.Separator);
-            var request = new PowerShellCommands(2, internalUsage: true);
-            request.AddCommand(CommandsPowerShell.cd, repository.Path);
-            request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--encoding=cp866" });
-
-            var results = await ExecuteAndInformUIAsync(request);
-
-            var tree = GitLogParser.CreateTreeOld(results);
-
-            return tree;
         }
 
         internal async Task<bool> CheckIfRepositoryExist(string directory)

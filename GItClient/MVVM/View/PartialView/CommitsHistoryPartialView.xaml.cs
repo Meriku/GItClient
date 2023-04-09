@@ -3,6 +3,7 @@ using GItClient.Core.Controllers;
 using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
+using Gu.Wpf.Adorners;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -130,7 +131,7 @@ namespace GItClient.MVVM.View.PartialView
 
             Task.Run(async () => 
             {
-                await currentRepository.CommitsHolder.WaitAsync();
+                await currentRepository.CommitsHolder.WaitAsync(); // if commits are loading - wait
                 currentRepository.CommitsHolder.Release();
 
                 WeakReferenceMessenger.Default.Send(new RepositoryChangedMessage("WaitingEnded"));
@@ -139,6 +140,8 @@ namespace GItClient.MVVM.View.PartialView
 
         private async Task RenderCommitsViewImpl(Repository currentRepository)
         {
+            var commits = currentRepository.CommitsHolder.Commits;
+
             MainGrid.SizeChanged -= GridChanged_ResizeSpinner;
 
             MainGrid.Children.Add(MainCanvas);
@@ -158,28 +161,27 @@ namespace GItClient.MVVM.View.PartialView
             EmptyFirstRow.Height = new GridLength(5);
             MainGrid.RowDefinitions.Add(EmptyFirstRow);
 
-            //tree
-            currentRepository.RecalculateBranches();
+            ////tree
             var tree = GitLogParser.CreateTree(currentRepository);
-            var keys = tree.AllNodes.Keys.ToArray();
+            //var keys = tree.AllNodes.Keys.ToArray();
             
 
             //add rows
-            for (var i = 0; i < keys.Length; i++)
+            for (var i = 0; i < commits.Length; i++)
             {
                 var row = new RowDefinition() { Height = new GridLength(rowHeight) };
                 MainGrid.RowDefinitions.Add(row);
             }
 
             var Height = MainGrid.RowDefinitions.Sum(x => x.ActualHeight);
-            for (var i = 0; i < keys.Length; i++) 
+            for (var i = commits.Length - 1; i >= 0 ; i--) 
             {
-                var commit = tree.AllNodes[keys[i]].Data;
+                var commit = commits[i];
 
-                var textblockHash = CreateTextBlock(commit.ShortCommitHash);
+                var textblockHash = CreateTextBlock(commit.ShortHash);
                 var textblockMessage = CreateTextBlock(commit.Subject);
-                var textblockAuthor = CreateTextBlock(commit.Author);
-                var textblockDate = CreateTextBlock(commit.ShortDate.ToString("g"));
+                var textblockAuthor = CreateTextBlock(commit.AuthorName);
+                var textblockDate = CreateTextBlock(commit.ShortDateString);
 
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
@@ -192,50 +194,52 @@ namespace GItClient.MVVM.View.PartialView
                 {
                     Height = ELLIPSE_SIZE,
                     Width = ELLIPSE_SIZE,
-                    Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
-                    ToolTip = new ToolTip() { Content = commit.Branch, Foreground = new SolidColorBrush(Colors.Black) },
+                    //Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
+                    Fill = new SolidColorBrush(Colors.White),
+                    ToolTip = new ToolTip() { Content = commit.Branch ?? "", Foreground = new SolidColorBrush(Colors.Black) },
                     HorizontalAlignment = HorizontalAlignment.Left,
                     
                 };
 
                 var node = new TreeViewItem();
                 node.Body = body;
-                node.CommitNode = tree.AllNodes[keys[i]];
-
-                graphNodes[node.CommitNode.Data.CommitHash] = node;
+                node.CommitNode = tree.AllNodes[commit.Hash];
+                graphNodes[commit.Hash] = node;
                 MainCanvas.Children.Add(node.Body);
 
-                var parent = tree.AllNodes[keys[i]].Parents.FirstOrDefault();
-                if (parent == null)
+                var parents = tree.AllNodes[commit.Hash].Parents;
+                if (parents.Count == 0)
                 {
                     Canvas.SetLeft(node.Body, 10);
                 }
-                else
+                else if (parents.Count == 1)
                 {
-                    var parentHash = parent.Data.CommitHash;
-                    var parenyNode = graphNodes[parentHash];
-                    var left = Canvas.GetLeft(parenyNode.Body);
-                    if (parenyNode.CommitNode.Data.Branch == node.CommitNode.Data.Branch)
-                    {
-                        Canvas.SetLeft(node.Body, left);
-                    }
-                    else
-                    {
-                        Canvas.SetLeft(node.Body, left + 20);
-                    }
+                    var parent = parents.First();
+                    var thisNodeIndex = parent.Children.IndexOf(tree.AllNodes[commit.Hash]);
+
+                    Canvas.SetLeft(node.Body, 10 * thisNodeIndex);
+                }
+                else if (parents.Count > 1)
+                {
+                    //TODO
+                    var parent = parents.Last();
+                    var parentNode = graphNodes[parent.Hash];
+
+                    var left = Canvas.GetLeft(parentNode.Body);
+                    Canvas.SetLeft(node.Body, left);
                 }
                 Canvas.SetZIndex(node.Body, 10);
 
-                Grid.SetRow(textblockHash, keys.Length - i);
+                Grid.SetRow(textblockHash, i + 1);
                 Grid.SetColumn(textblockHash, 1);
 
-                Grid.SetRow(textblockMessage, keys.Length - i);
+                Grid.SetRow(textblockMessage, i + 1);
                 Grid.SetColumn(textblockMessage, 2);
 
-                Grid.SetRow(textblockAuthor, keys.Length - i);
+                Grid.SetRow(textblockAuthor, i + 1);
                 Grid.SetColumn(textblockAuthor, 3);
 
-                Grid.SetRow(textblockDate, keys.Length - i);
+                Grid.SetRow(textblockDate, i + 1);
                 Grid.SetColumn(textblockDate, 4);
             }
 
@@ -261,7 +265,7 @@ namespace GItClient.MVVM.View.PartialView
                 {
                     maxChild = Math.Max(maxChild, node.CommitNode.Children.Count);
 
-                    var childHash = node.CommitNode.Children[i].Data.CommitHash;
+                    var childHash = node.CommitNode.Children[i].Data.Hash;
                     var child = allNodes[childHash];
 
                     var line = new Line();
