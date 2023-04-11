@@ -205,42 +205,38 @@ namespace GItClient.MVVM.View.PartialView
                 graphNodes[commit.Hash] = graphNode;
                 MainCanvas.Children.Add(graphNode.Body);
 
-                Canvas.SetTop(graphNode.Body, (rowsCount - 1 - i) * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
-                Canvas.SetZIndex(graphNode.Body, 10);
+
 
                 if (treeNode.Parents.Count == 0)
                 {
-                    Canvas.SetLeft(graphNode.Body, 10);
+                    graphNode.CollumnIndex = 0;
                 }
                 else if (treeNode.Parents.Count == 1)
                 {
                     var parent = treeNode.Parents.Last();
-                    var parentBody = graphNodes[parent.Hash].Body;
-                    var parentLeft = Canvas.GetLeft(parentBody);
-                    graphNode.Body.Fill = parentBody.Fill;
+                    graphNode.Body.Fill = graphNodes[parent.Data.Hash].Body.Fill;
 
                     if (parent.Children.Count == 1)
                     {
-                        Canvas.SetLeft(graphNode.Body, parentLeft);                   
+                        graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex;
                     }
                     else
                     {
-                        var index = parent.Children.Count - 1 - parent.Children.IndexOf(treeNode);
-                        Canvas.SetLeft(graphNode.Body, parentLeft + 10 * index);
-                        Canvas.SetLeft(graphNode.Body, parentLeft + 10 * index);
-
                         graphNode.Body.Fill = new SolidColorBrush(Helper.GetRandomColor());
+
+                        var index = parent.Children.Count - 1 - parent.Children.IndexOf(treeNode);
+                        graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex + index;                     
                     }
                 }
                 else
                 {
                     var parent = treeNode.Parents.First();
-                    var parentBody = graphNodes[parent.Hash].Body;
-                    var parentLeft = Canvas.GetLeft(parentBody);
-                    graphNode.Body.Fill = parentBody.Fill;
-
-                    Canvas.SetLeft(graphNode.Body, parentLeft);
+                    graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex;
+                    graphNode.Body.Fill = graphNodes[parent.Data.Hash].Body.Fill;
                 }
+                Canvas.SetLeft(graphNode.Body, graphNode.CollumnIndex * 10);
+                Canvas.SetTop(graphNode.Body, (rowsCount - 1 - i) * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
+                Canvas.SetZIndex(graphNode.Body, 10);
 
             }
 
@@ -375,7 +371,6 @@ namespace GItClient.MVVM.View.PartialView
     {
         public Ellipse Body { get; set; }
         public CommitsTreeNode CommitNode { get; set; }
-
         public int CollumnIndex { get; set; }
 
         public TreeViewItem() { }

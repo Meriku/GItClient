@@ -32,7 +32,10 @@ namespace GItClient.Core.Models
 
             foreach(var parentHash in node.Data.ParentHashes)
             {
-                var parent = AllNodes[parentHash];
+                var isCommitsParsedCorrectly = AllNodes.ContainsKey(parentHash);
+
+                var parent = isCommitsParsedCorrectly ? AllNodes[parentHash] : AllNodes.Last().Value;
+                
                 parent.AddChild(node);
             }
 

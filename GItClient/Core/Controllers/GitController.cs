@@ -32,7 +32,7 @@ namespace GItClient.Core.Controllers
         internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
         {
             //var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
-            var gitCommitFormat = string.Format("--format=%H%n%P{0}%an{0}%ae{0}%ad{0}%s{0}%b", GitLogParser.SEPARATOR);
+            var gitCommitFormat = string.Format("--format=%H%n{0}%P{0}%an{0}%ae{0}%ad{0}%s{0}%b", GitLogParser.SEPARATOR);
             // git log --all --format=%H%n%P~%an~%ae~%ad~%s~%b --date=iso-strict
             var request = new PowerShellCommands(2, internalUsage: true);
             request.AddCommand(CommandsPowerShell.cd, repository.Path);

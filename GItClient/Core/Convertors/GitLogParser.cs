@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GItClient.Core.Convertors
@@ -12,6 +13,7 @@ namespace GItClient.Core.Convertors
     {
         public const char SEPARATOR = '~';
         public const int HASH_LENGTH = 40;
+        public const string EMPTY = " ";
 
         public static GitCommits ConvertPSResponsesToGitCommits(PowerShellResponses responses)
         {
@@ -23,22 +25,26 @@ namespace GItClient.Core.Convertors
             {
                 if (PSResponses[i].Message.Length == HASH_LENGTH)
                 {
-                    tempCommit = new GitCommit() { Hash = PSResponses[i].Message };
-                    result.Add(tempCommit);
+                    var regex = new Regex("^[0-9a-fA-F]{40}$");
+                    if (regex.IsMatch(PSResponses[i].Message))
+                    {
+                        tempCommit = new GitCommit() { Hash = PSResponses[i].Message };
+                        result.Add(tempCommit);
+                    }
                 }
                 else if (PSResponses[i].Message.StartsWith("branch :"))
                 {
                     tempCommit.Branch = PSResponses[i].Message[8..];
                 }
-                else
+                else if (PSResponses[i].Message[0] == SEPARATOR)
                 {
-                    var commitBodyArray = PSResponses[i].Message.Split(SEPARATOR);
+                    var commitBodyArray = PSResponses[i].Message[1..].Split(SEPARATOR);
                     tempCommit.ParentHashes = commitBodyArray[0].Length > 0 ? commitBodyArray[0].Split(' ') : Array.Empty<string>();
-                    tempCommit.AuthorName = commitBodyArray[1];
-                    tempCommit.AuthorEmail = commitBodyArray[2];
-                    tempCommit.Date = commitBodyArray[3];
-                    tempCommit.Subject = commitBodyArray[4];
-                    tempCommit.Body = commitBodyArray[5];
+                    tempCommit.AuthorName = commitBodyArray.Length > 1 ? commitBodyArray[1] : EMPTY;
+                    tempCommit.AuthorEmail = commitBodyArray.Length > 2 ? commitBodyArray[2] : EMPTY;
+                    tempCommit.Date = commitBodyArray.Length > 3 ? commitBodyArray[3] : EMPTY;
+                    tempCommit.Subject = commitBodyArray.Length > 4 ? commitBodyArray[4] : EMPTY;
+                    tempCommit.Body = commitBodyArray.Length > 5 ? commitBodyArray[5] : EMPTY;
                 }        
             }
 
