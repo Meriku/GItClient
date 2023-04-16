@@ -41,14 +41,8 @@ namespace GItClient.Core.Convertors
         private GitCommit ParseCommit(string[] commitInfo)
         {
             var commit = new GitCommit();
-            try
-            {
-                commit.Level = ParseCommitLevel(commitInfo[0]);
-            }
-            catch(Exception e) 
-            {
-                Console.WriteLine("Exception");
-            }
+
+            commit.Level = ParseCommitLevel(commitInfo[0]);
             commit.Hash = commitInfo[1];
             commit.ParentHashes = commitInfo[2].Length > 0 ? commitInfo[2].Split(' ') : Array.Empty<string>();
             commit.AuthorName = commitInfo[3];
