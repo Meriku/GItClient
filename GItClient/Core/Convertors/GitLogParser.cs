@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 
 namespace GItClient.Core.Convertors
 {
@@ -13,43 +14,68 @@ namespace GItClient.Core.Convertors
     {
         public const char SEPARATOR = '~';
         public const int HASH_LENGTH = 40;
-        public const string EMPTY = " ";
 
-        public static GitCommits ConvertPSResponsesToGitCommits(PowerShellResponses responses)
+        public static GitCommits ParseGitGraph(PowerShellResponses responses)
         {
-            var PSResponses = responses.AllResponses.ToArray();
-            var result = new List<GitCommit>();
+            var PSResponses = responses.AllResponses;
 
-            var tempCommit = new GitCommit();
-            for (var i = 0; i < PSResponses.Length; i++)
+            var result = new GitCommits();
+            var commits = new Dictionary<string, GitCommit>();
+
+            foreach (var response in PSResponses)
             {
-                if (PSResponses[i].Message.Length == HASH_LENGTH)
+                var commitInfo = response.Message.Split(SEPARATOR);
+                if (commitInfo.Length > 1)
                 {
-                    var regex = new Regex("^[0-9a-fA-F]{40}$");
-                    if (regex.IsMatch(PSResponses[i].Message))
-                    {
-                        tempCommit = new GitCommit() { Hash = PSResponses[i].Message };
-                        result.Add(tempCommit);
-                    }
+                    var commit = ParseCommit(commitInfo);
+                    commits[commit.Hash] = commit;
                 }
-                else if (PSResponses[i].Message.StartsWith("branch :"))
-                {
-                    tempCommit.Branch = PSResponses[i].Message[8..];
-                }
-                else if (PSResponses[i].Message[0] == SEPARATOR)
-                {
-                    var commitBodyArray = PSResponses[i].Message[1..].Split(SEPARATOR);
-                    tempCommit.ParentHashes = commitBodyArray[0].Length > 0 ? commitBodyArray[0].Split(' ') : Array.Empty<string>();
-                    tempCommit.AuthorName = commitBodyArray.Length > 1 ? commitBodyArray[1] : EMPTY;
-                    tempCommit.AuthorEmail = commitBodyArray.Length > 2 ? commitBodyArray[2] : EMPTY;
-                    tempCommit.Date = commitBodyArray.Length > 3 ? commitBodyArray[3] : EMPTY;
-                    tempCommit.Subject = commitBodyArray.Length > 4 ? commitBodyArray[4] : EMPTY;
-                    tempCommit.Body = commitBodyArray.Length > 5 ? commitBodyArray[5] : EMPTY;
-                }        
             }
 
-            return new GitCommits(result);
+            result.CommitsMap = commits;
+            result.Commits = commits.Values.ToArray();
+            
+            return result;
+        }
 
+        private static GitCommit ParseCommit(string[] commitInfo)
+        {
+            var commit = new GitCommit();
+            try
+            {
+                commit.Level = ParseCommitLevel(commitInfo[0]);
+            }
+            catch(Exception e) 
+            {
+                Console.WriteLine("Exception");
+            }
+            commit.Hash = commitInfo[1];
+            commit.ParentHashes = commitInfo[2].Length > 0 ? commitInfo[2].Split(' ') : Array.Empty<string>();
+            commit.AuthorName = commitInfo[3];
+            commit.AuthorEmail = commitInfo[4];
+            commit.Date = commitInfo[5];
+            commit.Subject = commitInfo[6];
+            return commit;
+        }
+
+        private static int ParseCommitLevel(string line)
+        {
+            var level = 0;
+
+            for (var i = 0; i < line.Length; i++)
+            {
+                var letter = line[i];
+
+                if (letter == '*')
+                {
+                    return level;
+                }
+                else if (letter == '|')
+                {
+                    level++;
+                }
+            }
+            throw new Exception("Incorrect commit format");
         }
 
         public static CommitsTree CreateTree(Repository repository)

@@ -205,36 +205,7 @@ namespace GItClient.MVVM.View.PartialView
                 graphNodes[commit.Hash] = graphNode;
                 MainCanvas.Children.Add(graphNode.Body);
 
-
-
-                if (treeNode.Parents.Count == 0)
-                {
-                    graphNode.CollumnIndex = 0;
-                }
-                else if (treeNode.Parents.Count == 1)
-                {
-                    var parent = treeNode.Parents.Last();
-                    graphNode.Body.Fill = graphNodes[parent.Data.Hash].Body.Fill;
-
-                    if (parent.Children.Count == 1)
-                    {
-                        graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex;
-                    }
-                    else
-                    {
-                        graphNode.Body.Fill = new SolidColorBrush(Helper.GetRandomColor());
-
-                        var index = parent.Children.Count - 1 - parent.Children.IndexOf(treeNode);
-                        graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex + index;                     
-                    }
-                }
-                else
-                {
-                    var parent = treeNode.Parents.First();
-                    graphNode.CollumnIndex = graphNodes[parent.Data.Hash].CollumnIndex;
-                    graphNode.Body.Fill = graphNodes[parent.Data.Hash].Body.Fill;
-                }
-                Canvas.SetLeft(graphNode.Body, graphNode.CollumnIndex * 10);
+                Canvas.SetLeft(graphNode.Body, currentRepository.CommitsHolder.CommitsMap[commit.Data.Hash].Level * 10);
                 Canvas.SetTop(graphNode.Body, (rowsCount - 1 - i) * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
                 Canvas.SetZIndex(graphNode.Body, 10);
 

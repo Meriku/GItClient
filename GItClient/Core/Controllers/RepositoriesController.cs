@@ -40,9 +40,12 @@ namespace GItClient.Core.Controllers
         private static async Task LoadRepositoryCommits(Repository repo)
         {
             await repo.CommitsHolder.WaitAsync();
+          
             var commits = await _gitController.GetGitHistoryAsync(repo);
-            repo.CommitsHolder.Commits = commits;
+
             repo.CommitsHolder.Release();
+
+            repo.CommitsHolder = commits;
         }
 
         public static void StartLoadRepositoryCommits(string repoName)

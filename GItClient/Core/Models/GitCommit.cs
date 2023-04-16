@@ -38,6 +38,7 @@ namespace GItClient.Core.Models
 
     public class GitCommit : GitCommitExtended
     {
+        public int Level { get; set; }
         public string ShortHash => string.IsNullOrWhiteSpace(Hash) ? "" : Hash[0..7];
         public DateTime ShortDate => DateTime.TryParse(Date, out var shortDate) ? shortDate : DateTime.MinValue;
         public string ShortDateString => ShortDate.ToString("g");
@@ -47,6 +48,7 @@ namespace GItClient.Core.Models
     public class GitCommits : IEnumerable<GitCommit>
     {
         public GitCommit[] Commits { get; set; }
+        public Dictionary<string, GitCommit> CommitsMap { get; set; }
         public int Lenght => Commits.Length;
 
         public bool IsError { get; set; }
@@ -58,11 +60,13 @@ namespace GItClient.Core.Models
         public GitCommits(List<GitCommit> commits)
         {
             Commits = commits.ToArray();
+            CommitsMap = commits.ToDictionary(x => x.Hash, x => x);
             semaphore = new SemaphoreSlim(1);
         }
         public GitCommits()
         {
             Commits = Array.Empty<GitCommit>();
+            CommitsMap = new Dictionary<string, GitCommit>();
             semaphore = new SemaphoreSlim(1);
         }
 
