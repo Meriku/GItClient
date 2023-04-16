@@ -53,14 +53,6 @@ namespace GItClient.Core.Models
             Color = repImg.Color;
         }
 
-        //public void RecalculateBranches()
-        //{
-        //    var result = CommitsHolder.Commits.GroupBy(x => x.Branch);
-        //    CommitsByBranchName = result.ToDictionary(x => x.Key, x => x.ToList());
-
-        //    BranchesByName = CommitsByBranchName.Keys.ToDictionary(x => x, x => new Branch(x));
-        //}
-
     }
 
     public class Branch
@@ -70,10 +62,4 @@ namespace GItClient.Core.Models
 
         public Branch(string name) { Name = name;  Color = Helper.GetRandomColor(); }
     }
-
-    
-
-
-
-
 }

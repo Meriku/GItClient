@@ -29,23 +29,6 @@ namespace GItClient.Core.Controllers
 
             return gitVersion;  
         }
-        //internal async Task<GitCommit[]> GetGitHistoryAsync(Repository repository)
-        //{
-        //    //var gitCommitFormat = string.Format("--pretty=%H{0}%s{0}%b{0}%aN{0}%aE{0}%aD", GitLogParser.Separator);
-        //    var gitCommitFormat = string.Format("--format=%H%n{0}%P{0}%an{0}%ae{0}%ad{0}%s{0}%b", GitLogParser.SEPARATOR);
-        //    // git log --all --format=%H%n%P~%an~%ae~%ad~%s~%b --date=iso-strict
-        //    var request = new PowerShellCommands(2, internalUsage: true);
-        //    request.AddCommand(CommandsPowerShell.cd, repository.Path);
-        //    //request.AddCommand(CommandsPowerShell.git_Log, new string[] { gitCommitFormat, "--no-merges",  "--encoding=cp866" });
-        //    request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--all", gitCommitFormat, "--date=iso-strict", "--encoding=cp866" });
-
-        //    var results = await ExecuteAndInformUIAsync(request);
-
-        //    //var result = Mapper.Map<PowerShellResponses, GitCommits>(results);
-        //    var result = GitLogParser.ConvertPSResponsesToGitCommits(results);
-
-        //    return result.Commits;
-        //}
 
         internal async Task<GitCommits> GetGitHistoryAsync(Repository repository)
         {
@@ -53,11 +36,12 @@ namespace GItClient.Core.Controllers
             request.AddCommand(CommandsPowerShell.cd, repository.Path);
 
             var gitCommitFormat = string.Format("--format={0}%H{0}%P{0}%an{0}%ae{0}%ad{0}%s", GitLogParser.SEPARATOR);
-            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--graph", gitCommitFormat, "--date=iso-strict", "--encoding=cp866" });
+            request.AddCommand(CommandsPowerShell.git_Log, new string[] { "--graph", gitCommitFormat, "--date=iso-strict", "--encoding=cp866", "--all" });
 
             var results = await ExecuteAndInformUIAsync(request);
 
-            var commits = GitLogParser.ParseGitGraph(results);
+            var parser = new GitLogParser();
+            var commits = parser.ParseGitGraph(results);
 
             return commits;
         }

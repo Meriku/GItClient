@@ -10,12 +10,12 @@ using System.Windows.Shapes;
 
 namespace GItClient.Core.Convertors
 {
-    internal static class GitLogParser
+    internal class GitLogParser
     {
         public const char SEPARATOR = '~';
         public const int HASH_LENGTH = 40;
 
-        public static GitCommits ParseGitGraph(PowerShellResponses responses)
+        public GitCommits ParseGitGraph(PowerShellResponses responses)
         {
             var PSResponses = responses.AllResponses;
 
@@ -38,7 +38,7 @@ namespace GItClient.Core.Convertors
             return result;
         }
 
-        private static GitCommit ParseCommit(string[] commitInfo)
+        private GitCommit ParseCommit(string[] commitInfo)
         {
             var commit = new GitCommit();
             try
@@ -58,7 +58,7 @@ namespace GItClient.Core.Convertors
             return commit;
         }
 
-        private static int ParseCommitLevel(string line)
+        private int ParseCommitLevel(string line)
         {
             var level = 0;
 
@@ -78,19 +78,6 @@ namespace GItClient.Core.Convertors
             throw new Exception("Incorrect commit format");
         }
 
-        public static CommitsTree CreateTree(Repository repository)
-        {
-            var commits = repository.CommitsHolder.Commits;
-            var tree = new CommitsTree();
-
-            for (var i = commits.Length - 1; i >= 0; i--)
-            {
-                tree.Add(commits[i]);
-            }
-
-            return tree;
-
-        }
 
     }
 }

@@ -5,6 +5,7 @@ using GItClient.Core.Convertors;
 using GItClient.Core.Models;
 using GItClient.MVVM.Assets;
 using Gu.Wpf.Adorners;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -158,10 +159,8 @@ namespace GItClient.MVVM.View.PartialView
             var fontColor = new SolidColorBrush(System.Windows.Media.Color.FromRgb(190, 190, 190));
             var gridRowHeight = GetRowHeight();
 
-            var tree = GitLogParser.CreateTree(currentRepository); // first the oldest
-            var commits = tree.AllNodes.Values.ToArray();
-            //currentRepository.CommitsHolder.Commits; // first the newest
             var graphNodes = new Dictionary<string, TreeViewItem>();
+            var commits = currentRepository.CommitsHolder.Commits;
 
             for (var i = 0; i < commits.Length; i++)
             {
@@ -169,88 +168,99 @@ namespace GItClient.MVVM.View.PartialView
                 MainGrid.RowDefinitions.Add(currentRow);
             }
 
-            for (var i = 0; i < commits.Length; i++)
+            var maxLevel = 1;
+            for (var i = commits.Length - 1; i >= 0 ; i--)
             {
                 var rowsCount = MainGrid.RowDefinitions.Count - 1;
                 var commit = commits[i];
 
-                var textblockHash = CreateTextBlock(commit.Data.ShortHash);
-                var textblockMessage = CreateTextBlock(commit.Data.Subject);
-                var textblockAuthor = CreateTextBlock(commit.Data.AuthorName);
-                var textblockDate = CreateTextBlock(commit.Data.ShortDateString);
+                var textblockHash = CreateTextBlock(commit.ShortHash);
+                var textblockMessage = CreateTextBlock(commit.Subject);
+                var textblockAuthor = CreateTextBlock(commit.AuthorName);
+                var textblockDate = CreateTextBlock(commit.ShortDateString);
 
                 MainGrid.Children.Add(textblockHash);
                 MainGrid.Children.Add(textblockMessage);
                 MainGrid.Children.Add(textblockAuthor);
                 MainGrid.Children.Add(textblockDate);
 
-                Grid.SetRow(textblockHash, rowsCount - i);
+                Grid.SetRow(textblockHash, i + 1);
                 Grid.SetColumn(textblockHash, 1);
 
-                Grid.SetRow(textblockMessage, rowsCount - i);
+                Grid.SetRow(textblockMessage, i + 1);
                 Grid.SetColumn(textblockMessage, 2);
 
-                Grid.SetRow(textblockAuthor, rowsCount - i);
+                Grid.SetRow(textblockAuthor, i + 1);
                 Grid.SetColumn(textblockAuthor, 3);
 
-                Grid.SetRow(textblockDate, rowsCount - i);
+                Grid.SetRow(textblockDate, i + 1);
                 Grid.SetColumn(textblockDate, 4);
 
-                var treeNode = tree.AllNodes[commit.Hash];
+
                 var graphNode = new TreeViewItem()
                 {
-                    Body = CreateEllipse(commit.Data),
-                    CommitNode = tree.AllNodes[commit.Hash]
+                    Body = CreateEllipse(commit, graphNodes),
+                    Commit = commit
                 };
                 graphNodes[commit.Hash] = graphNode;
+                
+
                 MainCanvas.Children.Add(graphNode.Body);
 
-                Canvas.SetLeft(graphNode.Body, currentRepository.CommitsHolder.CommitsMap[commit.Data.Hash].Level * 10);
-                Canvas.SetTop(graphNode.Body, (rowsCount - 1 - i) * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
+                Canvas.SetLeft(graphNode.Body, 5 + commit.Level * 10);
+                Canvas.SetTop(graphNode.Body, i * gridRowHeight + EmptyFirstRow.Height.Value + ELLIPSE_SIZE / 2);
                 Canvas.SetZIndex(graphNode.Body, 10);
+                DrawLine(graphNodes, graphNode);
 
+                if (commit.Level > maxLevel)
+                {
+                    maxLevel = commit.Level;
+                }
             }
 
-
-            
-
-
-
-            
-            //var rowHeight = GetRowHeight();
-
-            ////tree
-            
-            //var keys = tree.AllNodes.Keys.ToArray();
-            
-
-
-
-           DrawLines(graphNodes, gridRowHeight);
-
-            MainGrid.ColumnDefinitions[0].Width = new GridLength(50);
-
+            MainGrid.ColumnDefinitions[0].Width = new GridLength(maxLevel * 10 + 30);
         }
-        public void DrawLines(Dictionary<string, TreeViewItem> allNodes, double rowHeight)
+
+        private void DrawLine(Dictionary<string, TreeViewItem> allNodes, TreeViewItem node)
         {
-            foreach (var node in allNodes.Values)
+            var maxLineLength = 150;
+            for (var i = 0; i < node.Commit.ParentHashes.Length; i++)
             {
-                for (var i = 0; i < node.CommitNode.Parents.Count; i++)
+                var parentHash = node.Commit.ParentHashes[i];
+                var parentNode = allNodes[parentHash];
+
+                var line = new Line();
+                line.Y1 = Canvas.GetTop(node.Body) + ELLIPSE_SIZE / 2;
+                line.X1 = Canvas.GetLeft(node.Body) + ELLIPSE_SIZE / 2;
+                line.Y2 = Canvas.GetTop(parentNode.Body) + ELLIPSE_SIZE / 2;
+                line.X2 = Canvas.GetLeft(parentNode.Body) + ELLIPSE_SIZE / 2;
+
+                line.StrokeThickness = 1;
+
+                if (parentNode.Commit.Level > node.Commit.Level)
                 {
-                    var parent = node.CommitNode.Parents[i];
-                    var parentNode = allNodes[parent.Hash];
-
-                    var line = new Line();
-                    line.Y1 = Canvas.GetTop(node.Body) + ELLIPSE_SIZE / 2;
-                    line.X1 = Canvas.GetLeft(node.Body) + ELLIPSE_SIZE / 2;
-                    line.Y2 = Canvas.GetTop(parentNode.Body) + ELLIPSE_SIZE / 2;
-                    line.X2 = Canvas.GetLeft(parentNode.Body) + ELLIPSE_SIZE / 2;
-
-                    line.Stroke = new SolidColorBrush(Colors.White);
-                    line.StrokeThickness = 1;
-
-                    MainCanvas.Children.Add(line);
+                    line.Stroke = parentNode.Body.Fill;
                 }
+                else
+                {
+                    line.Stroke = node.Body.Fill;
+                }            
+
+                if ((line.Y2 - line.Y1) > maxLineLength)
+                {
+                    line.X2 = line.X1;
+                    var extraLine = new Line();
+                    extraLine.Y1 = line.Y2;
+                    extraLine.Y2 = line.Y2;
+                    extraLine.X1 = line.X2;
+                    extraLine.X2 = Canvas.GetLeft(parentNode.Body) + ELLIPSE_SIZE / 2;
+
+                    extraLine.Stroke = line.Stroke;
+                    extraLine.StrokeThickness = 1;
+                    MainCanvas.Children.Add(extraLine);
+                }
+
+                MainCanvas.Children.Add(line);
             }
         }
 
@@ -268,17 +278,34 @@ namespace GItClient.MVVM.View.PartialView
 
             return textblock;
         }
-        private Ellipse CreateEllipse(GitCommit commit)
+        private Ellipse CreateEllipse(GitCommit commit, Dictionary<string, TreeViewItem> allNodes)
         {
-            return new Ellipse()
+            var result = new Ellipse()
             {
                 Height = ELLIPSE_SIZE,
                 Width = ELLIPSE_SIZE,
-                //Fill = new SolidColorBrush(currentRepository.BranchesByName[commit.Branch].Color),
                 Fill = new SolidColorBrush(Colors.White),
-                ToolTip = new ToolTip() { Content = commit.Hash + " " + commit.Branch ?? "", Foreground = new SolidColorBrush(Colors.Black) },
+                ToolTip = new ToolTip() { Content = commit.Hash + " " + "Parents: " + string.Join(", ", commit.ParentHashes), Foreground = new SolidColorBrush(Colors.Black) },
                 HorizontalAlignment = HorizontalAlignment.Left
             };
+
+            if (commit.Level == 0) { return result; };
+            
+            var parentHash = commit.ParentHashes.FirstOrDefault();
+            if (parentHash != null && allNodes.ContainsKey(parentHash))
+            {
+                var parent = allNodes[parentHash];
+                if (parent.Commit.Level == commit.Level)
+                {
+                    result.Fill = parent.Body.Fill;
+                }
+                else
+                {
+                    result.Fill = new SolidColorBrush(Helper.GetRandomColor());
+                }
+            }
+
+            return result;
         }
 
         private void ResizeGridText()
@@ -341,7 +368,7 @@ namespace GItClient.MVVM.View.PartialView
     public class TreeViewItem 
     {
         public Ellipse Body { get; set; }
-        public CommitsTreeNode CommitNode { get; set; }
+        public GitCommit Commit { get; set; }
         public int CollumnIndex { get; set; }
 
         public TreeViewItem() { }
