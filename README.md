@@ -21,6 +21,11 @@ Our Git Client aims to include a variety of features to enhance your Git workflo
 - Branching and merging: Streamlined tools for branching, merging, and resolving conflicts. - visual part of branching - done, tools for branching, merging, and resolving conflicts - not implemented yet
 - History and diff viewer: Visualize commit history and track changes efficiently. - not implemented yet
 
+## Screenshots
+![Git Commands View](/github/git_commands.png "Git Commands View")
+![Git Tree View](/github/git_tree.png "Git Tree View")
+![Main View](/github/main_view.png "Main View")
+
 ## Getting Started
 To start using the Git Client, follow these steps:
 
