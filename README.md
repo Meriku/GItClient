@@ -22,9 +22,17 @@ Our Git Client aims to include a variety of features to enhance your Git workflo
 - History and diff viewer: Visualize commit history and track changes efficiently. - not implemented yet
 
 ## Screenshots
-![Git Commands View](/github/git_commands.png "Git Commands View")
-![Git Tree View](/github/git_tree.png "Git Tree View")
-![Main View](/github/main_view.png "Main View")
+1. Git Commands View
+   
+![Git Commands View](/github/git_commands.png?raw=true "Git Commands View")
+
+2. Git Tree View
+   
+![Git Tree View](/github/git_tree.png?raw=true "Git Tree View")
+
+3. Main View
+   
+![Main View](/github/main_view.png?raw=true "Main View")
 
 ## Getting Started
 To start using the Git Client, follow these steps:
